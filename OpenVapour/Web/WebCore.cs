@@ -48,7 +48,7 @@ namespace OpenVapour.Web {
             try {
                 Console.WriteLine($"[0] http get '{Url}'");
                 while ((DateTime.Now - LastTimeout) < TimeSpan.FromMilliseconds(Timeout))
-                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout).TotalMilliseconds));
+                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout).TotalMilliseconds) + 10);
                 LastTimeout = DateTime.Now;
 
                 Console.WriteLine($"[1] http prepare '{Url}'");
