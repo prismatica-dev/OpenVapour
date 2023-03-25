@@ -361,14 +361,16 @@ namespace OpenVapour {
             foreach (ResultTorrent torrent in await GetResults(_)) AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {
-            magnetbutton.Text = "Queued";
-            Update();
-            string magnet = await GetMagnet(currenttorrent.TorrentUrl);
-            Console.WriteLine("opening magnet url " + magnet);
-            Clipboard.SetText(magnet);
-            Process.Start(magnet);
-            Cache.HomepageGame(currentgame.AppId);
-            magnetbutton.Text = "Magnet"; }
+            try {
+                magnetbutton.Text = "Queued";
+                Update();
+                string magnet = await GetMagnet(currenttorrent.TorrentUrl);
+                Console.WriteLine("opening magnet url " + magnet);
+                Clipboard.SetText(magnet);
+                Process.Start(magnet);
+                Cache.HomepageGame(currentgame.AppId);
+                magnetbutton.Text = "Magnet";
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); }}
 
         private void exit_Click(object sender, EventArgs e) { Close(); }
 
