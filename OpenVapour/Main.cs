@@ -353,7 +353,9 @@ namespace OpenVapour {
             ClearStore(); 
             AddGame(currentgame);
             gamepanel.Visible = false;
-            foreach (ResultTorrent torrent in await GetResults(Regex.Replace(currentgame.Name, @"[^\u0000-\u007F]+", string.Empty))) AddTorrent(torrent); }
+            string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
+            Console.WriteLine(_);
+            foreach (ResultTorrent torrent in await GetResults(_)) AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {
             magnetbutton.Text = "Queued";
