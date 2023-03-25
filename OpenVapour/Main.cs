@@ -78,7 +78,7 @@ namespace OpenVapour {
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = game.Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.GetStrippedValue("detailed_description"), BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
-
+            
             //Console.WriteLine(game.Name + "\n\n\n" + game.About);
 
             popup.Controls.Add(gameart);
@@ -262,7 +262,7 @@ namespace OpenVapour {
             List<Image> pbs = (List<Image>)pbl[0];
             pb.Image = pbs[2]; }
 
-        private void GameHoverStart(object sender, EventArgs e) {
+        private async void GameHoverStart(object sender, EventArgs e) {
             PictureBox pb = (PictureBox)sender;
             List<object> pbo = (List<object>)pb.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
@@ -274,7 +274,10 @@ namespace OpenVapour {
             else popup.Location = new Point(pb.Location.X + pb.Width + 5, pb.Location.Y + toolbar.Height);
 
             popup.Visible = true;
-            hover = true; }
+            hover = true;
+
+            await Task.Delay(5000);
+            popup.Visible = false; }
 
         private void GameHoverEnd(object sender, EventArgs e) {
             PictureBox pb = (PictureBox)sender;
