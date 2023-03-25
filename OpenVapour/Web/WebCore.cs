@@ -51,15 +51,17 @@ namespace OpenVapour.Web {
                     await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout).TotalMilliseconds));
                 LastTimeout = DateTime.Now;
 
-                Console.WriteLine($"[1] http get '{Url}'");
+                Console.WriteLine($"[1] http prepare '{Url}'");
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
                 req.Method = "GET";
                 req.Timeout = 2000;
                 req.UserAgent = GetRandomUserAgent();
                 req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                Console.WriteLine($"[2] http get '{Url}'");
                 using (Stream memory = (await req.GetResponseAsync()).GetResponseStream()) {
-                    Console.WriteLine($"[done] http get '{Url}'");
-                    return new StreamReader(memory).ReadToEnd(); }
+                    using (StreamReader reader = new StreamReader(memory)) {
+                        Console.WriteLine($"[done] http get '{Url}'");
+                        return reader.ReadToEnd(); }}
             } catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); return ""; }}
         public static string DecodeBlueMediaFiles(string EncodedUrl) {
             Console.WriteLine("decoding " + EncodedUrl);
