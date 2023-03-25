@@ -14,7 +14,11 @@ or view releases [here](https://github.com/lily-software/OpenVapour/releases)
 ### Compatibility
 Tested With:
 + Windows 10 + ReviOS 10 (Native)
+  + Occasional lag on search
 + Arch Linux (Wine)
+  + Heavy search lag
+  + Increased random crashes
+  + Requires windows fonts (Segoe UI Semilight)
 
 #### *Search Results View*
 ![Screenshot #1 - Search View](https://user-images.githubusercontent.com/59503910/224724215-46ae2eed-75f6-4941-8df7-a28d67d667b7.png)
