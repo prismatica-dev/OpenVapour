@@ -370,7 +370,7 @@ namespace OpenVapour {
                 Process.Start(magnet);
                 Cache.HomepageGame(currentgame.AppId);
                 magnetbutton.Text = "Magnet";
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); }}
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copied"; }}
 
         private void exit_Click(object sender, EventArgs e) { Close(); }
 
