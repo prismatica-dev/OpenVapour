@@ -367,7 +367,7 @@ namespace OpenVapour {
                 string magnet = await GetMagnet(currenttorrent.TorrentUrl);
                 Console.WriteLine("opening magnet url " + magnet);
                 Clipboard.SetText(magnet);
-                Process.Start(magnet);
+                try { Process.Start(magnet); } catch {} // Process.Start will throw an exception if no magnet-capable applications are installed
                 Cache.HomepageGame(currentgame.AppId);
                 magnetbutton.Text = "Magnet";
             } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); }}
