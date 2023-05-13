@@ -29,11 +29,27 @@ namespace OpenVapour.Steam {
             public string JSON { get; set; }
             public static async Task<ResultTorrent> TorrentFromUrl(string Url, string Name) {
                 ResultTorrent torrent = new ResultTorrent("");
-                torrent.JSON = ""; torrent.Url = Url; torrent.Name = Name; torrent.Image = ""; torrent.Description = "";
+                torrent.JSON = ""; torrent.Url = Url; torrent.Name = Name;
                 string html = await WebCore.GetWebString(Url);
                 torrent.Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>");
                 torrent.Image = GetBetween(html, "Download\" src=\"", "\""); // won't always work
                 torrent.TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"");
+
+                // fix description unicode bugs
+                bool descriptionFixed = false;
+                int iterations = 0;
+                while (!descriptionFixed) {
+                    iterations++; if (iterations > 50) break; // prevent infinite loop
+                    string unicode = GetBetween(torrent.Description, "#", ";");
+                    Console.WriteLine($"patching #{unicode};");
+                    if (unicode.Length > 0 && unicode.Length < 6) {
+                        Console.WriteLine("valid patch length!");
+                        if (int.TryParse(unicode, out int n)) {
+                            Console.WriteLine($"patched #{unicode}; with {(char)n}");
+                            torrent.Description = torrent.Description.Replace($"#{unicode};", $"{(char)n}"); }
+                        else descriptionFixed = true; }
+                    else descriptionFixed = true; }
+
                 return torrent; }
 
             public ResultTorrent(string JSON) {
