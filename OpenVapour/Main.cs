@@ -126,11 +126,11 @@ namespace OpenVapour {
 
                 List<object> metalist = new List<object>();
 
+                // green states for torrents
                 List<Image> states = new List<Image> {
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
-                //states.Add(Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 50)));
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 50, 170, 80)), // passive state
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 56, 229, 114)), // click state
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 119, 213, 160)) }; // hover state
 
                 metalist.Add(states);
                 metalist.Add(torrent);
@@ -174,36 +174,7 @@ namespace OpenVapour {
             panel.MouseUp += GameClickEnd;
 
             store.Controls.Add(panel);
-            await LoadGameBitmap(game, panel);
-            /*try {
-                Bitmap img = await GetShelf(Convert.ToInt32(game.AppId));
-                List<object> metalist = new List<object>();
-
-                List<Image> states = new List<Image> {
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
-                //states.Add(Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 50)));
-
-                metalist.Add(states);
-                metalist.Add(game);
-
-                panel.Image = states[0];
-                panel.Tag = metalist;
-
-                Panel popup = CreatePopUp(panel);
-                metalist.Add(popup);
-
-                panel.Click += GameClick;
-                
-                panel.MouseEnter += GameHoverStart;
-                panel.MouseDown += GameClickStart;
-
-                panel.MouseLeave += GameHoverEnd;
-                panel.MouseUp += GameClickEnd;
-
-                store.Controls.Add(panel);
-            } catch { panel.Image = SystemIcons.Error.ToBitmap(); }*/ }
+            await LoadGameBitmap(game, panel); }
 
         internal async Task LoadGameBitmap(SteamGame game, PictureBox output) {
             try {
@@ -276,7 +247,7 @@ namespace OpenVapour {
             popup.Visible = true;
             hover = true;
 
-            await Task.Delay(5000);
+            await Task.Delay(20000);
             popup.Visible = false; }
 
         private void GameHoverEnd(object sender, EventArgs e) {
@@ -361,15 +332,20 @@ namespace OpenVapour {
             foreach (ResultTorrent torrent in await GetResults(_)) AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {
+            string magnet = "";
             try {
                 magnetbutton.Text = "Queued";
                 Update();
-                string magnet = await GetMagnet(currenttorrent.TorrentUrl);
-                Console.WriteLine("opening magnet url " + magnet);
+                magnet = await GetMagnet(currenttorrent.TorrentUrl);
+                Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
-                try { Process.Start(magnet); } catch {} // Process.Start will throw an exception if no magnet-capable applications are installed
                 Cache.HomepageGame(currentgame.AppId);
-                magnetbutton.Text = "Magnet";
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Failed"; }
+            try {
+                if (magnet.Length > 0) {
+                    Console.WriteLine("opening magnet url " + magnet);
+                    Process.Start(magnet); // Process.Start will throw an exception if no magnet-capable applications are installed
+                    magnetbutton.Text = "Magnet"; }
             } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copied"; }}
 
         private void exit_Click(object sender, EventArgs e) { Close(); }
