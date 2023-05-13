@@ -11,7 +11,8 @@ namespace OpenVapour.Graphics {
         internal const int BorderRadius = 20;
         internal static Image AddOuterShadow(Image image, Color color) {
             Bitmap epicshadow = new Bitmap(image.Width, image.Height);
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(epicshadow)) { 
-                g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, image.Width, image.Height)); 
-                g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, image.Width - BorderRadius * 2, image.Height - BorderRadius * 2)); }
+            if (epicshadow.Width > BorderRadius * 2 && epicshadow.Height > BorderRadius * 2)
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(epicshadow)) { 
+                    g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, image.Width, image.Height)); 
+                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, image.Width - BorderRadius * 2, image.Height - BorderRadius * 2)); }
             return epicshadow; }}}

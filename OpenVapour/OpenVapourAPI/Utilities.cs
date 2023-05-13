@@ -116,7 +116,7 @@ namespace OpenVapour.Steam {
 
                 return Encoding.UTF8.GetString(buffer); }}
 
-        internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9 -]");
+        internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
         internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");
 
         /// <summary>

@@ -15,6 +15,7 @@ using System.Web.UI.WebControls.WebParts;
 using OpenVapour.Web;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
+using System.Web.UI.HtmlControls;
 
 namespace OpenVapour.Steam {
     internal class Torrent {
@@ -26,8 +27,15 @@ namespace OpenVapour.Steam {
             public string Image { get; set; }
             public string TorrentUrl { get; set; }
             public string JSON { get; set; }
-            public ResultTorrent(string Url, string Name) {
-                JSON = ""; this.Url = Url; this.Name = Name; Image = ""; Description = ""; }
+            public static async Task<ResultTorrent> TorrentFromUrl(string Url, string Name) {
+                ResultTorrent torrent = new ResultTorrent("");
+                torrent.JSON = ""; torrent.Url = Url; torrent.Name = Name; torrent.Image = ""; torrent.Description = "";
+                string html = await WebCore.GetWebString(Url);
+                torrent.Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>");
+                torrent.Image = GetBetween(html, "Download\" src=\"", "\""); // won't always work
+                torrent.TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"");
+                return torrent; }
+
             public ResultTorrent(string JSON) {
                 this.JSON = JSON;
                 Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
@@ -50,7 +58,7 @@ namespace OpenVapour.Steam {
                             Description = Description.Replace($"#{unicode};", $"{(char)n}");
                         } else descriptionFixed = true; } else descriptionFixed = true; }}}
 
-        public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value='", "'");
+        public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
         public static async Task<List<ResultTorrent>> GetResults(string Name) {
             List<ResultTorrent> results = new List<ResultTorrent>();
@@ -65,7 +73,11 @@ namespace OpenVapour.Steam {
                 Console.WriteLine($"found {items.Count():N0} torrents!");
                 // skip first non-item result
                 if (items.Count() > 1)
-                    for (int i = 1; i < items.Count(); i++) results.Add(new ResultTorrent(items[i]));
+                    for (int i = 1; i < items.Count(); i++) {
+                        ResultTorrent torrent = new ResultTorrent(items[i]);
+                        results.Add(torrent);
+                        Console.WriteLine("found torrent " + torrent.Url);
+                        resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
 
                 // check game list (sometimes results provided by pcgt are insufficient)
                 if (GameList.Length == 0)
@@ -75,10 +87,14 @@ namespace OpenVapour.Steam {
                 foreach (string game in GameList) {
                     if (game.StartsWith("<li><a")) {
                         string name = GetBetween(game, "data-wpel-link=\"internal\">", "</a");
+                        string filtname = FilterAlphanumeric(name.ToLower());
+                        string filtName = FilterAlphanumeric(Name.ToLower());
+
                         // really bad backup search algorithm
-                        if (!name.ToLower().Replace(" ", "").Contains(Name.ToLower().Trim().Replace(" ", ""))) continue;
-                        string url = GetBetween(game, "<a href=\"", "\"");
-                        results.Add(new ResultTorrent(url, name));
-                    }}
+                        if (filtname.Contains(filtName) || filtname == filtName) {
+                            string url = GetBetween(game, "<a href=\"", "\"");
+                            Console.WriteLine("search result found! " + url);
+                            if (!resulturls.Contains(url))
+                                results.Add(await ResultTorrent.TorrentFromUrl(url, name)); }}}
             } catch (Exception ex) { HandleException($"TorrentCore.GetResults({Name})", ex); }
             return results; }}}

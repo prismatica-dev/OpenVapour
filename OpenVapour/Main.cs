@@ -119,14 +119,15 @@ namespace OpenVapour {
             //SteamGame game = torrent.Game;
 
             try {
-                Image img = null;
-                if (Cache.IsBitmapCached(torrent.Url)) img = Cache.GetCachedBitmap(torrent.Url);
-                else {
-                    WebClient wc = new WebClient();
-                    byte[] bytes = wc.DownloadData(torrent.Image);
-                    MemoryStream ms = new MemoryStream(bytes);
-                    img = Image.FromStream(ms);
-                    Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
+                Image img = new Bitmap(1, 1);
+                if (torrent.Image.Length > 0)
+                    if (Cache.IsBitmapCached(torrent.Url)) img = Cache.GetCachedBitmap(torrent.Url);
+                    else {
+                        WebClient wc = new WebClient();
+                        byte[] bytes = wc.DownloadData(torrent.Image);
+                        MemoryStream ms = new MemoryStream(bytes);
+                        img = Image.FromStream(ms);
+                        Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
 
                 List<object> metalist = new List<object>();
 
