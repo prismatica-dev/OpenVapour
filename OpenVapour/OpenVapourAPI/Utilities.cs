@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,6 +15,9 @@ using System.Windows.Forms;
 
 namespace OpenVapour.Steam {
     internal class Utilities {
+        // Constants
+        private const string repo = "lily-software/OpenVapour";
+
         // Variables
         internal static readonly WebHeaderCollection headers = new WebHeaderCollection {{ HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" }};
         internal static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -41,6 +45,30 @@ namespace OpenVapour.Steam {
             ". 0", ".0",
             "?", "? ",
             "â€", "" };
+
+        internal static string GetLatestTag() {
+            try {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
+                request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
+                StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
+
+                return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
+            catch (Exception ex) { Console.WriteLine($"{ex.Message}"); }
+            return ""; }
+
+        internal static void UpdateProgram(string TagName) {
+            try {
+                // Download update
+                new WebClient().DownloadFile($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.exe", $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.new.exe");
+
+                // Create a batch file to override current version with update then delete itself after 500ms
+                File.WriteAllText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat", $"@echo off\nping 127.0.0.1 -n 1 -w 500> nul\ndel \"{Assembly.GetExecutingAssembly().Location}\"\nrename \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.new.exe\" \"OpenVapour.exe\"\nstart \"\" \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.exe\"\n(goto) 2>nul & del \"%~f0\"");
+
+                // Run the batch file and immediately terminate process
+                Process.Start($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat");
+                Process.GetCurrentProcess().Kill(); }
+            catch (Exception ex) { Console.WriteLine($"failed to auto-update due to {ex.Message}!"); }}
+
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
             int Start, End;
             if (String.Contains(BetweenStart) && String.Contains(BetweenEnd))

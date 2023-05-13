@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using Brushes = System.Drawing.Brushes;
 using Color = System.Drawing.Color;
 using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
+using System.Reflection;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -32,6 +33,9 @@ namespace OpenVapour {
             UpdateStyles();
 
             Cache.CheckCache();
+
+            string LatestTag = Utilities.GetLatestTag();
+            if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
 
             Bitmap background = new Bitmap(Width, Height);
             LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), Color.FromArgb(250, 149, 255), Color.FromArgb(173, 101, 255));
