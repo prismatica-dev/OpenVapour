@@ -1,5 +1,8 @@
-# OpenVapour — FLOSS Torrent Manager
-OpenVapour is a C# front-end for [Steam](https://store.steampowered.com/) focused on fast searches. As [FLOSS (Free/Libre/Open Source Software)](https://www.gnu.org/philosophy/floss-and-foss.en.html), the project is completely open source and uses no 3rd party libraries such as NUGET packages.
+<div align="center">
+  <h1>/lily.software/ OpenVapour — Torrent Manager</h1>
+  <i>A C# front-end for <a href="https://store.steampowered.com">Steam</a> focused on fast searches. As a <a href="https://www.gnu.org/philosophy/floss-and-foss.en.html">FLOSS</a> project, it is completely open source and uses no 3rd party libraries such as NUGET packages.</i><br>
+  <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
+</div><br>
 
 This tool is in early access! Please report bugs [here!](https://github.com/lily-software/OpenVapour/issues) Additionally, this is a 2 year old project of mine that I recently came back to and improved, there is definitely room for optimisation and as such it may run poorly on low-end systems.
 
@@ -14,7 +17,11 @@ or view releases [here](https://github.com/lily-software/OpenVapour/releases)
 ### Compatibility
 Tested With:
 + Windows 10 + ReviOS 10 (Native)
+  + Occasional lag on search
 + Arch Linux (Wine)
+  + Heavy search lag
+  + Increased random crashes
+  + Requires windows fonts (Segoe UI Semilight)
 
 #### *Search Results View*
 ![Screenshot #1 - Search View](https://user-images.githubusercontent.com/59503910/224724215-46ae2eed-75f6-4941-8df7-a28d67d667b7.png)
