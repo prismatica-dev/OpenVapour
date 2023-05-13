@@ -17,7 +17,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
             public string Name { get; set; }
             public string Price { get; set; }
             public int AppId { get; set; }
-            public async Task<Bitmap> Bitmap(string AssetName = library) { return await GetCDNAsset(AppId, AssetName); }
+            public async Task<Bitmap> Bitmap(string AssetName = library) => await GetCDNAsset(AppId, AssetName);
             public ResultGame(string JSON) {
                 Name = GetBetween(JSON, "name\":\"", "\"");
                 // Price = GetBetween(JSON, "price\":\"", "\"");
@@ -51,8 +51,12 @@ namespace OpenVapour.SteamPseudoWebAPI {
         public static async Task<Bitmap> GetCapsule(int AppId) => await GetCDNAsset(AppId, capsule);
         public static async Task<Bitmap> GetCDNAsset(int AppId, string ImageName) {
             try {
+                if (IsSteamBitmapCached(AppId, ImageName)) return GetCachedSteamBitmap(AppId, ImageName);
                 HttpWebRequest req = WebRequest.CreateHttp($"https://steamcdn-a.akamaihd.net/steam/apps/{AppId}/{ImageName}.jpg");
-                req.Method = "GET"; return new Bitmap((await req.GetResponseAsync()).GetResponseStream());
+                req.Method = "GET"; 
+                Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
+                CacheSteamBitmap(AppId, ImageName, bmp);
+                return bmp;
             } catch (Exception ex) { HandleException($"SteamCore.GetCDNAsset({AppId}, {ImageName})", ex); return new Bitmap(1, 1); }}
 
         public static async Task<List<ResultGame>> GetSuggestions(string Search) {

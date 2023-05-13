@@ -316,7 +316,7 @@ namespace OpenVapour {
             if (e.KeyCode == Keys.Enter) { 
                 ClearStore(); 
                 foreach (ResultGame game in await SteamCore.GetResults(realsearchtb.Text)) {
-                    if (!Cache.SteamGameCached(game.AppId)) {
+                    if (!Cache.IsSteamGameCached(game.AppId)) {
                         if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }} 
                         else { /*AddGame(game);*/ }}}}
 
