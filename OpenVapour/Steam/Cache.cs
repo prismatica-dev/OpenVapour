@@ -22,6 +22,9 @@ namespace OpenVapour.Steam {
         internal static void CacheSteamBitmap(int AppId, string Asset, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
         internal static bool IsSteamBitmapCached(int AppId, string Asset) => File.Exists($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
         internal static Bitmap GetCachedSteamBitmap(int AppId, string Asset) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
+        internal static void CacheBitmap(string Name, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
+        internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
+        internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
 
         internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
 

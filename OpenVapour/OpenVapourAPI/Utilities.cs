@@ -6,7 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -113,6 +115,9 @@ namespace OpenVapour.Steam {
                     gZipStream.Read(buffer, 0, buffer.Length); }
 
                 return Encoding.UTF8.GetString(buffer); }}
+
+        internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9 -]");
+        internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");
 
         /// <summary>
         /// returns true if appid is not a game (dlc / music / bundle) or if api call fails
