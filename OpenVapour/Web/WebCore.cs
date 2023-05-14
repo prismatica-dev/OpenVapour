@@ -39,7 +39,7 @@ namespace OpenVapour.Web {
         public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
         // web request timeout
-        public const int Timeout = 70;
+        public const int Timeout = 1000;
         public static DateTime LastTimeout = DateTime.Now;
         public static async Task<string> GetWebString(string Url) {
             try {
