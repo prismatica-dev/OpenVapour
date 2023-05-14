@@ -42,8 +42,17 @@ namespace OpenVapour.Steam {
             "?", "? ",
             "â€", "" };
 
+        internal static void CheckAutoUpdateIntegrity() {
+            try {
+                // delete autoupdate remnants if present
+                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat"); }
+            catch (Exception ex) { HandleException($"CheckAutoUpdateIntegrity()", ex); }}
+
         internal static string GetLatestTag() {
             try {
+                // delete autoupdate remnants if present
+                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat");
+
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
                 request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
                 StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());

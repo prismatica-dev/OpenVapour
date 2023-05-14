@@ -33,6 +33,7 @@ namespace OpenVapour {
 
             string LatestTag = Utilities.GetLatestTag();
             if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
+            Utilities.CheckAutoUpdateIntegrity();
 
             Bitmap background = new Bitmap(Width, Height);
             LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), Color.FromArgb(250, 149, 255), Color.FromArgb(173, 101, 255));
