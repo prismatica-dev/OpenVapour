@@ -96,7 +96,7 @@ namespace OpenVapour.Steam {
                         int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
                         // really bad backup search algorithm
-                        if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4)) {
+                        if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
                             string url = GetBetween(game, "<a href=\"", "\"");
                             Console.WriteLine("search result found! " + url);
                             if (!resulturls.Contains(url))
