@@ -138,9 +138,8 @@ namespace OpenVapour {
                         byte[] bytes = wc.DownloadData(torrent.Image);
                         MemoryStream ms = new MemoryStream(bytes);
                         img = Image.FromStream(ms);
-                        Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
-
-                List<object> metalist = new List<object>();
+                        Cache.CacheBitmap(torrent.Url, (Bitmap)img);
+                    }
 
                 // green states for torrents
                 List<Image> states = new List<Image> {
@@ -148,8 +147,7 @@ namespace OpenVapour {
                     Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 56, 229, 114)), // click state
                     Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 119, 213, 160)) }; // hover state
 
-                metalist.Add(states);
-                metalist.Add(torrent);
+                List<object> metalist = new List<object> { states, torrent };
 
                 panel.Image = states[0];
                 panel.Tag = metalist;
@@ -164,16 +162,14 @@ namespace OpenVapour {
 
                 panel.MouseLeave += GameHoverEnd;
                 panel.MouseUp += GameClickEnd;
-
+                
                 store.Controls.Add(panel); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal async void AddGame(SteamGame game) {
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
 
-            List<object> metalist = new List<object>();
-            metalist.Add(states);
-            metalist.Add(game);
+            List<object> metalist = new List<object> { states, game };
 
             panel.Image = states[0];
             panel.Tag = metalist;
