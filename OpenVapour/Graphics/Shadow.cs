@@ -14,5 +14,5 @@ namespace OpenVapour.Graphics {
             if (epicshadow.Width > BorderRadius * 2 && epicshadow.Height > BorderRadius * 2)
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(epicshadow)) { 
                     g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, image.Width, image.Height)); 
-                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, image.Width - BorderRadius * 2, image.Height - BorderRadius * 2)); }
+                    g.DrawImage(image, new Rectangle(BorderRadius - 1, BorderRadius - 1, image.Width - BorderRadius * 2, image.Height - BorderRadius * 2)); }
             return epicshadow; }}}

@@ -49,7 +49,9 @@ namespace OpenVapour {
                 Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
 
             store.Location = new Point(0, 25);
-            store.Size = new Size(Width + SystemInformation.VerticalScrollBarWidth, Height - 25); }
+            store.Size = new Size(Width + SystemInformation.VerticalScrollBarWidth, Height - 25);
+
+            DrawSearchBox(sender, e); }
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -82,7 +84,12 @@ namespace OpenVapour {
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = game.Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.GetStrippedValue("detailed_description"), BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
-            
+
+            if (gameart.Image != null) {
+                Image image = gameart.Image;
+                if (image.Height > image.Width) gameart.Size = new Size(107, 160);
+                else gameart.Size = new Size(107, 107); }
+
             //Console.WriteLine(game.Name + "\n\n\n" + game.About);
 
             popup.Controls.Add(gameart);
@@ -104,7 +111,10 @@ namespace OpenVapour {
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = torrent.Description, BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
 
-            //Console.WriteLine(game.Name + "\n\n\n" + game.About);
+            if (gameart.Image != null) {
+                Image image = gameart.Image;
+                if (image.Height > image.Width) gameart.Size = new Size(107, 160);
+                else gameart.Size = new Size(107, 107); }
 
             popup.Controls.Add(gameart);
             popup.Controls.Add(gamename);
@@ -116,7 +126,7 @@ namespace OpenVapour {
 
             return popup; }
 
-        internal void ClearStore() { store.Controls.Clear(); }
+        internal void ClearStore() => store.Controls.Clear();
 
         internal void AddTorrent(ResultTorrent torrent) {
             PictureBox panel = new PictureBox { Size = new Size(225, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
@@ -221,16 +231,22 @@ namespace OpenVapour {
             } catch { }}
 
         private SteamGame currentgame = new SteamGame("");
+        private void ResizeGameArt() {
+            if (gameart.Image == null) return;
+            Image image = gameart.Image;
+            if (image.Height > image.Width) gameart.Size = new Size(133, 200);
+            else gameart.Size = new Size(133, 133); }
+
         private void LoadGame(SteamGame game, Image art) {
             currentgame = game; magnetbutton.Visible = false; torrentsearch.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
-            gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
+            gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true; }
 
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; magnetbutton.Text = "Magnet"; magnetbutton.Visible = true; 
             torrentsearch.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: PCGamesTorrents"; 
-            gameart.Image = art; gamedesc.Text = game.Name + "\n\n" + game.Description; gamepanel.Location = new Point(7, 32); 
+            gameart.Image = art; gamedesc.Text = game.Name + "\n\n" + game.Description; gamepanel.Location = new Point(7, 32); ResizeGameArt();
             gamepanel.Visible = true; gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true; }
 
@@ -250,7 +266,7 @@ namespace OpenVapour {
             Panel popup = (Panel)pbo[2];
             popup.BringToFront();
 
-            if (pb.Location.X > 450) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
+            if (pb.Location.X > Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
             else popup.Location = new Point(pb.Location.X + pb.Width + 5, pb.Location.Y + toolbar.Height);
 
             popup.Visible = true;

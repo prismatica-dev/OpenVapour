@@ -50,10 +50,10 @@
             this.visitbutton = new System.Windows.Forms.Button();
             this.gamename = new System.Windows.Forms.Label();
             this.gameart = new System.Windows.Forms.PictureBox();
+            this.sourcename = new System.Windows.Forms.Label();
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
-            this.sourcename = new System.Windows.Forms.Label();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -102,7 +102,7 @@
             // exit
             // 
             this.exit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.exit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.exit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.exit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.exit.FlatAppearance.BorderSize = 0;
             this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -124,9 +124,9 @@
             this.storeselect.ForeColor = System.Drawing.Color.White;
             this.storeselect.Location = new System.Drawing.Point(3, 0);
             this.storeselect.Name = "storeselect";
-            this.storeselect.Size = new System.Drawing.Size(333, 25);
+            this.storeselect.Size = new System.Drawing.Size(381, 25);
             this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour — FLOSS Torrent Manager";
+            this.storeselect.Text = "OpenVapour v1.2.3 — FLOSS Torrent Manager";
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // searchtextbox
@@ -271,6 +271,7 @@
             this.steampage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.steampage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
             this.steampage.Location = new System.Drawing.Point(3, 3);
+            this.steampage.MaximumSize = new System.Drawing.Size(163, 42);
             this.steampage.Name = "steampage";
             this.steampage.Size = new System.Drawing.Size(163, 42);
             this.steampage.TabIndex = 8;
@@ -287,6 +288,7 @@
             this.torrentsearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.torrentsearch.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
             this.torrentsearch.Location = new System.Drawing.Point(172, 3);
+            this.torrentsearch.MaximumSize = new System.Drawing.Size(163, 42);
             this.torrentsearch.Name = "torrentsearch";
             this.torrentsearch.Size = new System.Drawing.Size(163, 42);
             this.torrentsearch.TabIndex = 9;
@@ -303,6 +305,7 @@
             this.magnetbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.magnetbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
             this.magnetbutton.Location = new System.Drawing.Point(3, 51);
+            this.magnetbutton.MaximumSize = new System.Drawing.Size(163, 42);
             this.magnetbutton.Name = "magnetbutton";
             this.magnetbutton.Size = new System.Drawing.Size(163, 42);
             this.magnetbutton.TabIndex = 10;
@@ -320,6 +323,7 @@
             this.visitbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.visitbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
             this.visitbutton.Location = new System.Drawing.Point(172, 51);
+            this.visitbutton.MaximumSize = new System.Drawing.Size(163, 42);
             this.visitbutton.Name = "visitbutton";
             this.visitbutton.Size = new System.Drawing.Size(163, 42);
             this.visitbutton.TabIndex = 11;
@@ -348,6 +352,18 @@
             this.gameart.TabIndex = 5;
             this.gameart.TabStop = false;
             // 
+            // sourcename
+            // 
+            this.sourcename.AutoSize = true;
+            this.sourcename.BackColor = System.Drawing.Color.Transparent;
+            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
+            this.sourcename.Location = new System.Drawing.Point(141, 182);
+            this.sourcename.MaximumSize = new System.Drawing.Size(350, 50);
+            this.sourcename.Name = "sourcename";
+            this.sourcename.Size = new System.Drawing.Size(123, 25);
+            this.sourcename.TabIndex = 12;
+            this.sourcename.Text = "Source: Steam";
+            // 
             // realsearchtb
             // 
             this.realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -357,12 +373,13 @@
             this.realsearchtb.Size = new System.Drawing.Size(1, 44);
             this.realsearchtb.TabIndex = 6;
             this.realsearchtb.TabStop = false;
+            this.realsearchtb.Text = "Search";
             this.realsearchtb.TextChanged += new System.EventHandler(this.DrawSearchBox);
             this.realsearchtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.realsearchtb_KeyDown);
             // 
             // nogamesnotif
             // 
-            this.nogamesnotif.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.nogamesnotif.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.nogamesnotif.Controls.Add(this.nogamesmessage);
             this.nogamesnotif.ForeColor = System.Drawing.Color.White;
             this.nogamesnotif.Location = new System.Drawing.Point(516, 330);
@@ -384,18 +401,6 @@
             this.nogamesmessage.TabIndex = 0;
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sourcename
-            // 
-            this.sourcename.AutoSize = true;
-            this.sourcename.BackColor = System.Drawing.Color.Transparent;
-            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
-            this.sourcename.Location = new System.Drawing.Point(141, 182);
-            this.sourcename.MaximumSize = new System.Drawing.Size(350, 50);
-            this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(123, 25);
-            this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Steam";
             // 
             // Main
             // 

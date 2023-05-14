@@ -49,15 +49,18 @@ namespace OpenVapour.SteamPseudoWebAPI {
         public static async Task<Bitmap> GetHeader(int AppId) => await GetCDNAsset(AppId, header);
         public static async Task<Bitmap> GetShelf(int AppId) => await GetCDNAsset(AppId, library);
         public static async Task<Bitmap> GetCapsule(int AppId) => await GetCDNAsset(AppId, capsule);
-        public static async Task<Bitmap> GetCDNAsset(int AppId, string ImageName) {
+        public static async Task<Bitmap> GetCDNAsset(int AppId, string ImageName, bool Retry = false) {
             try {
                 if (IsSteamBitmapCached(AppId, ImageName)) return GetCachedSteamBitmap(AppId, ImageName);
-                HttpWebRequest req = WebRequest.CreateHttp($"https://steamcdn-a.akamaihd.net/steam/apps/{AppId}/{ImageName}.jpg");
+                HttpWebRequest req = WebRequest.CreateHttp($"https://steamcdn-a.akamaihd.net/steam/apps/{AppId}/{(Retry?header:ImageName)}.jpg");
                 req.Method = "GET"; 
                 Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
                 CacheSteamBitmap(AppId, ImageName, bmp);
                 return bmp;
-            } catch (Exception ex) { HandleException($"SteamCore.GetCDNAsset({AppId}, {ImageName})", ex); return new Bitmap(1, 1); }}
+            } catch (Exception ex) { 
+                HandleException($"SteamCore.GetCDNAsset({AppId}, {ImageName}, {(Retry?"Retry":"N/A")})", ex);
+                if (Retry || ImageName == header || !ex.Message.Contains("404")) return new Bitmap(1, 1);
+                else return await GetCDNAsset(AppId, ImageName, true); }}
 
         public static async Task<List<ResultGame>> GetSuggestions(string Search) {
             List<ResultGame> suggestions = new List<ResultGame>();
