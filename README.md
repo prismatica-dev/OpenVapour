@@ -30,12 +30,13 @@ Tested With:
 ![Screenshot #2 - Steam Game Details](https://user-images.githubusercontent.com/59503910/224725037-559b3cc0-2839-4aac-a7cf-b434ea4eba6a.png)
 
 #### *Details View (PCGT Torrent)*
-![Screenshot #3 - Torrent Details](https://user-images.githubusercontent.com/59503910/224724507-8d55d4ca-908c-46ac-9ee4-5782c40b0241.png)
+![Screenshot #3 - Torrent Details](https://user-images.githubusercontent.com/59503910/238187984-a25497d5-ff63-4303-8a07-b7ec062d50c2.png)
+<br>
+*Mindustry is available for free officially at https://anuke.itch.io/mindustry!*
 
 ## Known Bugs
 - Occasional crashes on HttpWebRequest
 - Search box cursor does not reflect cursor position
-- Detail mini-popups sometimes do not vanish
 - Search results for a previous search can load on the current one if the user is fast enough (somewhat fixed)
 
 ## Legal Disclaimer
