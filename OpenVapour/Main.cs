@@ -166,7 +166,7 @@ namespace OpenVapour {
                 panel.MouseUp += GameClickEnd;
 
                 store.Controls.Add(panel); }
-            catch { panel.Image = SystemIcons.Error.ToBitmap(); }}
+            catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal async void AddGame(SteamGame game) {
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
@@ -225,7 +225,7 @@ namespace OpenVapour {
                 ResultTorrent game = (ResultTorrent)pbl[1];
 
                 if (!gamepanelopen) { LoadTorrent(game, pbs[0]); } else if (panelgame != game.Name) { ClosePanelTorrent(true, pbl); }
-            } catch { }}
+            } catch (Exception ex) { Utilities.HandleException($"TorrentClick(sender, e)", ex); }}
 
         private SteamGame currentgame = new SteamGame("");
         private void ResizeGameArt() {
@@ -375,7 +375,8 @@ namespace OpenVapour {
         private async void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; if (Directory.GetFiles(Utilities.RoamingAppData + "\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
             foreach (string file in Directory.GetFiles(Utilities.RoamingAppData + "\\lily.software\\OpenVapour\\Storage\\Games")) {
-                try { AddGame(await GetGame(Convert.ToInt32(file.Substring(file.LastIndexOf("\\") + 1)))); } catch {}}
+                try { AddGame(await GetGame(Convert.ToInt32(file.Substring(file.LastIndexOf("\\") + 1)))); } catch (Exception ex) { Utilities.HandleException($"MainShown(sender, e)", ex); }
+                }
             else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };

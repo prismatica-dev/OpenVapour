@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using static OpenVapour.Steam.Utilities;
 using static OpenVapour.SteamPseudoWebAPI.SteamCore;
@@ -47,5 +48,5 @@ namespace OpenVapour.Steam {
                     string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
                     SteamGame game = new SteamGame(cached);
                     return game; }
-            } catch { File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
+            } catch (Exception ex) { HandleException($"LoadCachedSteamGame({AppId}", ex); File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
             return new SteamGame(AppId.ToString()); }}}

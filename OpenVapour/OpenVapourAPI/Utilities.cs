@@ -49,7 +49,7 @@ namespace OpenVapour.Steam {
                 StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
 
                 return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
-            catch (Exception ex) { Console.WriteLine($"{ex.Message}"); }
+            catch (Exception ex) { HandleException($"GetLatestTag()", ex); }
             return ""; }
 
         internal static void UpdateProgram(string TagName) {
@@ -63,7 +63,7 @@ namespace OpenVapour.Steam {
                 // Run the batch file and immediately terminate process
                 Process.Start($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat");
                 Process.GetCurrentProcess().Kill(); }
-            catch (Exception ex) { Console.WriteLine($"failed to auto-update due to {ex.Message}!"); }}
+            catch (Exception ex) { HandleException($"UpdateProgram({TagName})", ex); }}
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
             int Start, End;
@@ -75,8 +75,12 @@ namespace OpenVapour.Steam {
                         return String.Substring(Start, End - Start);
                     } catch (ArgumentOutOfRangeException) { return ""; }
                 else return String.Substring(String.IndexOf(BetweenStart + BetweenStart.Length));
-            else return "";}
-        internal static void HandleException(string Cause, Exception Result) { Console.WriteLine($"{Cause} threw exception '{Result.Message}'"); }
+            else return ""; }
+        private static bool LogWritten = false;
+        internal static void HandleException(string Cause, Exception Result) { 
+            Console.WriteLine($"{Cause} threw exception '{Result.Message}'");
+            if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}' Stack Trace: '{Result.StackTrace}'");
+            else { File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}' Stack Trace: '{Result.StackTrace}'"); LogWritten = true; }}
         internal static float FitText(Font font, string text, Size size, float max) {
             bool fit = false;
             font = new Font(font.FontFamily, max, font.Style);
@@ -162,7 +166,7 @@ namespace OpenVapour.Steam {
                         if (data.Contains("\"success\":\"true\"") && isdlc && !Cache.IsBlacklisted(appid)) Cache.BlacklistID(appid, "DLC Content.");
                     } else { Cache.BlacklistID(appid); isdlc = true; }}
                 else isdlc = true;
-            } catch (System.Reflection.TargetInvocationException) { isdlc = true; }
+            } catch (TargetInvocationException) { isdlc = true; } catch (Exception ex) { HandleException($"IsDlc({appid})", ex); }
 
             return isdlc; }
 
