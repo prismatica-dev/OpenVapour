@@ -1,21 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Windows.Forms;
-using OpenVapour.SteamPseudoWebAPI;
-using OpenVapour.Steam;
 using static OpenVapour.Steam.Utilities;
-using System.Web.UI.WebControls.WebParts;
 using OpenVapour.Web;
-using System.Text.RegularExpressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Web.UI.HtmlControls;
 
 namespace OpenVapour.Steam {
     internal class Torrent {

@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using OpenVapour.Steam;
 using static OpenVapour.Steam.Utilities;
 using static OpenVapour.Steam.Cache;
 using OpenVapour.Web;
-using System.Text.RegularExpressions;
 
 namespace OpenVapour.SteamPseudoWebAPI {
     public class SteamCore {

@@ -1,9 +1,5 @@
-﻿using OpenVapour.SteamPseudoWebAPI;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
-using System.Linq.Expressions;
 using static OpenVapour.Steam.Utilities;
 using static OpenVapour.SteamPseudoWebAPI.SteamCore;
 
