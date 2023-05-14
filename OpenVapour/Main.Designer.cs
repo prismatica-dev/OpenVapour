@@ -126,7 +126,7 @@
             this.storeselect.Name = "storeselect";
             this.storeselect.Size = new System.Drawing.Size(391, 25);
             this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour v1.2.3b — FLOSS Torrent Manager";
+            this.storeselect.Text = "OpenVapour v1.2.3c — FLOSS Torrent Manager";
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // searchtextbox
@@ -383,7 +383,7 @@
             // 
             // nogamesnotif
             // 
-            this.nogamesnotif.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.nogamesnotif.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.nogamesnotif.Controls.Add(this.nogamesmessage);
             this.nogamesnotif.ForeColor = System.Drawing.Color.White;
             this.nogamesnotif.Location = new System.Drawing.Point(516, 330);
