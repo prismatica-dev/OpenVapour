@@ -42,6 +42,22 @@ namespace OpenVapour.Steam {
             "?", "? ",
             "â€", "" };
 
+        internal static int GetLevenshteinDistance(string String, string Destination) {
+            int length1 = String.Length;
+            int length2 = Destination.Length;
+            int[,] matrix = new int[length1 + 1, length2 + 1];
+
+            if (length1 == 0) return length2;
+            if (length2 == 0) return length1;
+
+            for (int i = 0; i <= length1; i++) matrix[i, 0] = i;
+            for (int j = 0; j <= length2; j++) matrix[0, j] = j;
+
+            for (int i = 1; i <= length1; i++)
+                for (int j = 1; j <= length2; j++)
+                    matrix[i, j] = Math.Min(Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1), matrix[i - 1, j - 1] + ((Destination[j - 1] == String[i - 1]) ? 0 : 1));
+            return matrix[length1, length2]; }
+
         internal static void CheckAutoUpdateIntegrity() {
             try {
                 // delete autoupdate remnants if present

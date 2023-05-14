@@ -93,9 +93,10 @@ namespace OpenVapour.Steam {
                         string name = GetBetween(game, "data-wpel-link=\"internal\">", "</a");
                         string filtname = FilterAlphanumeric(name.ToLower());
                         string filtName = FilterAlphanumeric(Name.ToLower());
+                        int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
                         // really bad backup search algorithm
-                        if (filtname.Contains(filtName) || filtname == filtName) {
+                        if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4)) {
                             string url = GetBetween(game, "<a href=\"", "\"");
                             Console.WriteLine("search result found! " + url);
                             if (!resulturls.Contains(url))
