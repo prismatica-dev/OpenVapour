@@ -16,12 +16,12 @@ namespace OpenVapour.Steam {
             public string TorrentUrl { get; set; }
             public string JSON { get; set; }
             public static async Task<ResultTorrent> TorrentFromUrl(string Url, string Name) {
-                ResultTorrent torrent = new ResultTorrent("");
-                torrent.JSON = ""; torrent.Url = Url; torrent.Name = Name;
                 string html = await WebCore.GetWebString(Url);
-                torrent.Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>");
-                torrent.Image = GetBetween(html, "Download\" src=\"", "\""); // won't always work
-                torrent.TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"");
+                ResultTorrent torrent = new ResultTorrent("") {
+                    JSON = "", Url = Url, Name = Name,
+                    Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>"),
+                    Image = GetBetween(html, "Download\" src=\"", "\""),
+                    TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"") };
 
                 // fix description unicode bugs
                 bool descriptionFixed = false;
@@ -37,7 +37,6 @@ namespace OpenVapour.Steam {
                             torrent.Description = torrent.Description.Replace($"#{unicode};", $"{(char)n}"); }
                         else descriptionFixed = true; }
                     else descriptionFixed = true; }
-
                 return torrent; }
 
             public ResultTorrent(string JSON) {
@@ -71,7 +70,6 @@ namespace OpenVapour.Steam {
                 // scrape just the rss2 feed to avoid cloudflare
                 // pcgamestorrents rss2 feed always returns XML
                 string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
-                // if (XML.Contains("<item>")) return results; // no results
 
                 string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                 Console.WriteLine($"found {items.Count():N0} torrents!");
