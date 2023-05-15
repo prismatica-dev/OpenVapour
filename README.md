@@ -35,7 +35,7 @@ Tested With:
 *Mindustry is available for free officially at https://anuke.itch.io/mindustry!*
 
 ## Troubleshooting
-OpenVapour requires [.NET Framework 4.8.1](https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net481-web-installer).<br>
+OpenVapour requires [.NET Desktop Runtime 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0/).<br>
 Additionally, an external torrent client such as [qBittorrent](https://www.qbittorrent.org/) is required to download from torrents (and interpret magnet links).
 
 If you have both of these and are still experiencing issues, please create a report [on the issues page](https://github.com/lily-software/OpenVapour/issues).<br>
