@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenVapour.Web;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -7,15 +8,16 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OpenVapour.Steam {
-    internal class Utilities {
+    internal partial class Utilities {
         // Constants
         private const string repo = "lily-software/OpenVapour";
 
         // Variables
-        internal static readonly WebHeaderCollection headers = new WebHeaderCollection {{ HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" }};
+        internal static readonly WebHeaderCollection headers = new() {{ HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" }};
         internal static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         internal static readonly string[] FilterCore = {
             "  ", " ",
@@ -55,7 +57,7 @@ namespace OpenVapour.Steam {
 
             for (int i = 1; i <= length1; i++)
                 for (int j = 1; j <= length2; j++)
-                    matrix[i, j] = Math.Min(Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1), matrix[i - 1, j - 1] + ((Destination[j - 1] == String[i - 1]) ? 0 : 1));
+                    matrix[i, j] = Math.Min(Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1), matrix[i - 1, j - 1] + (Destination[j - 1] == String[i - 1] ? 0 : 1));
             return matrix[length1, length2]; }
 
         internal static void CheckAutoUpdateIntegrity() {
@@ -71,7 +73,7 @@ namespace OpenVapour.Steam {
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
                 request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
-                StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
+                StreamReader reader = new(request.GetResponse().GetResponseStream());
 
                 return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
             catch (Exception ex) { HandleException($"GetLatestTag()", ex); }
@@ -142,9 +144,7 @@ namespace OpenVapour.Steam {
         internal static string CompressString(string text) {
             byte[] buffer = Encoding.UTF8.GetBytes(text);
             var memoryStream = new MemoryStream();
-            using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true)) {
-                gZipStream.Write(buffer, 0, buffer.Length); }
-
+            using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))                 gZipStream.Write(buffer, 0, buffer.Length); 
             memoryStream.Position = 0;
 
             var compressedData = new byte[memoryStream.Length];
@@ -164,12 +164,13 @@ namespace OpenVapour.Steam {
                 var buffer = new byte[dataLength];
 
                 memoryStream.Position = 0;
-                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
-                    gZipStream.Read(buffer, 0, buffer.Length); }
-
+                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))                     gZipStream.Read(buffer, 0, buffer.Length); 
                 return Encoding.UTF8.GetString(buffer); }}
+        
 
-        internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
+        [GeneratedRegex("[^a-zA-Z0-9]")]
+        private static partial Regex AlphanumericRegex();
+        internal static Regex alphanumeric = AlphanumericRegex();
         internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");
 
         /// <summary>
@@ -177,20 +178,16 @@ namespace OpenVapour.Steam {
         /// </summary>
         /// <param name="appid">appid to check</param>
         /// <returns></returns>
-        internal static bool IsDlc(string appid) {
+        internal static async Task<bool> IsDlc(string appid) {
             bool isdlc = false;
 
             try {
-                if (!Cache.IsBlacklisted(appid)) {
-                    if (!appid.Contains(",")) {
-                        WebClient client = new WebClient { Headers = headers };
-                        string data = client.DownloadString("https://store.steampowered.com/api/appdetails/?appids=" + appid + "&filters=basic");
-
+                if (!Cache.IsBlacklisted(appid))
+                    if (!appid.Contains(',')) {
+                        string data = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails/?appids={appid}&filters=basic");
                         if (!data.Contains("\"type\":\"game\"")) isdlc = true;
-
                         if (data.Contains("\"success\":\"true\"") && isdlc && !Cache.IsBlacklisted(appid)) Cache.BlacklistID(appid, "DLC Content.");
-                    } else { Cache.BlacklistID(appid); isdlc = true; }}
-                else isdlc = true;
+                    } else { Cache.BlacklistID(appid); isdlc = true; }                else isdlc = true;
             } catch (TargetInvocationException) { isdlc = true; } catch (Exception ex) { HandleException($"IsDlc({appid})", ex); }
 
             return isdlc; }
@@ -204,4 +201,6 @@ namespace OpenVapour.Steam {
             catch (ArgumentException) { FilteredText = UnfilteredText; }
             if (FilteredText.Length <= 0) FilteredText = UnfilteredText;
 
-            return FilteredText; }}}
+            return FilteredText; }
+    }
+}

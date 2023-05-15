@@ -29,424 +29,422 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.toolbar = new System.Windows.Forms.Panel();
-            this.managesources = new System.Windows.Forms.Button();
-            this.exit = new System.Windows.Forms.Button();
-            this.storeselect = new System.Windows.Forms.Label();
-            this.searchtextbox = new System.Windows.Forms.Panel();
-            this.store = new System.Windows.Forms.FlowLayoutPanel();
-            this.popuppanel = new System.Windows.Forms.Panel();
-            this.popupdesc = new System.Windows.Forms.Label();
-            this.popuptitle = new System.Windows.Forms.Label();
-            this.popupart = new System.Windows.Forms.PictureBox();
-            this.gamepanel = new System.Windows.Forms.Panel();
-            this.gamedescpanel = new System.Windows.Forms.Panel();
-            this.gamedesc = new System.Windows.Forms.Label();
-            this.closemenu = new System.Windows.Forms.Label();
-            this.gamebtns = new System.Windows.Forms.FlowLayoutPanel();
-            this.steampage = new System.Windows.Forms.Button();
-            this.torrentsearch = new System.Windows.Forms.Button();
-            this.magnetbutton = new System.Windows.Forms.Button();
-            this.visitbutton = new System.Windows.Forms.Button();
-            this.gamename = new System.Windows.Forms.Label();
-            this.gameart = new System.Windows.Forms.PictureBox();
-            this.sourcename = new System.Windows.Forms.Label();
-            this.realsearchtb = new System.Windows.Forms.TextBox();
-            this.nogamesnotif = new System.Windows.Forms.Panel();
-            this.nogamesmessage = new System.Windows.Forms.Label();
-            this.toolbar.SuspendLayout();
-            this.popuppanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
-            this.gamepanel.SuspendLayout();
-            this.gamedescpanel.SuspendLayout();
-            this.gamebtns.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
-            this.nogamesnotif.SuspendLayout();
-            this.SuspendLayout();
+            toolbar = new System.Windows.Forms.Panel();
+            managesources = new System.Windows.Forms.Button();
+            exit = new System.Windows.Forms.Button();
+            storeselect = new System.Windows.Forms.Label();
+            searchtextbox = new System.Windows.Forms.Panel();
+            store = new System.Windows.Forms.FlowLayoutPanel();
+            popuppanel = new System.Windows.Forms.Panel();
+            popupdesc = new System.Windows.Forms.Label();
+            popuptitle = new System.Windows.Forms.Label();
+            popupart = new System.Windows.Forms.PictureBox();
+            gamepanel = new System.Windows.Forms.Panel();
+            gamedescpanel = new System.Windows.Forms.Panel();
+            gamedesc = new System.Windows.Forms.Label();
+            closemenu = new System.Windows.Forms.Label();
+            gamebtns = new System.Windows.Forms.FlowLayoutPanel();
+            steampage = new System.Windows.Forms.Button();
+            torrentsearch = new System.Windows.Forms.Button();
+            magnetbutton = new System.Windows.Forms.Button();
+            visitbutton = new System.Windows.Forms.Button();
+            gamename = new System.Windows.Forms.Label();
+            gameart = new System.Windows.Forms.PictureBox();
+            sourcename = new System.Windows.Forms.Label();
+            realsearchtb = new System.Windows.Forms.TextBox();
+            nogamesnotif = new System.Windows.Forms.Panel();
+            nogamesmessage = new System.Windows.Forms.Label();
+            toolbar.SuspendLayout();
+            popuppanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)popupart).BeginInit();
+            gamepanel.SuspendLayout();
+            gamedescpanel.SuspendLayout();
+            gamebtns.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)gameart).BeginInit();
+            nogamesnotif.SuspendLayout();
+            SuspendLayout();
             // 
             // toolbar
             // 
-            this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.toolbar.Controls.Add(this.managesources);
-            this.toolbar.Controls.Add(this.exit);
-            this.toolbar.Controls.Add(this.storeselect);
-            this.toolbar.Controls.Add(this.searchtextbox);
-            this.toolbar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.toolbar.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
-            this.toolbar.ForeColor = System.Drawing.Color.White;
-            this.toolbar.Location = new System.Drawing.Point(0, 0);
-            this.toolbar.Name = "toolbar";
-            this.toolbar.Size = new System.Drawing.Size(800, 25);
-            this.toolbar.TabIndex = 1;
-            this.toolbar.Visible = false;
-            this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            toolbar.BackColor = System.Drawing.Color.FromArgb(50, 0, 0, 0);
+            toolbar.Controls.Add(managesources);
+            toolbar.Controls.Add(exit);
+            toolbar.Controls.Add(storeselect);
+            toolbar.Controls.Add(searchtextbox);
+            toolbar.Dock = System.Windows.Forms.DockStyle.Top;
+            toolbar.Font = new System.Drawing.Font("Segoe UI Light", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            toolbar.ForeColor = System.Drawing.Color.White;
+            toolbar.Location = new System.Drawing.Point(0, 0);
+            toolbar.Name = "toolbar";
+            toolbar.Size = new System.Drawing.Size(800, 25);
+            toolbar.TabIndex = 1;
+            toolbar.Visible = false;
+            toolbar.MouseDown += Drag;
             // 
             // managesources
             // 
-            this.managesources.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.managesources.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.managesources.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.managesources.FlatAppearance.BorderSize = 0;
-            this.managesources.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.managesources.Font = new System.Drawing.Font("Segoe UI Light", 9F);
-            this.managesources.ForeColor = System.Drawing.Color.White;
-            this.managesources.Location = new System.Drawing.Point(475, 0);
-            this.managesources.Margin = new System.Windows.Forms.Padding(0);
-            this.managesources.Name = "managesources";
-            this.managesources.Size = new System.Drawing.Size(100, 25);
-            this.managesources.TabIndex = 7;
-            this.managesources.Text = "Manage Sources";
-            this.managesources.UseVisualStyleBackColor = false;
-            this.managesources.Visible = false;
+            managesources.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            managesources.BackColor = System.Drawing.Color.FromArgb(180, 255, 255, 255);
+            managesources.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(180, 255, 255, 255);
+            managesources.FlatAppearance.BorderSize = 0;
+            managesources.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            managesources.Font = new System.Drawing.Font("Segoe UI Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            managesources.ForeColor = System.Drawing.Color.White;
+            managesources.Location = new System.Drawing.Point(475, 0);
+            managesources.Margin = new System.Windows.Forms.Padding(0);
+            managesources.Name = "managesources";
+            managesources.Size = new System.Drawing.Size(100, 25);
+            managesources.TabIndex = 7;
+            managesources.Text = "Manage Sources";
+            managesources.UseVisualStyleBackColor = false;
+            managesources.Visible = false;
             // 
             // exit
             // 
-            this.exit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.exit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.exit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.exit.FlatAppearance.BorderSize = 0;
-            this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exit.Font = new System.Drawing.Font("Segoe UI Light", 8F);
-            this.exit.ForeColor = System.Drawing.Color.White;
-            this.exit.Location = new System.Drawing.Point(775, 0);
-            this.exit.Margin = new System.Windows.Forms.Padding(0);
-            this.exit.Name = "exit";
-            this.exit.Size = new System.Drawing.Size(25, 25);
-            this.exit.TabIndex = 6;
-            this.exit.UseVisualStyleBackColor = false;
-            this.exit.Click += new System.EventHandler(this.exit_Click);
+            exit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            exit.BackColor = System.Drawing.Color.FromArgb(180, 255, 70, 70);
+            exit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(180, 255, 255, 255);
+            exit.FlatAppearance.BorderSize = 0;
+            exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            exit.Font = new System.Drawing.Font("Segoe UI Light", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            exit.ForeColor = System.Drawing.Color.White;
+            exit.Location = new System.Drawing.Point(775, 0);
+            exit.Margin = new System.Windows.Forms.Padding(0);
+            exit.Name = "exit";
+            exit.Size = new System.Drawing.Size(25, 25);
+            exit.TabIndex = 6;
+            exit.UseVisualStyleBackColor = false;
+            exit.Click += exit_Click;
             // 
             // storeselect
             // 
-            this.storeselect.AutoSize = true;
-            this.storeselect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.storeselect.Font = new System.Drawing.Font("Segoe UI Semilight", 14.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.storeselect.ForeColor = System.Drawing.Color.White;
-            this.storeselect.Location = new System.Drawing.Point(3, 0);
-            this.storeselect.Name = "storeselect";
-            this.storeselect.Size = new System.Drawing.Size(391, 25);
-            this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour v1.2.3c — FLOSS Torrent Manager";
-            this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            storeselect.AutoSize = true;
+            storeselect.BackColor = System.Drawing.Color.FromArgb(0, 0, 0, 0);
+            storeselect.Font = new System.Drawing.Font("Segoe UI Semilight", 14.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
+            storeselect.ForeColor = System.Drawing.Color.White;
+            storeselect.Location = new System.Drawing.Point(3, 0);
+            storeselect.Name = "storeselect";
+            storeselect.Size = new System.Drawing.Size(382, 25);
+            storeselect.TabIndex = 0;
+            storeselect.Text = "OpenVapour v1.2.4 — FLOSS Torrent Manager";
+            storeselect.MouseDown += Drag;
             // 
             // searchtextbox
             // 
-            this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(575, 0);
-            this.searchtextbox.Name = "searchtextbox";
-            this.searchtextbox.Size = new System.Drawing.Size(200, 25);
-            this.searchtextbox.TabIndex = 5;
-            this.searchtextbox.Click += new System.EventHandler(this.searchtextbox_Click);
+            searchtextbox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            searchtextbox.BackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255);
+            searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
+            searchtextbox.Location = new System.Drawing.Point(575, 0);
+            searchtextbox.Name = "searchtextbox";
+            searchtextbox.Size = new System.Drawing.Size(200, 25);
+            searchtextbox.TabIndex = 5;
+            searchtextbox.Click += searchtextbox_Click;
             // 
             // store
             // 
-            this.store.AutoScroll = true;
-            this.store.BackColor = System.Drawing.Color.Transparent;
-            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.store.Location = new System.Drawing.Point(0, 25);
-            this.store.Name = "store";
-            this.store.Size = new System.Drawing.Size(11, 487);
-            this.store.TabIndex = 2;
-            this.store.Visible = false;
-            this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            store.AutoScroll = true;
+            store.BackColor = System.Drawing.Color.Transparent;
+            store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            store.Location = new System.Drawing.Point(0, 25);
+            store.Name = "store";
+            store.Size = new System.Drawing.Size(11, 487);
+            store.TabIndex = 2;
+            store.Visible = false;
+            store.MouseDown += Drag;
             // 
             // popuppanel
             // 
-            this.popuppanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.popuppanel.Controls.Add(this.popupdesc);
-            this.popuppanel.Controls.Add(this.popuptitle);
-            this.popuppanel.Controls.Add(this.popupart);
-            this.popuppanel.ForeColor = System.Drawing.Color.White;
-            this.popuppanel.Location = new System.Drawing.Point(511, 31);
-            this.popuppanel.Name = "popuppanel";
-            this.popuppanel.Size = new System.Drawing.Size(300, 170);
-            this.popuppanel.TabIndex = 3;
-            this.popuppanel.Visible = false;
+            popuppanel.BackColor = System.Drawing.Color.FromArgb(165, 0, 0, 0);
+            popuppanel.Controls.Add(popupdesc);
+            popuppanel.Controls.Add(popuptitle);
+            popuppanel.Controls.Add(popupart);
+            popuppanel.ForeColor = System.Drawing.Color.White;
+            popuppanel.Location = new System.Drawing.Point(511, 31);
+            popuppanel.Name = "popuppanel";
+            popuppanel.Size = new System.Drawing.Size(300, 170);
+            popuppanel.TabIndex = 3;
+            popuppanel.Visible = false;
             // 
             // popupdesc
             // 
-            this.popupdesc.AutoSize = true;
-            this.popupdesc.BackColor = System.Drawing.Color.Transparent;
-            this.popupdesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F);
-            this.popupdesc.Location = new System.Drawing.Point(117, 43);
-            this.popupdesc.MaximumSize = new System.Drawing.Size(178, 117);
-            this.popupdesc.Name = "popupdesc";
-            this.popupdesc.Size = new System.Drawing.Size(175, 117);
-            this.popupdesc.TabIndex = 2;
-            this.popupdesc.Text = "content is a game by game developers about game where you can game in a game worl" +
-    "d with many game characters, with a game storyline and plot\r\n";
+            popupdesc.AutoSize = true;
+            popupdesc.BackColor = System.Drawing.Color.Transparent;
+            popupdesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            popupdesc.Location = new System.Drawing.Point(117, 43);
+            popupdesc.MaximumSize = new System.Drawing.Size(178, 117);
+            popupdesc.Name = "popupdesc";
+            popupdesc.Size = new System.Drawing.Size(175, 117);
+            popupdesc.TabIndex = 2;
+            popupdesc.Text = "content is a game by game developers about game where you can game in a game world with many game characters, with a game storyline and plot\r\n";
             // 
             // popuptitle
             // 
-            this.popuptitle.AutoSize = true;
-            this.popuptitle.BackColor = System.Drawing.Color.Transparent;
-            this.popuptitle.Font = new System.Drawing.Font("Segoe UI Light", 18.25F);
-            this.popuptitle.Location = new System.Drawing.Point(114, 5);
-            this.popuptitle.MaximumSize = new System.Drawing.Size(178, 50);
-            this.popuptitle.Name = "popuptitle";
-            this.popuptitle.Size = new System.Drawing.Size(93, 35);
-            this.popuptitle.TabIndex = 1;
-            this.popuptitle.Text = "content";
+            popuptitle.AutoSize = true;
+            popuptitle.BackColor = System.Drawing.Color.Transparent;
+            popuptitle.Font = new System.Drawing.Font("Segoe UI Light", 18.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            popuptitle.Location = new System.Drawing.Point(114, 5);
+            popuptitle.MaximumSize = new System.Drawing.Size(178, 50);
+            popuptitle.Name = "popuptitle";
+            popuptitle.Size = new System.Drawing.Size(93, 35);
+            popuptitle.TabIndex = 1;
+            popuptitle.Text = "content";
             // 
             // popupart
             // 
-            this.popupart.Location = new System.Drawing.Point(5, 5);
-            this.popupart.Name = "popupart";
-            this.popupart.Size = new System.Drawing.Size(107, 160);
-            this.popupart.TabIndex = 0;
-            this.popupart.TabStop = false;
+            popupart.Location = new System.Drawing.Point(5, 5);
+            popupart.Name = "popupart";
+            popupart.Size = new System.Drawing.Size(107, 160);
+            popupart.TabIndex = 0;
+            popupart.TabStop = false;
             // 
             // gamepanel
             // 
-            this.gamepanel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.gamepanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gamepanel.Controls.Add(this.gamedescpanel);
-            this.gamepanel.Controls.Add(this.closemenu);
-            this.gamepanel.Controls.Add(this.gamebtns);
-            this.gamepanel.Controls.Add(this.gamename);
-            this.gamepanel.Controls.Add(this.gameart);
-            this.gamepanel.Controls.Add(this.sourcename);
-            this.gamepanel.ForeColor = System.Drawing.Color.White;
-            this.gamepanel.Location = new System.Drawing.Point(7, 32);
-            this.gamepanel.Name = "gamepanel";
-            this.gamepanel.Size = new System.Drawing.Size(498, 464);
-            this.gamepanel.TabIndex = 4;
-            this.gamepanel.Visible = false;
+            gamepanel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            gamepanel.BackColor = System.Drawing.Color.FromArgb(125, 0, 0, 0);
+            gamepanel.Controls.Add(gamedescpanel);
+            gamepanel.Controls.Add(closemenu);
+            gamepanel.Controls.Add(gamebtns);
+            gamepanel.Controls.Add(gamename);
+            gamepanel.Controls.Add(gameart);
+            gamepanel.Controls.Add(sourcename);
+            gamepanel.ForeColor = System.Drawing.Color.White;
+            gamepanel.Location = new System.Drawing.Point(7, 32);
+            gamepanel.Name = "gamepanel";
+            gamepanel.Size = new System.Drawing.Size(498, 464);
+            gamepanel.TabIndex = 4;
+            gamepanel.Visible = false;
             // 
             // gamedescpanel
             // 
-            this.gamedescpanel.AutoScroll = true;
-            this.gamedescpanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gamedescpanel.Controls.Add(this.gamedesc);
-            this.gamedescpanel.Location = new System.Drawing.Point(0, 213);
-            this.gamedescpanel.Name = "gamedescpanel";
-            this.gamedescpanel.Size = new System.Drawing.Size(526, 245);
-            this.gamedescpanel.TabIndex = 11;
+            gamedescpanel.AutoScroll = true;
+            gamedescpanel.BackColor = System.Drawing.Color.FromArgb(0, 0, 0, 0);
+            gamedescpanel.Controls.Add(gamedesc);
+            gamedescpanel.Location = new System.Drawing.Point(0, 213);
+            gamedescpanel.Name = "gamedescpanel";
+            gamedescpanel.Size = new System.Drawing.Size(526, 245);
+            gamedescpanel.TabIndex = 11;
             // 
             // gamedesc
             // 
-            this.gamedesc.AutoSize = true;
-            this.gamedesc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gamedesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F);
-            this.gamedesc.Location = new System.Drawing.Point(6, 0);
-            this.gamedesc.MaximumSize = new System.Drawing.Size(486, 0);
-            this.gamedesc.MinimumSize = new System.Drawing.Size(486, 245);
-            this.gamedesc.Name = "gamedesc";
-            this.gamedesc.Size = new System.Drawing.Size(486, 368);
-            this.gamedesc.TabIndex = 7;
-            this.gamedesc.Text = resources.GetString("gamedesc.Text");
+            gamedesc.AutoSize = true;
+            gamedesc.BackColor = System.Drawing.Color.FromArgb(125, 0, 0, 0);
+            gamedesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            gamedesc.Location = new System.Drawing.Point(6, 0);
+            gamedesc.MaximumSize = new System.Drawing.Size(486, 0);
+            gamedesc.MinimumSize = new System.Drawing.Size(486, 245);
+            gamedesc.Name = "gamedesc";
+            gamedesc.Size = new System.Drawing.Size(486, 368);
+            gamedesc.TabIndex = 7;
+            gamedesc.Text = resources.GetString("gamedesc.Text");
             // 
             // closemenu
             // 
-            this.closemenu.AutoSize = true;
-            this.closemenu.BackColor = System.Drawing.Color.Transparent;
-            this.closemenu.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
-            this.closemenu.Location = new System.Drawing.Point(474, 0);
-            this.closemenu.Name = "closemenu";
-            this.closemenu.Size = new System.Drawing.Size(24, 25);
-            this.closemenu.TabIndex = 10;
-            this.closemenu.Text = "<";
-            this.closemenu.Click += new System.EventHandler(this.ClosePanelBtn);
+            closemenu.AutoSize = true;
+            closemenu.BackColor = System.Drawing.Color.Transparent;
+            closemenu.Font = new System.Drawing.Font("Segoe UI Light", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            closemenu.Location = new System.Drawing.Point(474, 0);
+            closemenu.Name = "closemenu";
+            closemenu.Size = new System.Drawing.Size(24, 25);
+            closemenu.TabIndex = 10;
+            closemenu.Text = "<";
+            closemenu.Click += ClosePanelBtn;
             // 
             // gamebtns
             // 
-            this.gamebtns.BackColor = System.Drawing.Color.Transparent;
-            this.gamebtns.Controls.Add(this.steampage);
-            this.gamebtns.Controls.Add(this.torrentsearch);
-            this.gamebtns.Controls.Add(this.magnetbutton);
-            this.gamebtns.Controls.Add(this.visitbutton);
-            this.gamebtns.Location = new System.Drawing.Point(146, 51);
-            this.gamebtns.Name = "gamebtns";
-            this.gamebtns.Size = new System.Drawing.Size(340, 96);
-            this.gamebtns.TabIndex = 9;
+            gamebtns.BackColor = System.Drawing.Color.Transparent;
+            gamebtns.Controls.Add(steampage);
+            gamebtns.Controls.Add(torrentsearch);
+            gamebtns.Controls.Add(magnetbutton);
+            gamebtns.Controls.Add(visitbutton);
+            gamebtns.Location = new System.Drawing.Point(146, 51);
+            gamebtns.Name = "gamebtns";
+            gamebtns.Size = new System.Drawing.Size(340, 96);
+            gamebtns.TabIndex = 9;
             // 
             // steampage
             // 
-            this.steampage.AutoSize = true;
-            this.steampage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.steampage.FlatAppearance.BorderSize = 0;
-            this.steampage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.steampage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.steampage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.steampage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.steampage.Location = new System.Drawing.Point(3, 3);
-            this.steampage.MaximumSize = new System.Drawing.Size(163, 42);
-            this.steampage.Name = "steampage";
-            this.steampage.Size = new System.Drawing.Size(163, 42);
-            this.steampage.TabIndex = 8;
-            this.steampage.Text = "Steam Page";
-            this.steampage.UseVisualStyleBackColor = false;
-            this.steampage.Click += new System.EventHandler(this.steampage_Click);
+            steampage.AutoSize = true;
+            steampage.BackColor = System.Drawing.Color.FromArgb(130, 0, 0, 0);
+            steampage.FlatAppearance.BorderSize = 0;
+            steampage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(200, 0, 0, 0);
+            steampage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(165, 0, 0, 0);
+            steampage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            steampage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            steampage.Location = new System.Drawing.Point(3, 3);
+            steampage.MaximumSize = new System.Drawing.Size(163, 42);
+            steampage.Name = "steampage";
+            steampage.Size = new System.Drawing.Size(163, 42);
+            steampage.TabIndex = 8;
+            steampage.Text = "Steam Page";
+            steampage.UseVisualStyleBackColor = false;
+            steampage.Click += steampage_Click;
             // 
             // torrentsearch
             // 
-            this.torrentsearch.AutoSize = true;
-            this.torrentsearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(0)))));
-            this.torrentsearch.FlatAppearance.BorderSize = 0;
-            this.torrentsearch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.torrentsearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.torrentsearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.torrentsearch.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.torrentsearch.Location = new System.Drawing.Point(172, 3);
-            this.torrentsearch.MaximumSize = new System.Drawing.Size(163, 42);
-            this.torrentsearch.Name = "torrentsearch";
-            this.torrentsearch.Size = new System.Drawing.Size(163, 42);
-            this.torrentsearch.TabIndex = 9;
-            this.torrentsearch.Text = "Torrent Search";
-            this.torrentsearch.UseVisualStyleBackColor = false;
-            this.torrentsearch.Click += new System.EventHandler(this.TorrentSearch);
+            torrentsearch.AutoSize = true;
+            torrentsearch.BackColor = System.Drawing.Color.FromArgb(130, 0, 100, 0);
+            torrentsearch.FlatAppearance.BorderSize = 0;
+            torrentsearch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(200, 0, 0, 0);
+            torrentsearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(165, 0, 0, 0);
+            torrentsearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            torrentsearch.Font = new System.Drawing.Font("Segoe UI Light", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            torrentsearch.Location = new System.Drawing.Point(172, 3);
+            torrentsearch.MaximumSize = new System.Drawing.Size(163, 42);
+            torrentsearch.Name = "torrentsearch";
+            torrentsearch.Size = new System.Drawing.Size(163, 42);
+            torrentsearch.TabIndex = 9;
+            torrentsearch.Text = "Torrent Search";
+            torrentsearch.UseVisualStyleBackColor = false;
+            torrentsearch.Click += TorrentSearch;
             // 
             // magnetbutton
             // 
-            this.magnetbutton.AutoSize = true;
-            this.magnetbutton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(0)))));
-            this.magnetbutton.FlatAppearance.BorderSize = 0;
-            this.magnetbutton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.magnetbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.magnetbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.magnetbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.magnetbutton.Location = new System.Drawing.Point(3, 51);
-            this.magnetbutton.MaximumSize = new System.Drawing.Size(163, 42);
-            this.magnetbutton.Name = "magnetbutton";
-            this.magnetbutton.Size = new System.Drawing.Size(163, 42);
-            this.magnetbutton.TabIndex = 10;
-            this.magnetbutton.Text = "Magnet";
-            this.magnetbutton.UseVisualStyleBackColor = false;
-            this.magnetbutton.Visible = false;
-            this.magnetbutton.Click += new System.EventHandler(this.Magnet);
+            magnetbutton.AutoSize = true;
+            magnetbutton.BackColor = System.Drawing.Color.FromArgb(130, 0, 100, 0);
+            magnetbutton.FlatAppearance.BorderSize = 0;
+            magnetbutton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(200, 0, 0, 0);
+            magnetbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(165, 0, 0, 0);
+            magnetbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            magnetbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            magnetbutton.Location = new System.Drawing.Point(3, 51);
+            magnetbutton.MaximumSize = new System.Drawing.Size(163, 42);
+            magnetbutton.Name = "magnetbutton";
+            magnetbutton.Size = new System.Drawing.Size(163, 42);
+            magnetbutton.TabIndex = 10;
+            magnetbutton.Text = "Magnet";
+            magnetbutton.UseVisualStyleBackColor = false;
+            magnetbutton.Visible = false;
+            magnetbutton.Click += Magnet;
             // 
             // visitbutton
             // 
-            this.visitbutton.AutoSize = true;
-            this.visitbutton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.visitbutton.FlatAppearance.BorderSize = 0;
-            this.visitbutton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.visitbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.visitbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.visitbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.visitbutton.Location = new System.Drawing.Point(172, 51);
-            this.visitbutton.MaximumSize = new System.Drawing.Size(163, 42);
-            this.visitbutton.Name = "visitbutton";
-            this.visitbutton.Size = new System.Drawing.Size(163, 42);
-            this.visitbutton.TabIndex = 11;
-            this.visitbutton.Text = "View Site";
-            this.visitbutton.UseVisualStyleBackColor = false;
-            this.visitbutton.Visible = false;
+            visitbutton.AutoSize = true;
+            visitbutton.BackColor = System.Drawing.Color.FromArgb(130, 0, 0, 0);
+            visitbutton.FlatAppearance.BorderSize = 0;
+            visitbutton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(200, 0, 0, 0);
+            visitbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(165, 0, 0, 0);
+            visitbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            visitbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            visitbutton.Location = new System.Drawing.Point(172, 51);
+            visitbutton.MaximumSize = new System.Drawing.Size(163, 42);
+            visitbutton.Name = "visitbutton";
+            visitbutton.Size = new System.Drawing.Size(163, 42);
+            visitbutton.TabIndex = 11;
+            visitbutton.Text = "View Site";
+            visitbutton.UseVisualStyleBackColor = false;
+            visitbutton.Visible = false;
             // 
             // gamename
             // 
-            this.gamename.AutoSize = true;
-            this.gamename.BackColor = System.Drawing.Color.Transparent;
-            this.gamename.Font = new System.Drawing.Font("Segoe UI Light", 22.25F);
-            this.gamename.Location = new System.Drawing.Point(146, 7);
-            this.gamename.MaximumSize = new System.Drawing.Size(350, 50);
-            this.gamename.Name = "gamename";
-            this.gamename.Size = new System.Drawing.Size(203, 41);
-            this.gamename.TabIndex = 6;
-            this.gamename.Text = "Content Name";
+            gamename.AutoSize = true;
+            gamename.BackColor = System.Drawing.Color.Transparent;
+            gamename.Font = new System.Drawing.Font("Segoe UI Light", 22.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            gamename.Location = new System.Drawing.Point(146, 7);
+            gamename.MaximumSize = new System.Drawing.Size(350, 50);
+            gamename.Name = "gamename";
+            gamename.Size = new System.Drawing.Size(203, 41);
+            gamename.TabIndex = 6;
+            gamename.Text = "Content Name";
             // 
             // gameart
             // 
-            this.gameart.Location = new System.Drawing.Point(7, 7);
-            this.gameart.Name = "gameart";
-            this.gameart.Size = new System.Drawing.Size(133, 200);
-            this.gameart.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.gameart.TabIndex = 5;
-            this.gameart.TabStop = false;
+            gameart.Location = new System.Drawing.Point(7, 7);
+            gameart.Name = "gameart";
+            gameart.Size = new System.Drawing.Size(133, 200);
+            gameart.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            gameart.TabIndex = 5;
+            gameart.TabStop = false;
             // 
             // sourcename
             // 
-            this.sourcename.AutoSize = true;
-            this.sourcename.BackColor = System.Drawing.Color.Transparent;
-            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
-            this.sourcename.Location = new System.Drawing.Point(141, 182);
-            this.sourcename.MaximumSize = new System.Drawing.Size(350, 50);
-            this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(123, 25);
-            this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Steam";
+            sourcename.AutoSize = true;
+            sourcename.BackColor = System.Drawing.Color.Transparent;
+            sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
+            sourcename.Location = new System.Drawing.Point(141, 182);
+            sourcename.MaximumSize = new System.Drawing.Size(350, 50);
+            sourcename.Name = "sourcename";
+            sourcename.Size = new System.Drawing.Size(123, 25);
+            sourcename.TabIndex = 12;
+            sourcename.Text = "Source: Steam";
             // 
             // realsearchtb
             // 
-            this.realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.realsearchtb.Location = new System.Drawing.Point(-50, -50);
-            this.realsearchtb.Margin = new System.Windows.Forms.Padding(0);
-            this.realsearchtb.Name = "realsearchtb";
-            this.realsearchtb.Size = new System.Drawing.Size(1, 44);
-            this.realsearchtb.TabIndex = 6;
-            this.realsearchtb.TabStop = false;
-            this.realsearchtb.Text = "Search";
-            this.realsearchtb.TextChanged += new System.EventHandler(this.DrawSearchBox);
-            this.realsearchtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.realsearchtb_KeyDown);
+            realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            realsearchtb.Location = new System.Drawing.Point(-50, -50);
+            realsearchtb.Margin = new System.Windows.Forms.Padding(0);
+            realsearchtb.Name = "realsearchtb";
+            realsearchtb.Size = new System.Drawing.Size(1, 44);
+            realsearchtb.TabIndex = 6;
+            realsearchtb.TabStop = false;
+            realsearchtb.Text = "Search";
+            realsearchtb.TextChanged += DrawSearchBox;
+            realsearchtb.KeyDown += realsearchtb_KeyDown;
             // 
             // nogamesnotif
             // 
-            this.nogamesnotif.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.nogamesnotif.Controls.Add(this.nogamesmessage);
-            this.nogamesnotif.ForeColor = System.Drawing.Color.White;
-            this.nogamesnotif.Location = new System.Drawing.Point(516, 330);
-            this.nogamesnotif.Name = "nogamesnotif";
-            this.nogamesnotif.Size = new System.Drawing.Size(225, 225);
-            this.nogamesnotif.TabIndex = 7;
-            this.nogamesnotif.Visible = false;
+            nogamesnotif.BackColor = System.Drawing.Color.FromArgb(50, 0, 0, 0);
+            nogamesnotif.Controls.Add(nogamesmessage);
+            nogamesnotif.ForeColor = System.Drawing.Color.White;
+            nogamesnotif.Location = new System.Drawing.Point(516, 330);
+            nogamesnotif.Name = "nogamesnotif";
+            nogamesnotif.Size = new System.Drawing.Size(225, 225);
+            nogamesnotif.TabIndex = 7;
+            nogamesnotif.Visible = false;
             // 
             // nogamesmessage
             // 
-            this.nogamesmessage.AutoSize = true;
-            this.nogamesmessage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.nogamesmessage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.nogamesmessage.Location = new System.Drawing.Point(0, 0);
-            this.nogamesmessage.MaximumSize = new System.Drawing.Size(225, 0);
-            this.nogamesmessage.MinimumSize = new System.Drawing.Size(225, 225);
-            this.nogamesmessage.Name = "nogamesmessage";
-            this.nogamesmessage.Size = new System.Drawing.Size(225, 225);
-            this.nogamesmessage.TabIndex = 0;
-            this.nogamesmessage.Text = "content you install will appear here";
-            this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            nogamesmessage.AutoSize = true;
+            nogamesmessage.BackColor = System.Drawing.Color.FromArgb(0, 0, 0, 0);
+            nogamesmessage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            nogamesmessage.Location = new System.Drawing.Point(0, 0);
+            nogamesmessage.MaximumSize = new System.Drawing.Size(225, 0);
+            nogamesmessage.MinimumSize = new System.Drawing.Size(225, 225);
+            nogamesmessage.Name = "nogamesmessage";
+            nogamesmessage.Size = new System.Drawing.Size(225, 225);
+            nogamesmessage.TabIndex = 0;
+            nogamesmessage.Text = "content you install will appear here";
+            nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Orchid;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(800, 512);
-            this.Controls.Add(this.realsearchtb);
-            this.Controls.Add(this.gamepanel);
-            this.Controls.Add(this.popuppanel);
-            this.Controls.Add(this.store);
-            this.Controls.Add(this.toolbar);
-            this.Controls.Add(this.nogamesnotif);
-            this.Font = new System.Drawing.Font("Segoe UI Light", 24.25F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
-            this.Name = "Main";
-            this.Text = "OpenVapour";
-            this.TransparencyKey = System.Drawing.Color.Snow;
-            this.Load += new System.EventHandler(this.Main_Load);
-            this.Shown += new System.EventHandler(this.MainShown);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
-            this.toolbar.ResumeLayout(false);
-            this.toolbar.PerformLayout();
-            this.popuppanel.ResumeLayout(false);
-            this.popuppanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.popupart)).EndInit();
-            this.gamepanel.ResumeLayout(false);
-            this.gamepanel.PerformLayout();
-            this.gamedescpanel.ResumeLayout(false);
-            this.gamedescpanel.PerformLayout();
-            this.gamebtns.ResumeLayout(false);
-            this.gamebtns.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
-            this.nogamesnotif.ResumeLayout(false);
-            this.nogamesnotif.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.Orchid;
+            BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            ClientSize = new System.Drawing.Size(800, 512);
+            Controls.Add(realsearchtb);
+            Controls.Add(gamepanel);
+            Controls.Add(popuppanel);
+            Controls.Add(store);
+            Controls.Add(toolbar);
+            Controls.Add(nogamesnotif);
+            Font = new System.Drawing.Font("Segoe UI Light", 24.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            KeyPreview = true;
+            Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
+            Name = "Main";
+            Text = "OpenVapour";
+            TransparencyKey = System.Drawing.Color.Snow;
+            Load += Main_Load;
+            Shown += MainShown;
+            MouseDown += Drag;
+            toolbar.ResumeLayout(false);
+            toolbar.PerformLayout();
+            popuppanel.ResumeLayout(false);
+            popuppanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)popupart).EndInit();
+            gamepanel.ResumeLayout(false);
+            gamepanel.PerformLayout();
+            gamedescpanel.ResumeLayout(false);
+            gamedescpanel.PerformLayout();
+            gamebtns.ResumeLayout(false);
+            gamebtns.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)gameart).EndInit();
+            nogamesnotif.ResumeLayout(false);
+            nogamesnotif.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

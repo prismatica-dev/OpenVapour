@@ -7,7 +7,7 @@ using OpenVapour.Web;
 
 namespace OpenVapour.Steam {
     internal class Torrent {
-        public static string[] GameList = new string[] { };
+        public static string[] GameList = Array.Empty<string>();
         internal class ResultTorrent {
             public string Name { get; set; }
             public string Description { get; set; }
@@ -16,12 +16,8 @@ namespace OpenVapour.Steam {
             public string TorrentUrl { get; set; }
             public string JSON { get; set; }
             public static async Task<ResultTorrent> TorrentFromUrl(string Url, string Name) {
-                ResultTorrent torrent = new ResultTorrent("");
-                torrent.JSON = ""; torrent.Url = Url; torrent.Name = Name;
                 string html = await WebCore.GetWebString(Url);
-                torrent.Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>");
-                torrent.Image = GetBetween(html, "Download\" src=\"", "\""); // won't always work
-                torrent.TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"");
+                ResultTorrent torrent = new("") { JSON = "", Url = Url, Name = Name, Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>"), Image = GetBetween(html, "Download\" src=\"", "\""), TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"") };
 
                 // fix description unicode bugs
                 bool descriptionFixed = false;
@@ -37,7 +33,6 @@ namespace OpenVapour.Steam {
                             torrent.Description = torrent.Description.Replace($"#{unicode};", $"{(char)n}"); }
                         else descriptionFixed = true; }
                     else descriptionFixed = true; }
-
                 return torrent; }
 
             public ResultTorrent(string JSON) {
@@ -65,20 +60,19 @@ namespace OpenVapour.Steam {
         public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
         public static async Task<List<ResultTorrent>> GetResults(string Name) {
-            List<ResultTorrent> results = new List<ResultTorrent>();
-            List<string> resulturls = new List<string>();
+            List<ResultTorrent> results = new();
+            List<string> resulturls = new();
             try {
                 // scrape just the rss2 feed to avoid cloudflare
                 // pcgamestorrents rss2 feed always returns XML
                 string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
-                // if (XML.Contains("<item>")) return results; // no results
 
                 string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine($"found {items.Count():N0} torrents!");
+                Console.WriteLine($"found {items.Length:N0} torrents!");
                 // skip first non-item result
-                if (items.Count() > 1)
-                    for (int i = 1; i < items.Count(); i++) {
-                        ResultTorrent torrent = new ResultTorrent(items[i]);
+                if (items.Length > 1)
+                    for (int i = 1; i < items.Length; i++) {
+                        ResultTorrent torrent = new(items[i]);
                         results.Add(torrent);
                         Console.WriteLine("found torrent " + torrent.Url);
                         resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
