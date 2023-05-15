@@ -265,7 +265,7 @@ namespace OpenVapour {
             }; time.Enabled = true; }
 
         private void ClosePanelBtn(object sender, EventArgs e) { ClosePanel(false, new List<object>()); }
-        private void searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
+        private void Searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
 
         private void DrawSearchBox(object sender, EventArgs e) {
             Bitmap bit = new Bitmap(searchtextbox.Width, searchtextbox.Height);
@@ -278,14 +278,14 @@ namespace OpenVapour {
                 g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
             } searchtextbox.BackgroundImage = bit; }
 
-        private async void realsearchtb_KeyDown(object sender, KeyEventArgs e) {
+        private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
                 ClearStore(); 
                 foreach (ResultGame game in await SteamCore.GetResults(realsearchtb.Text)) {
                     if (!Cache.IsSteamGameCached(game.AppId)) {
                         if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}}}
 
-        private void steampage_Click(object sender, EventArgs e) { Process.Start("https://store.steampowered.com/app/" + currentgame.AppId); }
+        private void SteamPage_Click(object sender, EventArgs e) { Process.Start("https://store.steampowered.com/app/" + currentgame.AppId); }
         private async void AsyncAddGame(int AppId) => AddGame(await GetGame(AppId));
 
         private async void TorrentSearch(object sender, EventArgs e) {
@@ -305,15 +305,15 @@ namespace OpenVapour {
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame.AppId);
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Failed"; }
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Fail-0"; }
             try {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will throw an exception if no magnet-capable applications are installed
                     magnetbutton.Text = "Magnet"; }
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copied"; }}
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Fail-1"; }}
 
-        private void exit_Click(object sender, EventArgs e) => Close();
+        private void Exit_Click(object sender, EventArgs e) => Close();
 
         private async void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; if (Directory.GetFiles(Utilities.RoamingAppData + "\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)

@@ -114,7 +114,7 @@
             this.exit.Size = new System.Drawing.Size(25, 25);
             this.exit.TabIndex = 6;
             this.exit.UseVisualStyleBackColor = false;
-            this.exit.Click += new System.EventHandler(this.exit_Click);
+            this.exit.Click += new System.EventHandler(this.Exit_Click);
             // 
             // storeselect
             // 
@@ -138,7 +138,7 @@
             this.searchtextbox.Name = "searchtextbox";
             this.searchtextbox.Size = new System.Drawing.Size(200, 25);
             this.searchtextbox.TabIndex = 5;
-            this.searchtextbox.Click += new System.EventHandler(this.searchtextbox_Click);
+            this.searchtextbox.Click += new System.EventHandler(this.Searchtextbox_Click);
             // 
             // store
             // 
@@ -278,7 +278,7 @@
             this.steampage.TabIndex = 8;
             this.steampage.Text = "Steam Page";
             this.steampage.UseVisualStyleBackColor = false;
-            this.steampage.Click += new System.EventHandler(this.steampage_Click);
+            this.steampage.Click += new System.EventHandler(this.SteamPage_Click);
             // 
             // torrentsearch
             // 
@@ -379,7 +379,7 @@
             this.realsearchtb.TabStop = false;
             this.realsearchtb.Text = "Search";
             this.realsearchtb.TextChanged += new System.EventHandler(this.DrawSearchBox);
-            this.realsearchtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.realsearchtb_KeyDown);
+            this.realsearchtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Realsearchtb_KeyDown);
             // 
             // nogamesnotif
             // 
