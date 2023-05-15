@@ -139,8 +139,7 @@ namespace OpenVapour {
                         byte[] bytes = wc.DownloadData(torrent.Image);
                         MemoryStream ms = new MemoryStream(bytes);
                         img = Image.FromStream(ms);
-                        Cache.CacheBitmap(torrent.Url, (Bitmap)img);
-                    }
+                        Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
 
                 // green states for torrents
                 List<Image> states = new List<Image> {
@@ -284,10 +283,8 @@ namespace OpenVapour {
             List<Image> pbs = (List<Image>)pbl[0];
             pb.Image = pbs[0];
 
-            if (hover)
-                pb.Image = pbs[1];
-            else
-                pb.Image = pbs[0]; }
+            if (hover) pb.Image = pbs[1];
+            else pb.Image = pbs[0]; }
 
         private void ClosePanel(bool OpenNext, List<object> List) {
             Timer time = new Timer { Interval = 30 };
@@ -325,10 +322,13 @@ namespace OpenVapour {
 
         private void DrawSearchBox(object sender, EventArgs e) {
             Bitmap bit = new Bitmap(searchtextbox.Width, searchtextbox.Height);
+            string t = realsearchtb.Text;
+            if (DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) t = t.Insert(realsearchtb.SelectionStart, "|");
+
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                g.DrawString(realsearchtb.Text + (DateTime.Now.Millisecond%1024<512?"|":""), new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
+                g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
             } searchtextbox.BackgroundImage = bit; }
 
         private async void realsearchtb_KeyDown(object sender, KeyEventArgs e) {
