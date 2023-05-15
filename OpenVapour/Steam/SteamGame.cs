@@ -51,7 +51,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 if (IsSteamBitmapCached(AppId, ImageName)) return GetCachedSteamBitmap(AppId, ImageName);
                 HttpWebRequest req = WebRequest.CreateHttp($"https://steamcdn-a.akamaihd.net/steam/apps/{AppId}/{(Retry?header:ImageName)}.jpg");
                 req.Method = "GET"; 
-                Bitmap bmp = new((await req.GetResponseAsync()).GetResponseStream());
+                Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
                 CacheSteamBitmap(AppId, ImageName, bmp);
                 return bmp;
             } catch (Exception ex) { 
@@ -60,7 +60,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 else return await GetCDNAsset(AppId, ImageName, true); }}
 
         public static async Task<List<ResultGame>> GetSuggestions(string Search) {
-            List<ResultGame> suggestions = new();
+            List<ResultGame> suggestions = new List<ResultGame>();
             try {
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/suggest?cc=US&l=english&realm=1&origin=https:%2F%2Fstore.steampowered.com&f=jsonfull&term={Search}&require_type=game,software");
                 while (JSON.Contains("{\"id")) {
@@ -70,7 +70,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
             return suggestions; }
 
         public static async Task<List<ResultGame>> GetResults(string Search, int MaxResults = 10) {
-            List<ResultGame> suggestions = new();
+            List<ResultGame> suggestions = new List<ResultGame>();
             int _r = 0;
             try {
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&category1=998%2C994");
@@ -86,7 +86,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
             return suggestions; }
 
         public static async Task<List<Task<SteamGame>>> ProcessResults(List<ResultGame> Results, bool Basic = true) {
-            List<Task<SteamGame>> games = new();
+            List<Task<SteamGame>> games = new List<Task<SteamGame>>();
             try {
                 foreach (ResultGame _ in Results) {
                     Task<SteamGame> g = GetGame(_.AppId, Basic);

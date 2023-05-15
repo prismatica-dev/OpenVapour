@@ -22,6 +22,7 @@ namespace OpenVapour.Steam {
         internal static void CacheBitmap(string Name, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
+
         internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
 
         internal static void CacheSteamGame(SteamGame game) {
@@ -45,7 +46,7 @@ namespace OpenVapour.Steam {
             try {
                 if (File.Exists($"{DedicatedCache}\\Games\\{AppId}")) {
                     string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
-                    SteamGame game = new(cached);
+                    SteamGame game = new SteamGame(cached);
                     return game; }
             } catch (Exception ex) { HandleException($"LoadCachedSteamGame({AppId}", ex); File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
             return new SteamGame(AppId.ToString()); }}}
