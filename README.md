@@ -16,12 +16,9 @@ or view releases [here](https://github.com/lily-software/OpenVapour/releases)
 
 ### Compatibility
 Tested With:
-+ Windows 10 + ReviOS 10 (Native)
-  + Occasional lag on search
-+ Arch Linux (Wine)
-  + Heavy search lag
-  + Increased random crashes
-  + Requires windows fonts (Segoe UI Semilight)
++ ✅ Windows 10 + ReviOS 10 (Native)
++ ✅ Arch Linux (Wine)
+  + ⚠️ Requires windows fonts (Segoe UI Semilight)
 
 #### *Search Results View*
 ![Screenshot #1 - Search View](https://user-images.githubusercontent.com/59503910/224724215-46ae2eed-75f6-4941-8df7-a28d67d667b7.png)
@@ -34,10 +31,18 @@ Tested With:
 <br>
 *Mindustry is available for free officially at https://anuke.itch.io/mindustry!*
 
+## Troubleshooting
+OpenVapour requires [.NET Framework 4.8.1](https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net481-web-installer).<br>
+Additionally, an external torrent client such as [qBittorrent](https://www.qbittorrent.org/) is required to download from torrents (and interpret magnet links).
+
+If you have both of these and are still experiencing issues, please create a report [on the issues page](https://github.com/lily-software/OpenVapour/issues).<br>
+If present, you **must** include your exception.log file (at %Appdata%/lily.software/OpenVapour/exception.log) as otherwise it is significantly more difficult to determine and fix these issues.
+
 ## Known Bugs
-- Occasional crashes on HttpWebRequest
+- Occasional crashes on HttpWebRequest (likely fixed)
 - Search box cursor does not reflect cursor position
 - Search results for a previous search can load on the current one if the user is fast enough (somewhat fixed)
+- Steam search results occassionally include a completely null game (no title, description, app id, etc)
 
 ## Legal Disclaimer
 As OpenVapour utilises torrent hosting sites, some content accessible by the user may violate regional copyright laws. It is trusted that the user will not abuse this, and will only use this feature for content without [DRM](https://en.wikipedia.org/wiki/Digital_rights_management) or non-copyrighted material. Further, the tool also serves educational purpose, as it highlights several flaws in the URL "shorteners" used by torrent hosting sites. 
