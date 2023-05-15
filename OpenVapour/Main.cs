@@ -264,7 +264,7 @@ namespace OpenVapour {
                 else { panelgame = ""; time.Enabled = false; }
             }; time.Enabled = true; }
 
-        private void ClosePanelBtn(object sender, EventArgs e) { ClosePanel(false, new List<object>()); }
+        private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, new List<object>());
         private void Searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
 
         private void DrawSearchBox(object sender, EventArgs e) {
@@ -285,7 +285,7 @@ namespace OpenVapour {
                     if (!Cache.IsSteamGameCached(game.AppId)) {
                         if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}}}
 
-        private void SteamPage_Click(object sender, EventArgs e) { Process.Start("https://store.steampowered.com/app/" + currentgame.AppId); }
+        private void SteamPage_Click(object sender, EventArgs e) => Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
         private async void AsyncAddGame(int AppId) => AddGame(await GetGame(AppId));
 
         private async void TorrentSearch(object sender, EventArgs e) {
@@ -305,13 +305,13 @@ namespace OpenVapour {
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame.AppId);
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Fail-0"; }
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copy Failed"; }
             try {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will throw an exception if no magnet-capable applications are installed
-                    magnetbutton.Text = "Magnet"; }
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Fail-1"; }}
+                    magnetbutton.Text = "Success"; }
+            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Open Failed"; }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
