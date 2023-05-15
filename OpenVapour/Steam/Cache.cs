@@ -22,24 +22,16 @@ namespace OpenVapour.Steam {
         internal static void CacheBitmap(string Name, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
-
         internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
-
-        internal static void CacheSteamGame(SteamGame game) {
-            if (game.AppId.ToString().Length <= 0) return;
-            CheckCache();
-            File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(game.ApiJSON)); }
+        internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(game.ApiJSON));
+        internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
 
         internal static void HomepageGame(string AppId) {
             CheckCache(); if (AppId.Length > 0) File.WriteAllText($"{DedicatedStorage}\\Games\\{AppId}", ""); }
-
         internal static void BlacklistID(string AppId, string Reason = "") {
             CheckCache(); if (AppId.Length > 0) File.WriteAllText($"{DedicatedStorage}\\Blacklist\\{AppId}", Reason == ""?"Blacklist reason not provided.":$"Blacklisted for: {Reason}"); }
-
         internal static void WhitelistID(string AppId) {
             if (File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}")) File.Delete($"{DedicatedStorage}\\Blacklist\\{AppId}"); }
-
-        internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
 
         internal static SteamGame LoadCachedSteamGame(int AppId) {
             CheckCache();
