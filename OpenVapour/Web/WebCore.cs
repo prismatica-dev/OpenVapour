@@ -35,11 +35,11 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/79.0.4143.50",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/92.0.1",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" };
-        private static Random rng = new Random();
+        private static readonly Random rng = new Random();
         public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
         // web request timeout
-        public const int Timeout = 1000;
+        public const int Timeout = 100;
         public static DateTime LastTimeout = DateTime.Now;
         public static async Task<string> GetWebString(string Url) {
             try {
