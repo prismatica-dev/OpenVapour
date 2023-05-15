@@ -267,7 +267,7 @@
             this.gamebtns.Controls.Add(this.VisitButtonContainer);
             this.gamebtns.Location = new System.Drawing.Point(146, 51);
             this.gamebtns.Name = "gamebtns";
-            this.gamebtns.Size = new System.Drawing.Size(340, 128);
+            this.gamebtns.Size = new System.Drawing.Size(340, 100);
             this.gamebtns.TabIndex = 9;
             // 
             // steampage
