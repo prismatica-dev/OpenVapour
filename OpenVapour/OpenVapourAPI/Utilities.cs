@@ -18,29 +18,19 @@ namespace OpenVapour.Steam {
         internal static readonly WebHeaderCollection headers = new WebHeaderCollection {{ HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" }};
         internal static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         internal static readonly string[] FilterCore = {
-            "  ", " ",
-            " />", "/>",
-            "<br>", Environment.NewLine,
-            "quot;", "\"",
-            "\\r\\n", Environment.NewLine,
-            "\\n", Environment.NewLine,
-            "â€™", "'",
-            "â„¢", "™",
-            "Â", "",
-            "&amp;", "&",
-            "</h1>", Environment.NewLine + Environment.NewLine,
-            "</h2>", Environment.NewLine + Environment.NewLine,
-            "\\u2019", "'",
-            "\u0009", "",
-            "\\u2013", "",
-            "\\u201c", "\"",
-            "\\u201d", "",
-            "\\t", "\t",
-            "!", "! ",
-            ".", ". ",
-            ". 0", ".0",
-            "?", "? ",
+            "  ", " ", " />", "/>",
+            "<br>", Environment.NewLine, "quot;", "\"",
+            "\\r\\n", Environment.NewLine, "\\n", Environment.NewLine,
+            "â€™", "'", "â„¢", "™",
+            "Â", "", "&amp;", "&",
+            "</h1>", Environment.NewLine + Environment.NewLine, "</h2>", Environment.NewLine + Environment.NewLine,
+            "\\u2019", "'", "\u0009", "",
+            "\\u2013", "", "\\u201c", "\"",
+            "\\u201d", "", "\\t", "\t",
+            "!", "! ", ".", ". ",
+            ". 0", ".0", "?", "? ",
             "â€", "" };
+        private static bool LogWritten = false;
 
         internal static int GetLevenshteinDistance(string String, string Destination) {
             int length1 = String.Length;
@@ -49,10 +39,8 @@ namespace OpenVapour.Steam {
 
             if (length1 == 0) return length2;
             if (length2 == 0) return length1;
-
             for (int i = 0; i <= length1; i++) matrix[i, 0] = i;
             for (int j = 0; j <= length2; j++) matrix[0, j] = j;
-
             for (int i = 1; i <= length1; i++)
                 for (int j = 1; j <= length2; j++)
                     matrix[i, j] = Math.Min(Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1), matrix[i - 1, j - 1] + ((Destination[j - 1] == String[i - 1]) ? 0 : 1));
@@ -63,7 +51,6 @@ namespace OpenVapour.Steam {
                 // delete autoupdate remnants if present
                 if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat"); }
             catch (Exception ex) { HandleException($"CheckAutoUpdateIntegrity()", ex); }}
-
         internal static string GetLatestTag() {
             try {
                 // delete autoupdate remnants if present
@@ -101,7 +88,6 @@ namespace OpenVapour.Steam {
                     } catch (ArgumentOutOfRangeException) { return ""; }
                 else return String.Substring(String.IndexOf(BetweenStart + BetweenStart.Length));
             else return ""; }
-        private static bool LogWritten = false;
         internal static void HandleException(string Cause, Exception Result) { 
             Console.WriteLine($"{Cause} threw exception '{Result.Message}'");
             if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}' Stack Trace: '{Result.StackTrace}'");
@@ -146,10 +132,8 @@ namespace OpenVapour.Steam {
                 gZipStream.Write(buffer, 0, buffer.Length); }
 
             memoryStream.Position = 0;
-
             var compressedData = new byte[memoryStream.Length];
             memoryStream.Read(compressedData, 0, compressedData.Length);
-
             var gZipBuffer = new byte[compressedData.Length + 4];
             Buffer.BlockCopy(compressedData, 0, gZipBuffer, 4, compressedData.Length);
             Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gZipBuffer, 0, 4);
@@ -162,11 +146,9 @@ namespace OpenVapour.Steam {
                 memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
 
                 var buffer = new byte[dataLength];
-
                 memoryStream.Position = 0;
                 using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
                     gZipStream.Read(buffer, 0, buffer.Length); }
-
                 return Encoding.UTF8.GetString(buffer); }}
 
         internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
@@ -179,7 +161,6 @@ namespace OpenVapour.Steam {
         /// <returns></returns>
         internal static bool IsDlc(string appid) {
             bool isdlc = false;
-
             try {
                 if (!Cache.IsBlacklisted(appid)) {
                     if (!appid.Contains(",")) {
@@ -192,16 +173,4 @@ namespace OpenVapour.Steam {
                     } else { Cache.BlacklistID(appid); isdlc = true; }}
                 else isdlc = true;
             } catch (TargetInvocationException) { isdlc = true; } catch (Exception ex) { HandleException($"IsDlc({appid})", ex); }
-
-            return isdlc; }
-
-        internal static string FilterText(string UnfilteredText, string[] TextFilters) {
-            string FilteredText = UnfilteredText;
-
-            try {
-                for (int i = 0; i < TextFilters.Length; i += 2)
-                    FilteredText = FilteredText.Replace(TextFilters[i], TextFilters[i + 1]); }
-            catch (ArgumentException) { FilteredText = UnfilteredText; }
-            if (FilteredText.Length <= 0) FilteredText = UnfilteredText;
-
-            return FilteredText; }}}
+            return isdlc; }}}
