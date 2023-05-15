@@ -17,16 +17,11 @@ namespace OpenVapour.SteamPseudoWebAPI {
             public async Task<Bitmap> Bitmap(string AssetName = library) => await GetCDNAsset(AppId, AssetName);
             public ResultGame(string JSON) {
                 Name = GetBetween(JSON, "name\":\"", "\"");
-                // Price = GetBetween(JSON, "price\":\"", "\"");
                 Console.WriteLine(JSON);
                 string _ = "";
-                // try getting id from result
-                if (JSON.Contains("id\":")) _ = GetBetween(JSON, "id\":", ",");
-                // otherwise get it from the logo asset
-                else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/");
-                // pray one of them worked
-                if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_);
-            }}
+                if (JSON.Contains("id\":")) _ = GetBetween(JSON, "id\":", ","); // try getting id from result
+                else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/"); // otherwise get it from the logo asset
+                if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_); }} // pray one of them worked
 
         public class SteamGame {
             public string ApiJSON { get; set; }
