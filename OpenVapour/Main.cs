@@ -120,7 +120,9 @@ namespace OpenVapour {
 
         internal void ClearStore() => store.Controls.Clear();
 
-        internal void AddTorrent(ResultTorrent torrent) {
+        internal async Task AddTorrent(ResultTorrent torrent) => await AddTorrent(Task.FromResult(torrent));
+        internal async Task AddTorrent(Task<ResultTorrent> torrenttask) {
+            ResultTorrent torrent = await torrenttask;
             PictureBox panel = new PictureBox { Size = new Size(225, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
             try {
                 Image img = new Bitmap(1, 1);
@@ -148,7 +150,8 @@ namespace OpenVapour {
                 panel.MouseDown += GameClickStart;
                 panel.MouseLeave += GameHoverEnd;
                 panel.MouseUp += GameClickEnd;
-                store.Controls.Add(panel); }
+                store.Controls.Add(panel);
+                Update(); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal async void AddGame(SteamGame game) {
@@ -294,7 +297,10 @@ namespace OpenVapour {
             gamepanel.Visible = false;
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Console.WriteLine(_);
-            foreach (ResultTorrent torrent in await GetResults(_)) AddTorrent(torrent); }
+            List<ResultTorrent> torrents = await GetResults(_);
+            foreach (ResultTorrent torrent in torrents) await AddTorrent(torrent);
+            List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(_);
+            foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {
             string magnet = "";

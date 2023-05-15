@@ -63,24 +63,10 @@ namespace OpenVapour.Steam {
 
         public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
-        public static async Task<List<ResultTorrent>> GetResults(string Name) {
-            List<ResultTorrent> results = new List<ResultTorrent>();
+        public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(string Name) {
+            List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
             List<string> resulturls = new List<string>();
             try {
-                // scrape just the rss2 feed to avoid cloudflare
-                // pcgamestorrents rss2 feed always returns XML
-                string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
-
-                string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine($"found {items.Count():N0} torrents!");
-                // skip first non-item result
-                if (items.Count() > 1)
-                    for (int i = 1; i < items.Count(); i++) {
-                        ResultTorrent torrent = new ResultTorrent(items[i]);
-                        results.Add(torrent);
-                        Console.WriteLine("found torrent " + torrent.Url);
-                        resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
-
                 // check game list (sometimes results provided by pcgt are insufficient)
                 if (GameList.Length == 0)
                     GameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html"), "<ul>", "</ul>\n<div").Split('\n');
@@ -98,6 +84,26 @@ namespace OpenVapour.Steam {
                             string url = GetBetween(game, "<a href=\"", "\"");
                             Console.WriteLine("search result found! " + url);
                             if (!resulturls.Contains(url))
-                                results.Add(await ResultTorrent.TorrentFromUrl(url, name)); }}}
+                                results.Add(ResultTorrent.TorrentFromUrl(url, name)); }}}
+            } catch (Exception ex) { HandleException($"TorrentCore.GetExtendedResults({Name})", ex); }
+            return results; }
+
+        public static async Task<List<ResultTorrent>> GetResults(string Name) {
+            List<ResultTorrent> results = new List<ResultTorrent>();
+            List<string> resulturls = new List<string>();
+            try {
+                // scrape just the rss2 feed to avoid cloudflare
+                // pcgamestorrents rss2 feed always returns XML
+                string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
+
+                string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
+                Console.WriteLine($"found {items.Count():N0} torrents!");
+                // skip first non-item result
+                if (items.Count() > 1)
+                    for (int i = 1; i < items.Count(); i++) {
+                        ResultTorrent torrent = new ResultTorrent(items[i]);
+                        results.Add(torrent);
+                        Console.WriteLine("found torrent " + torrent.Url);
+                        resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
             } catch (Exception ex) { HandleException($"TorrentCore.GetResults({Name})", ex); }
             return results; }}}
