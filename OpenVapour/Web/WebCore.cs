@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace OpenVapour.Web {
@@ -35,12 +36,12 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/79.0.4143.50",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/92.0.1",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" };
-        private static Random rng = new Random();
+        private static readonly Random rng = new();
         public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
         // web request timeout
-        public const int Timeout = 1000;
-        public static DateTime LastTimeout = DateTime.Now;
+        public const int Timeout = 100;
+        private static DateTime LastTimeout = DateTime.Now;
         public static async Task<string> GetWebString(string Url) {
             try {
                 Console.WriteLine($"[0] http get '{Url}'");
@@ -49,16 +50,18 @@ namespace OpenVapour.Web {
                 LastTimeout = DateTime.Now;
 
                 Console.WriteLine($"[1] http prepare '{Url}'");
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
-                req.Method = "GET";
-                req.Timeout = 2000;
-                req.UserAgent = GetRandomUserAgent();
-                req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                Console.WriteLine($"[2] http get '{Url}'");
-                using (Stream memory = (await req.GetResponseAsync()).GetResponseStream()) {
-                    using (StreamReader reader = new StreamReader(memory)) {
-                        Console.WriteLine($"[done] http get '{Url}'");
-                        return reader.ReadToEnd(); }}
+
+                using (HttpClientHandler clientHandler = new()) {
+                    clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                    using (HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(2000) }) {
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
+                        Console.WriteLine($"[2] http get '{Url}'");
+                        HttpResponseMessage response = await client.GetAsync(Url);
+                        response.EnsureSuccessStatusCode();
+                        using (Stream stream = await response.Content.ReadAsStreamAsync()) {
+                            using (StreamReader reader = new(stream)) {
+                                Console.WriteLine($"[done] http get '{Url}'");
+                                return await reader.ReadToEndAsync(); }}}}
             } catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); return ""; }}
         public static string DecodeBlueMediaFiles(string EncodedUrl) {
             Console.WriteLine("decoding " + EncodedUrl);
@@ -66,7 +69,7 @@ namespace OpenVapour.Web {
                 .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
                 .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
                 .Replace("https://bluemediafiles.site/get-url.php?url=", "");
-            if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl.Substring(EncodedUrl.IndexOf('=') + 1);
+            if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl[(EncodedUrl.IndexOf('=') + 1)..];
             string URL = "";
             for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
             for (int i = (EncodedUrl.Length / 2) + 4; i < EncodedUrl.Length; i += 2) URL += EncodedUrl[i];
