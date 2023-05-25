@@ -1,12 +1,17 @@
 <div align="center">
-  <h1>/lily.software/ OpenVapour — Torrent Manager</h1>
+  <h1>/lily.software/ OpenVapour — Torrent Search Engine</h1>
   <i>A C# front-end for <a href="https://store.steampowered.com">Steam</a> focused on fast searches. As a <a href="https://www.gnu.org/philosophy/floss-and-foss.en.html">FLOSS</a> project, it is completely open source and uses no 3rd party libraries such as NUGET packages.</i><br>
   <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
 </div><br>
 
 This tool is in early access! Please report bugs [here!](https://github.com/lily-software/OpenVapour/issues) Additionally, this is a 2 year old project of mine that I recently came back to and improved, there is definitely room for optimisation and as such it may run poorly on low-end systems.
 
-## Torrent Management
+## Torrent Search Engine
+OpenVapour curates a series of torrent results from multiple reputable game torrenting sites (1.3.0+), or pcgamestorrents (pre-1.3.0). All "url shorteners", popups and ads are all bypassed to provide you with the smoothest experience possible with a beautiful UI.
+### Site-Specific Bypasses
++ PCGamesTorrents : Better Search Capability, URL Shortener Bypass, Cloudflare Bypass
+
+## Torrent Downloading
 **OpenVapour is not a torrent client! An external torrent client capable of interpreting 'magnet' links is required!**
 Personally, I highly encourage use of [qBittorrent](https://www.qbittorrent.org/), as a reliable, open-source torrent client.
 
