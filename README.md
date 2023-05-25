@@ -45,7 +45,6 @@ If present, you **must** include your exception.log file (at %Appdata%/lily.soft
 
 ## Known Bugs
 - Occasional crashes on HttpWebRequest (likely fixed)
-- Search box cursor does not reflect cursor position
 - Search results for a previous search can load on the current one if the user is fast enough (somewhat fixed)
 - Steam search results occassionally include a completely null game (no title, description, app id, etc)
 
