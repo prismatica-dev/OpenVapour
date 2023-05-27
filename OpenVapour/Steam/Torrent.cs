@@ -50,17 +50,12 @@ namespace OpenVapour.Steam {
                         while (!descriptionFixed) {
                             iterations++; if (iterations > 50) break; // prevent infinite loop
                             string unicode = GetBetween(torrent.Description, "#", ";");
-                            Console.WriteLine($"patching #{unicode};");
                             if (unicode.Length > 0 && unicode.Length < 6) {
-                                Console.WriteLine("valid patch length!");
                                 if (int.TryParse(unicode, out int n)) {
-                                    Console.WriteLine($"patched #{unicode}; with {(char)n}");
                                     torrent.Description = torrent.Description.Replace($"#{unicode};", $"{(char)n}"); }
                                 else descriptionFixed = true; }
                             else descriptionFixed = true; }
                         return torrent;
-
-
 
                     case TorrentSource.Unknown:
                     default:
@@ -69,22 +64,43 @@ namespace OpenVapour.Steam {
             public ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;
                 this.JSON = JSON;
-                Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                Name = GetBetween(JSON, "<title>", "</title>");
-                Description = StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", ""));
-                Image = GetBetween(JSON, "src=\"", "\"");
-                TorrentUrl = GetBetween(JSON, "a href=\"", "\"");
+                switch (Source) {
+                    case TorrentSource.PCGamesTorrents:
+                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                        Name = GetBetween(JSON, "<title>", "</title>");
+                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                        Image = GetBetween(JSON, "src=\"", "\"");
+                        TorrentUrl = GetBetween(JSON, "a href=\"", "\"");
+                    break;
+                    
+                    case TorrentSource.FitgirlRepacks:
+                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                        Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
+                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                        Image = GetBetween(JSON, "src=\"", "\"");
+                        TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}";
+                        break;
 
-                // fix description unicode bugs
-                bool descriptionFixed = false;
-                int iterations = 0;
-                while (!descriptionFixed) {
-                    iterations++; if (iterations > 50) break; // prevent infinite loop
-                    string unicode = GetBetween(Description, "#", ";");
-                    if (unicode.Length > 0 && unicode.Length < 6) {
-                        if (int.TryParse(unicode, out int n)) {
-                            Description = Description.Replace($"#{unicode};", $"{(char)n}");
-                        } else descriptionFixed = true; } else descriptionFixed = true; }}}
+                    case TorrentSource.Unknown:
+                    default:
+                        Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
+                        break;
+                    }}}
+
+        public static string FixRSSUnicode(string Content) {
+            bool Fixed = false;
+            int iterations = 0;
+            while (!Fixed) {
+                iterations++; if (iterations > 50) break; // prevent excessive iterations
+                bool strangeFormatting = false;
+                string unicode = GetBetween(Content, "#", ";");
+                if (unicode.Length > 6) { strangeFormatting = true; unicode = GetBetween(Content, "#", " "); }
+
+                if (unicode.Length > 0 && unicode.Length < 6) {
+                    if (int.TryParse(unicode, out int n)) {
+                        Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
+                    } else Fixed = true; } else Fixed = true; }
+            return Content; }
 
         public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
@@ -128,12 +144,11 @@ namespace OpenVapour.Steam {
             try {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
-                        // scrape just the rss2 feed to avoid cloudflare
-                        // pcgamestorrents rss2 feed always returns XML
+                        // scrape the rss2 feed to avoid cloudflare
                         string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
-
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        Console.WriteLine($"found {items.Count():N0} torrents!");
+                        Console.WriteLine($"[PCGT] found {items.Count():N0} torrents!");
+
                         // skip first non-item result
                         if (items.Count() > 1)
                             for (int i = 1; i < items.Count(); i++) {
@@ -143,6 +158,20 @@ namespace OpenVapour.Steam {
                                 resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
                     break; 
                         
+                    case TorrentSource.FitgirlRepacks:
+                        string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
+                        Console.WriteLine(fitgirlrss);
+                        string[] fitgirlitems = fitgirlrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
+                        Console.WriteLine($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
+
+                        if (fitgirlitems.Count() > 1)
+                            for (int i = 1; i < fitgirlitems.Count(); i++) {
+                                ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
+                                results.Add(torrent);
+                                Console.WriteLine("found torrent " + torrent.Url);
+                                resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
+                        break;
+
                     case TorrentSource.Unknown:
                     default:
                         // search capability not implemented

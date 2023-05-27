@@ -20,6 +20,7 @@ using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
 using System.Reflection;
 using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
+using System.Runtime.ExceptionServices;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -144,7 +145,7 @@ namespace OpenVapour {
                     Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 207, 61)), // passive state
                     Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 255, 74)), // click state
                     Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 33, 236, 92)) }; // hover state
-                List<object> metalist = new List<object> { states, torrent };
+                List<object> metalist = new List<object> { states, torrent, true };
                 panel.Image = states[0];
                 panel.Tag = metalist;
                 Panel popup = CreatePopUp(torrent, states[0]);
@@ -231,9 +232,10 @@ namespace OpenVapour {
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; magnetbutton.Text = "Magnet"; MagnetButtonContainer.Visible = true; 
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {TorrentSources.SourceScores[game.Source].Item2}"; 
-            gameart.Image = art; gamedesc.Text = game.Name + "\n\n" + game.Description; gamepanel.Location = new Point(7, 32); ResizeGameArt();
-            gamepanel.Visible = true; gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
+            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
+            gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
+            gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
+            gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true; }
 
         private void GameClickStart(object sender, MouseEventArgs e) {
@@ -328,8 +330,19 @@ namespace OpenVapour {
             gamepanel.Visible = false;
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Console.WriteLine(_);
-            List<ResultTorrent> torrents = await GetResults(TorrentSource.PCGamesTorrents, _);
-            foreach (ResultTorrent torrent in torrents) await AddTorrent(torrent);
+            
+            //List<ResultTorrent> torrents = await GetResults(TorrentSource.FitgirlRepacks, _);
+            //foreach (ResultTorrent torrent in torrents) await AddTorrent(torrent);
+            //torrents = await GetResults(TorrentSource.PCGamesTorrents, _);
+
+            foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                Task<List<ResultTorrent>> getresults = GetResults(source, _);
+                Task gettask = getresults.ContinueWith((results) => {
+                    foreach (ResultTorrent torrent in results.Result)
+                        Application.OpenForms[0].Invoke((MethodInvoker)async delegate { await AddTorrent(torrent); });
+                });
+                await gettask; }
+
             List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(TorrentSource.PCGamesTorrents, _);
             foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent); }
 
@@ -338,7 +351,18 @@ namespace OpenVapour {
             try {
                 magnetbutton.Text = "Queued";
                 Update();
-                magnet = await GetMagnet(currenttorrent.TorrentUrl);
+
+                switch (currenttorrent.Source) {
+                    case TorrentSource.PCGamesTorrents:
+                        magnet = await GetMagnet(currenttorrent.TorrentUrl);
+                        break;
+                    case TorrentSource.FitgirlRepacks:
+                        magnet = currenttorrent.TorrentUrl;
+                        break;
+                    case TorrentSource.Unknown:
+                    default:
+                        MessageBox.Show("[UNKNOWN SOURCE] Please report this error");
+                        break; }
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame.AppId);
