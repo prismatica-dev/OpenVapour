@@ -202,6 +202,7 @@ namespace OpenVapour {
             else gameart.Size = new Size(133, 133); }
 
         private void LoadGame(SteamGame game, Image art) {
+            if (game.Name == "") return;
             currentgame = game; magnetbutton.Visible = false; torrentsearch.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();

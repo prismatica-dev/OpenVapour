@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -31,6 +32,18 @@ namespace OpenVapour.Steam {
             ". 0", ".0", "?", "? ",
             "â€", "" };
         private static bool LogWritten = false;
+
+        // Source Ratings
+        // Name, Trustworthiness, Quality
+        // Trustworthiness ratings are decided based on history and general community view on site
+        // Quality ratings are based on easiness to install, DRM, ads, etc
+        internal static readonly Dictionary<string, Tuple<byte, byte>> SourceScores = new Dictionary<string, Tuple<byte, byte>> {
+                { "PCGamesTorrents", new Tuple<byte, byte>(6, 8) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
+                { "Fitgirl Repacks", new Tuple<byte, byte>(10, 10) }, // extremely trustworthy lightweight repacks
+                { "SteamRIP", new Tuple<byte, byte>(9, 8) }, // reliable multi-platform games, but lacks torrent links on many
+                { "Seven Gamers", new Tuple<byte, byte>(7, 8) }, // trustworthy, but usually uses ISOs detracting from easiness
+                { "GOG", new Tuple<byte, byte>(9, 5) } // trustworthy, but absolutely garbage installers
+            };
 
         internal static int GetLevenshteinDistance(string String, string Destination) {
             int length1 = String.Length;

@@ -44,9 +44,13 @@
             this.gamedesc = new System.Windows.Forms.Label();
             this.closemenu = new System.Windows.Forms.Label();
             this.gamebtns = new System.Windows.Forms.FlowLayoutPanel();
+            this.SteamPageContainer = new System.Windows.Forms.Panel();
             this.steampage = new System.Windows.Forms.Button();
+            this.TorrentSearchContainer = new System.Windows.Forms.Panel();
             this.torrentsearch = new System.Windows.Forms.Button();
+            this.MagnetButtonContainer = new System.Windows.Forms.Panel();
             this.magnetbutton = new System.Windows.Forms.Button();
+            this.VisitButtonContainer = new System.Windows.Forms.Panel();
             this.visitbutton = new System.Windows.Forms.Button();
             this.gamename = new System.Windows.Forms.Label();
             this.gameart = new System.Windows.Forms.PictureBox();
@@ -54,22 +58,18 @@
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
-            this.SteamPageContainer = new System.Windows.Forms.Panel();
-            this.TorrentSearchContainer = new System.Windows.Forms.Panel();
-            this.MagnetButtonContainer = new System.Windows.Forms.Panel();
-            this.VisitButtonContainer = new System.Windows.Forms.Panel();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
             this.gamepanel.SuspendLayout();
             this.gamedescpanel.SuspendLayout();
             this.gamebtns.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
-            this.nogamesnotif.SuspendLayout();
             this.SteamPageContainer.SuspendLayout();
             this.TorrentSearchContainer.SuspendLayout();
             this.MagnetButtonContainer.SuspendLayout();
             this.VisitButtonContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
+            this.nogamesnotif.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -210,12 +210,12 @@
             // 
             this.gamepanel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.gamepanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.gamepanel.Controls.Add(this.sourcename);
             this.gamepanel.Controls.Add(this.gamedescpanel);
             this.gamepanel.Controls.Add(this.closemenu);
             this.gamepanel.Controls.Add(this.gamebtns);
             this.gamepanel.Controls.Add(this.gamename);
             this.gamepanel.Controls.Add(this.gameart);
-            this.gamepanel.Controls.Add(this.sourcename);
             this.gamepanel.ForeColor = System.Drawing.Color.White;
             this.gamepanel.Location = new System.Drawing.Point(7, 32);
             this.gamepanel.Name = "gamepanel";
@@ -270,6 +270,15 @@
             this.gamebtns.Size = new System.Drawing.Size(340, 100);
             this.gamebtns.TabIndex = 9;
             // 
+            // SteamPageContainer
+            // 
+            this.SteamPageContainer.Controls.Add(this.steampage);
+            this.SteamPageContainer.Location = new System.Drawing.Point(3, 3);
+            this.SteamPageContainer.MaximumSize = new System.Drawing.Size(163, 42);
+            this.SteamPageContainer.Name = "SteamPageContainer";
+            this.SteamPageContainer.Size = new System.Drawing.Size(163, 42);
+            this.SteamPageContainer.TabIndex = 12;
+            // 
             // steampage
             // 
             this.steampage.AutoSize = true;
@@ -287,6 +296,15 @@
             this.steampage.Text = "Steam Page";
             this.steampage.UseVisualStyleBackColor = false;
             this.steampage.Click += new System.EventHandler(this.SteamPage_Click);
+            // 
+            // TorrentSearchContainer
+            // 
+            this.TorrentSearchContainer.Controls.Add(this.torrentsearch);
+            this.TorrentSearchContainer.Location = new System.Drawing.Point(172, 3);
+            this.TorrentSearchContainer.MaximumSize = new System.Drawing.Size(163, 42);
+            this.TorrentSearchContainer.Name = "TorrentSearchContainer";
+            this.TorrentSearchContainer.Size = new System.Drawing.Size(163, 42);
+            this.TorrentSearchContainer.TabIndex = 13;
             // 
             // torrentsearch
             // 
@@ -306,6 +324,15 @@
             this.torrentsearch.UseVisualStyleBackColor = false;
             this.torrentsearch.Click += new System.EventHandler(this.TorrentSearch);
             // 
+            // MagnetButtonContainer
+            // 
+            this.MagnetButtonContainer.Controls.Add(this.magnetbutton);
+            this.MagnetButtonContainer.Location = new System.Drawing.Point(3, 51);
+            this.MagnetButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
+            this.MagnetButtonContainer.Name = "MagnetButtonContainer";
+            this.MagnetButtonContainer.Size = new System.Drawing.Size(163, 42);
+            this.MagnetButtonContainer.TabIndex = 14;
+            // 
             // magnetbutton
             // 
             this.magnetbutton.AutoSize = true;
@@ -324,6 +351,15 @@
             this.magnetbutton.UseVisualStyleBackColor = false;
             this.magnetbutton.Visible = false;
             this.magnetbutton.Click += new System.EventHandler(this.Magnet);
+            // 
+            // VisitButtonContainer
+            // 
+            this.VisitButtonContainer.Controls.Add(this.visitbutton);
+            this.VisitButtonContainer.Location = new System.Drawing.Point(172, 51);
+            this.VisitButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
+            this.VisitButtonContainer.Name = "VisitButtonContainer";
+            this.VisitButtonContainer.Size = new System.Drawing.Size(163, 42);
+            this.VisitButtonContainer.TabIndex = 15;
             // 
             // visitbutton
             // 
@@ -369,12 +405,13 @@
             this.sourcename.AutoSize = true;
             this.sourcename.BackColor = System.Drawing.Color.Transparent;
             this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
-            this.sourcename.Location = new System.Drawing.Point(141, 182);
-            this.sourcename.MaximumSize = new System.Drawing.Size(350, 50);
+            this.sourcename.Location = new System.Drawing.Point(148, 132);
+            this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
             this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(123, 25);
+            this.sourcename.Size = new System.Drawing.Size(167, 75);
             this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Steam";
+            this.sourcename.Text = "Source: Steam\r\nTrustworthiness: 5/5\r\nQuality: 5/5";
+            this.sourcename.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // realsearchtb
             // 
@@ -414,42 +451,6 @@
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // SteamPageContainer
-            // 
-            this.SteamPageContainer.Controls.Add(this.steampage);
-            this.SteamPageContainer.Location = new System.Drawing.Point(3, 3);
-            this.SteamPageContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.SteamPageContainer.Name = "SteamPageContainer";
-            this.SteamPageContainer.Size = new System.Drawing.Size(163, 42);
-            this.SteamPageContainer.TabIndex = 12;
-            // 
-            // TorrentSearchContainer
-            // 
-            this.TorrentSearchContainer.Controls.Add(this.torrentsearch);
-            this.TorrentSearchContainer.Location = new System.Drawing.Point(172, 3);
-            this.TorrentSearchContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.TorrentSearchContainer.Name = "TorrentSearchContainer";
-            this.TorrentSearchContainer.Size = new System.Drawing.Size(163, 42);
-            this.TorrentSearchContainer.TabIndex = 13;
-            // 
-            // MagnetButtonContainer
-            // 
-            this.MagnetButtonContainer.Controls.Add(this.magnetbutton);
-            this.MagnetButtonContainer.Location = new System.Drawing.Point(3, 51);
-            this.MagnetButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.MagnetButtonContainer.Name = "MagnetButtonContainer";
-            this.MagnetButtonContainer.Size = new System.Drawing.Size(163, 42);
-            this.MagnetButtonContainer.TabIndex = 14;
-            // 
-            // VisitButtonContainer
-            // 
-            this.VisitButtonContainer.Controls.Add(this.visitbutton);
-            this.VisitButtonContainer.Location = new System.Drawing.Point(172, 51);
-            this.VisitButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.VisitButtonContainer.Name = "VisitButtonContainer";
-            this.VisitButtonContainer.Size = new System.Drawing.Size(163, 42);
-            this.VisitButtonContainer.TabIndex = 15;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
@@ -484,9 +485,6 @@
             this.gamedescpanel.ResumeLayout(false);
             this.gamedescpanel.PerformLayout();
             this.gamebtns.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
-            this.nogamesnotif.ResumeLayout(false);
-            this.nogamesnotif.PerformLayout();
             this.SteamPageContainer.ResumeLayout(false);
             this.SteamPageContainer.PerformLayout();
             this.TorrentSearchContainer.ResumeLayout(false);
@@ -495,6 +493,9 @@
             this.MagnetButtonContainer.PerformLayout();
             this.VisitButtonContainer.ResumeLayout(false);
             this.VisitButtonContainer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
+            this.nogamesnotif.ResumeLayout(false);
+            this.nogamesnotif.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
