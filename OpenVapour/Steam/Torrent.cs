@@ -71,7 +71,7 @@ namespace OpenVapour.Steam {
                 Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
                 Name = GetBetween(JSON, "<title>", "</title>");
                 Description = StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", ""));
-                Image = GetBetween(JSON, "src=\"", "\""); Console.WriteLine($"found torrent {Name}!");
+                Image = GetBetween(JSON, "src=\"", "\"");
                 TorrentUrl = GetBetween(JSON, "a href=\"", "\"");
 
                 // fix description unicode bugs
@@ -80,11 +80,8 @@ namespace OpenVapour.Steam {
                 while (!descriptionFixed) {
                     iterations++; if (iterations > 50) break; // prevent infinite loop
                     string unicode = GetBetween(Description, "#", ";");
-                    Console.WriteLine($"patching #{unicode};");
                     if (unicode.Length > 0 && unicode.Length < 6) {
-                        Console.WriteLine("valid patch length!");
                         if (int.TryParse(unicode, out int n)) {
-                            Console.WriteLine($"patched #{unicode}; with {(char)n}");
                             Description = Description.Replace($"#{unicode};", $"{(char)n}");
                         } else descriptionFixed = true; } else descriptionFixed = true; }}}
 

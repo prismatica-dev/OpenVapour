@@ -160,6 +160,10 @@ namespace OpenVapour {
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal async void AddGame(SteamGame game) {
+            if (InvokeRequired) {
+                Invoke((MethodInvoker)delegate { AddGame(game); });
+                return; }
+
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
             List<object> metalist = new List<object> { states, game };
             panel.Image = states[0];
@@ -173,19 +177,28 @@ namespace OpenVapour {
             panel.MouseLeave += GameHoverEnd;
             panel.MouseUp += GameClickEnd;
             store.Controls.Add(panel);
+            Update();
             await LoadGameBitmap(game, panel); }
 
         internal async Task LoadGameBitmap(SteamGame game, PictureBox output) {
             try {
+                if (InvokeRequired) {
+                    Invoke((MethodInvoker)async delegate { await LoadGameBitmap(game, output); });
+                    return; }
                 Bitmap img = await GetShelf(Convert.ToInt32(game.AppId));
-                List<Image> states = new List<Image> {
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
-                output.Image = states[0];
-                List<object> metalist = output.Tag as List<object>;
-                metalist.RemoveAt(0); metalist.Insert(0, states);
-                metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output));
+                Task<Bitmap> shelfTask = GetShelf(Convert.ToInt32(game.AppId));
+                Task cont = shelfTask.ContinueWith((shelf) => {
+                    List<Image> states = new List<Image> {
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
+                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
+                    output.Invoke((MethodInvoker)delegate { 
+                        output.Image = states[0]; 
+                        List<object> metalist = output.Tag as List<object>;
+                        metalist.RemoveAt(0); metalist.Insert(0, states);
+                        metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output));
+                        }); });
+                await cont;
             } catch(Exception ex) { Utilities.HandleException($"LoadGameBitmap(game, panel)", ex); }}
 
         private void GameClick (object sender, EventArgs e) {
@@ -291,12 +304,19 @@ namespace OpenVapour {
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
                 ClearStore(); 
-                foreach (ResultGame game in await SteamCore.GetResults(realsearchtb.Text)) {
+                await GetResults(realsearchtb.Text);
+                /*foreach (ResultGame game in await GetResults(realsearchtb.Text)) {
                     if (!Cache.IsSteamGameCached(game.AppId)) {
-                        if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}}}
+                        if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}*/}}
 
         private void SteamPage_Click(object sender, EventArgs e) => Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
-        private async void AsyncAddGame(int AppId) => AddGame(await GetGame(AppId));
+        public async void AsyncAddGame(int AppId) {
+            Task<SteamGame> getTask = GetGame(AppId);
+            Task cont = getTask.ContinueWith((game) => {
+                AddGame(game.Result);
+            });
+            await cont;
+            /*AddGame(await GetGame(AppId));*/ }
 
         private async void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 

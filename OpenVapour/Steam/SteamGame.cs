@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using static OpenVapour.Steam.Utilities;
 using static OpenVapour.Steam.Cache;
 using OpenVapour.Web;
+using OpenVapour.Steam;
+using System.Windows.Forms;
 
 namespace OpenVapour.SteamPseudoWebAPI {
     public class SteamCore {
@@ -65,20 +67,27 @@ namespace OpenVapour.SteamPseudoWebAPI {
             return suggestions; }
 
         public static async Task<List<ResultGame>> GetResults(string Search, int MaxResults = 10) {
-            List<ResultGame> suggestions = new List<ResultGame>();
+            List<ResultGame> results = new List<ResultGame>();
             int _r = 0;
             try {
+                // applied filter will only return games and software (no dlc or demos)
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&category1=998%2C994");
                 Console.WriteLine("processing results");
                 JSON = JSON.Substring(JSON.IndexOf("[") + 1);
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
                     _r++;
                     Console.WriteLine("adding result,,,");
-                    suggestions.Add(new ResultGame(JSON.Substring(0, JSON.IndexOf('}'))));
-                    Console.WriteLine($"removing result '{suggestions.Last().AppId}' from json,,,");
-                    JSON = JSON.Substring(JSON.IndexOf("}") + 1); }
+                    ResultGame last = new ResultGame(JSON.Substring(0, JSON.IndexOf('}')));
+                    results.Add(last);
+                    Console.WriteLine($"removing result '{last.AppId}' from json,,,");
+                    JSON = JSON.Substring(JSON.IndexOf("}") + 1);
+                    if (!IsSteamGameCached(last.AppId)) {
+                        Main main = null;
+                        Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
+                        main?.Invoke((MethodInvoker)delegate { main.AsyncAddGame(last.AppId);
+                        }); }}
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
-            return suggestions; }
+            return results; }
 
         public static async Task<List<Task<SteamGame>>> ProcessResults(List<ResultGame> Results, bool Basic = true) {
             List<Task<SteamGame>> games = new List<Task<SteamGame>>();

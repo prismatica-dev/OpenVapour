@@ -105,7 +105,6 @@
             this.managesources.TabIndex = 7;
             this.managesources.Text = "Manage Sources";
             this.managesources.UseVisualStyleBackColor = false;
-            this.managesources.Visible = false;
             // 
             // exit
             // 

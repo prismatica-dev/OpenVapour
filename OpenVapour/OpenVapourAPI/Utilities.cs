@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenVapour.Web;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OpenVapour.Steam {
@@ -16,7 +18,6 @@ namespace OpenVapour.Steam {
         private const string repo = "lily-software/OpenVapour";
 
         // Variables
-        internal static readonly WebHeaderCollection headers = new WebHeaderCollection {{ HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" }};
         internal static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         internal static readonly string[] FilterCore = {
             "  ", " ", " />", "/>",
@@ -160,16 +161,14 @@ namespace OpenVapour.Steam {
         /// </summary>
         /// <param name="appid">appid to check</param>
         /// <returns></returns>
-        internal static bool IsDlc(string appid) {
+        internal static async Task<bool> IsDlc(string appid) {
             bool isdlc = false;
             try {
                 if (!Cache.IsBlacklisted(appid)) {
                     if (!appid.Contains(",")) {
-                        WebClient client = new WebClient { Headers = headers };
-                        string data = client.DownloadString("https://store.steampowered.com/api/appdetails/?appids=" + appid + "&filters=basic");
+                        string data = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails/?appids={appid}&filters=basic");
 
                         if (!data.Contains("\"type\":\"game\"")) isdlc = true;
-
                         if (data.Contains("\"success\":\"true\"") && isdlc && !Cache.IsBlacklisted(appid)) Cache.BlacklistID(appid, "DLC Content.");
                     } else { Cache.BlacklistID(appid); isdlc = true; }}
                 else isdlc = true;

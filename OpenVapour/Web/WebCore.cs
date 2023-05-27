@@ -1,7 +1,11 @@
 ﻿using OpenVapour.Steam;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace OpenVapour.Web {
@@ -38,28 +42,48 @@ namespace OpenVapour.Web {
         private static readonly Random rng = new Random();
         public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
-        // web request timeout
-        public const int Timeout = 100;
-        public static DateTime LastTimeout = DateTime.Now;
-        public static async Task<string> GetWebString(string Url) {
-            try {
-                Console.WriteLine($"[0] http get '{Url}'");
-                while ((DateTime.Now - LastTimeout) < TimeSpan.FromMilliseconds(Timeout))
-                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout).TotalMilliseconds) + 10);
-                LastTimeout = DateTime.Now;
+        // web requests
+        public const int Timeout = 25;
+        public static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
 
-                Console.WriteLine($"[1] http prepare '{Url}'");
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
-                req.Method = "GET";
-                req.Timeout = 2000;
-                req.UserAgent = GetRandomUserAgent();
-                req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                Console.WriteLine($"[2] http get '{Url}'");
-                using (Stream memory = (await req.GetResponseAsync()).GetResponseStream()) {
-                    using (StreamReader reader = new StreamReader(memory)) {
-                        Console.WriteLine($"[done] http get '{Url}'");
-                        return reader.ReadToEnd(); }}
-            } catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); return ""; }}
+        public static async Task<string> GetWebString(string Url) {
+            Console.WriteLine($"[0] http get '{Url}'");
+            string baseUrl = GetBaseUrl(Url);
+            if (LastTimeout.ContainsKey(baseUrl)) {
+                while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
+                LastTimeout[baseUrl] = DateTime.Now;
+            } else LastTimeout.Add(baseUrl, DateTime.Now);
+            
+            Console.WriteLine($"[1] http prepare '{Url}'");
+            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(2000) }) {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate"));
+                try {
+                    Console.WriteLine($"[2] http get '{Url}'");
+                    HttpResponseMessage response = await client.GetAsync(Url);
+                    response.EnsureSuccessStatusCode();
+
+                    string content = "";
+                    using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
+                        Stream decompressionStream = null;
+                        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+                            decompressionStream = new GZipStream(decompressedStream, CompressionMode.Decompress);
+                        else if (response.Content.Headers.ContentEncoding.Contains("deflate"))
+                            decompressionStream = new DeflateStream(decompressedStream, CompressionMode.Decompress);
+
+                        // Read the decompressed content as a string
+                        content = await new StreamReader(decompressionStream ?? decompressedStream).ReadToEndAsync(); }
+
+                    // string content = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[done] http get '{Url}'");
+                    return content; }
+                catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}
+            return ""; }
+    
+        public static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
+
         public static string DecodeBlueMediaFiles(string EncodedUrl) {
             Console.WriteLine("decoding " + EncodedUrl);
             EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
