@@ -132,9 +132,9 @@
             this.storeselect.ForeColor = System.Drawing.Color.White;
             this.storeselect.Location = new System.Drawing.Point(3, 0);
             this.storeselect.Name = "storeselect";
-            this.storeselect.Size = new System.Drawing.Size(391, 25);
+            this.storeselect.Size = new System.Drawing.Size(363, 25);
             this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour v1.2.3d — FLOSS Torrent Manager";
+            this.storeselect.Text = "OpenVapour v1.3.0 — FLOSS Torrent Search";
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // searchtextbox

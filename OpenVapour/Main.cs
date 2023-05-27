@@ -18,6 +18,8 @@ using Brushes = System.Drawing.Brushes;
 using Color = System.Drawing.Color;
 using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
 using System.Reflection;
+using static OpenVapour.Steam.TorrentSources;
+using OpenVapour.OpenVapourAPI;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -39,8 +41,11 @@ namespace OpenVapour {
             string LatestTag = Utilities.GetLatestTag();
             if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
             Utilities.CheckAutoUpdateIntegrity();
+            UserSettings.LoadSettings();
+            Size = UserSettings.WindowSize;
+
             Bitmap background = new Bitmap(Width, Height);
-            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), Color.FromArgb(250, 149, 255), Color.FromArgb(173, 101, 255));
+            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
             BackgroundImage = background;
 
@@ -299,9 +304,9 @@ namespace OpenVapour {
             gamepanel.Visible = false;
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Console.WriteLine(_);
-            List<ResultTorrent> torrents = await GetResults(_);
+            List<ResultTorrent> torrents = await GetResults(TorrentSource.PCGamesTorrents, _);
             foreach (ResultTorrent torrent in torrents) await AddTorrent(torrent);
-            List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(_);
+            List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(TorrentSource.PCGamesTorrents, _);
             foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {

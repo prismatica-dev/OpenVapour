@@ -90,47 +90,64 @@ namespace OpenVapour.Steam {
 
         public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
-        public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(string Name) {
+        public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
             List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
             List<string> resulturls = new List<string>();
             try {
-                // check game list (sometimes results provided by pcgt are insufficient)
-                if (GameList.Length == 0)
-                    GameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html"), "<ul>", "</ul>\n<div").Split('\n');
+                switch (Source) { 
+                    case TorrentSource.PCGamesTorrents:
+                        // check game list (sometimes results provided by pcgt are insufficient)
+                        if (GameList.Length == 0)
+                            GameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html"), "<ul>", "</ul>\n<div").Split('\n');
                 
-                // process game list
-                foreach (string game in GameList) {
-                    if (game.StartsWith("<li><a")) {
-                        string name = GetBetween(game, "data-wpel-link=\"internal\">", "</a");
-                        string filtname = FilterAlphanumeric(name.ToLower());
-                        string filtName = FilterAlphanumeric(Name.ToLower());
-                        int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
+                        // process game list
+                        foreach (string game in GameList) {
+                            if (game.StartsWith("<li><a")) {
+                                string name = GetBetween(game, "data-wpel-link=\"internal\">", "</a");
+                                string filtname = FilterAlphanumeric(name.ToLower());
+                                string filtName = FilterAlphanumeric(Name.ToLower());
+                                int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
-                        // really bad backup search algorithm
-                        if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
-                            string url = GetBetween(game, "<a href=\"", "\"");
-                            Console.WriteLine("search result found! " + url);
-                            if (!resulturls.Contains(url))
-                                results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.PCGamesTorrents, url, name)); }}}
-            } catch (Exception ex) { HandleException($"TorrentCore.GetExtendedResults({Name})", ex); }
+                                // really bad backup search algorithm
+                                if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
+                                    string url = GetBetween(game, "<a href=\"", "\"");
+                                    Console.WriteLine("search result found! " + url);
+                                    if (!resulturls.Contains(url))
+                                        results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.PCGamesTorrents, url, name)); }}}
+                    break;
+
+                    case TorrentSource.FitgirlRepacks:
+                    case TorrentSource.Unknown:
+                    default:
+                        // extended search capability not implemented / not needed
+                        break; }
+            } catch (Exception ex) { HandleException($"TorrentCore.GetExtendedResults({Source}, {Name})", ex); }
             return results; }
 
-        public static async Task<List<ResultTorrent>> GetResults(string Name) {
+        public static async Task<List<ResultTorrent>> GetResults(TorrentSource Source, string Name) {
             List<ResultTorrent> results = new List<ResultTorrent>();
             List<string> resulturls = new List<string>();
             try {
-                // scrape just the rss2 feed to avoid cloudflare
-                // pcgamestorrents rss2 feed always returns XML
-                string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
+                switch (Source) {
+                    case TorrentSource.PCGamesTorrents:
+                        // scrape just the rss2 feed to avoid cloudflare
+                        // pcgamestorrents rss2 feed always returns XML
+                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
 
-                string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine($"found {items.Count():N0} torrents!");
-                // skip first non-item result
-                if (items.Count() > 1)
-                    for (int i = 1; i < items.Count(); i++) {
-                        ResultTorrent torrent = new ResultTorrent(items[i]);
-                        results.Add(torrent);
-                        Console.WriteLine("found torrent " + torrent.Url);
-                        resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
-            } catch (Exception ex) { HandleException($"TorrentCore.GetResults({Name})", ex); }
+                        string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
+                        Console.WriteLine($"found {items.Count():N0} torrents!");
+                        // skip first non-item result
+                        if (items.Count() > 1)
+                            for (int i = 1; i < items.Count(); i++) {
+                                ResultTorrent torrent = new ResultTorrent(items[i]);
+                                results.Add(torrent);
+                                Console.WriteLine("found torrent " + torrent.Url);
+                                resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
+                    break; 
+                        
+                    case TorrentSource.Unknown:
+                    default:
+                        // search capability not implemented
+                        break; }
+            } catch (Exception ex) { HandleException($"TorrentCore.GetResults({Source}, {Name})", ex); }
             return results; }}}
