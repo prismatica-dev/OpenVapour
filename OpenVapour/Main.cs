@@ -203,13 +203,14 @@ namespace OpenVapour {
 
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
-            currentgame = game; magnetbutton.Visible = false; torrentsearch.Visible = true; Focus(); 
+            currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true; }
         private void LoadTorrent(ResultTorrent game, Image art) {
-            currenttorrent = game; magnetbutton.Text = "Magnet"; magnetbutton.Visible = true; 
-            torrentsearch.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: PCGamesTorrents"; 
+            currenttorrent = game; magnetbutton.Text = "Magnet"; MagnetButtonContainer.Visible = true; 
+            TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
+            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {TorrentSources.SourceScores[game.Source].Item1}\nQuality: {TorrentSources.SourceScores[game.Source].Item2}"; 
             gameart.Image = art; gamedesc.Text = game.Name + "\n\n" + game.Description; gamepanel.Location = new Point(7, 32); ResizeGameArt();
             gamepanel.Visible = true; gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true; }

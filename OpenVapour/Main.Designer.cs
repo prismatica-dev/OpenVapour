@@ -267,7 +267,7 @@
             this.gamebtns.Controls.Add(this.VisitButtonContainer);
             this.gamebtns.Location = new System.Drawing.Point(146, 51);
             this.gamebtns.Name = "gamebtns";
-            this.gamebtns.Size = new System.Drawing.Size(340, 100);
+            this.gamebtns.Size = new System.Drawing.Size(343, 100);
             this.gamebtns.TabIndex = 9;
             // 
             // SteamPageContainer
@@ -407,6 +407,7 @@
             this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
             this.sourcename.Location = new System.Drawing.Point(148, 132);
             this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
+            this.sourcename.MinimumSize = new System.Drawing.Size(0, 75);
             this.sourcename.Name = "sourcename";
             this.sourcename.Size = new System.Drawing.Size(167, 75);
             this.sourcename.TabIndex = 12;
