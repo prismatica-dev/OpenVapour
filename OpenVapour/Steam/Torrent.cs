@@ -38,7 +38,7 @@ namespace OpenVapour.Steam {
 
                 switch (source) {
                     case TorrentSource.PCGamesTorrents:
-                        ResultTorrent torrent = new ResultTorrent("") {
+                        ResultTorrent torrent = new ResultTorrent(source, "") {
                             JSON = "", Url = Url, Name = Name,
                             Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>"),
                             Image = GetBetween(html, "Download\" src=\"", "\""),
@@ -64,9 +64,10 @@ namespace OpenVapour.Steam {
 
                     case TorrentSource.Unknown:
                     default:
-                        return new ResultTorrent(""); }}
+                        return new ResultTorrent(source, ""); }}
 
-            public ResultTorrent(string JSON) {
+            public ResultTorrent(TorrentSource Source, string JSON) {
+                this.Source = Source;
                 this.JSON = JSON;
                 Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
                 Name = GetBetween(JSON, "<title>", "</title>");
@@ -95,7 +96,7 @@ namespace OpenVapour.Steam {
                     case TorrentSource.PCGamesTorrents:
                         // check game list (sometimes results provided by pcgt are insufficient)
                         if (GameList.Length == 0)
-                            GameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html"), "<ul>", "</ul>\n<div").Split('\n');
+                            GameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html", 10000), "<ul>", "</ul>\n<div").Split('\n');
                 
                         // process game list
                         foreach (string game in GameList) {
@@ -136,7 +137,7 @@ namespace OpenVapour.Steam {
                         // skip first non-item result
                         if (items.Count() > 1)
                             for (int i = 1; i < items.Count(); i++) {
-                                ResultTorrent torrent = new ResultTorrent(items[i]);
+                                ResultTorrent torrent = new ResultTorrent(Source, items[i]);
                                 results.Add(torrent);
                                 Console.WriteLine("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }

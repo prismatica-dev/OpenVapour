@@ -26,7 +26,7 @@ namespace OpenVapour {
         public Main() { InitializeComponent(); }
         public static List<Image> states = new List<Image>();
         private SteamGame currentgame = new SteamGame("");
-        private ResultTorrent currenttorrent = new ResultTorrent("");
+        private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
         private bool gamepanelopen = false;
         private string panelgame = "";
@@ -165,7 +165,7 @@ namespace OpenVapour {
                 return; }
 
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
-            List<object> metalist = new List<object> { states, game };
+            List<object> metalist = new List<object> { states, game, false };
             panel.Image = states[0];
             panel.Tag = metalist;
             Panel popup = CreatePopUp(panel);
@@ -196,6 +196,7 @@ namespace OpenVapour {
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
                         metalist.RemoveAt(0); metalist.Insert(0, states);
+                        metalist[2] = true;
                         metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output));
                         }); });
                 await cont;
@@ -213,6 +214,7 @@ namespace OpenVapour {
                 ResultTorrent game = (ResultTorrent)pbl[1];
                 if (!gamepanelopen) { LoadTorrent(game, pbs[0]); } else if (panelgame != game.Name) ClosePanelTorrent(true, pbl);
             } catch (Exception ex) { Utilities.HandleException($"TorrentClick(sender, e)", ex); }}
+
         private void ResizeGameArt() {
             if (gameart.Image == null) return;
             Image image = gameart.Image;
@@ -225,10 +227,11 @@ namespace OpenVapour {
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true; }
+
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; magnetbutton.Text = "Magnet"; MagnetButtonContainer.Visible = true; 
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {TorrentSources.SourceScores[game.Source].Item1}\nQuality: {TorrentSources.SourceScores[game.Source].Item2}"; 
+            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {TorrentSources.SourceScores[game.Source].Item2}"; 
             gameart.Image = art; gamedesc.Text = game.Name + "\n\n" + game.Description; gamepanel.Location = new Point(7, 32); ResizeGameArt();
             gamepanel.Visible = true; gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true; }
@@ -239,7 +242,7 @@ namespace OpenVapour {
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[1];
-            Panel popup = (Panel)pbl[2];
+            Panel popup = (Panel)pbl[3];
             popup.BringToFront();
 
             if (pb.Location.X > Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
@@ -247,12 +250,13 @@ namespace OpenVapour {
 
             popup.Visible = true;
             hover = true;
-            await Task.Delay(20000);
+            if ((bool)pbl[2]) await Task.Delay(20000);
+            else await Task.Delay(1000);
             popup.Visible = false; }
         private void GameHoverEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[0];
-            Panel popup = (Panel)pbl[2];
+            Panel popup = (Panel)pbl[3];
             popup.Visible = false;
             hover = false; }
         private void GameClickEnd(object sender, EventArgs e) {

@@ -331,6 +331,7 @@
             this.MagnetButtonContainer.Name = "MagnetButtonContainer";
             this.MagnetButtonContainer.Size = new System.Drawing.Size(163, 42);
             this.MagnetButtonContainer.TabIndex = 14;
+            this.MagnetButtonContainer.Visible = false;
             // 
             // magnetbutton
             // 
@@ -348,7 +349,6 @@
             this.magnetbutton.TabIndex = 10;
             this.magnetbutton.Text = "Magnet";
             this.magnetbutton.UseVisualStyleBackColor = false;
-            this.magnetbutton.Visible = false;
             this.magnetbutton.Click += new System.EventHandler(this.Magnet);
             // 
             // VisitButtonContainer
@@ -359,6 +359,7 @@
             this.VisitButtonContainer.Name = "VisitButtonContainer";
             this.VisitButtonContainer.Size = new System.Drawing.Size(163, 42);
             this.VisitButtonContainer.TabIndex = 15;
+            this.VisitButtonContainer.Visible = false;
             // 
             // visitbutton
             // 
@@ -376,7 +377,6 @@
             this.visitbutton.TabIndex = 11;
             this.visitbutton.Text = "View Site";
             this.visitbutton.UseVisualStyleBackColor = false;
-            this.visitbutton.Visible = false;
             // 
             // gamename
             // 

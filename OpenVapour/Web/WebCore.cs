@@ -46,7 +46,7 @@ namespace OpenVapour.Web {
         public const int Timeout = 25;
         public static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
 
-        public static async Task<string> GetWebString(string Url) {
+        public static async Task<string> GetWebString(string Url, int MaxTimeout = 2000) {
             Console.WriteLine($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
@@ -56,7 +56,7 @@ namespace OpenVapour.Web {
             } else LastTimeout.Add(baseUrl, DateTime.Now);
             
             Console.WriteLine($"[1] http prepare '{Url}'");
-            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(2000) }) {
+            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
                 client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
                 client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate"));
@@ -79,6 +79,7 @@ namespace OpenVapour.Web {
                     // string content = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"[done] http get '{Url}'");
                     return content; }
+                catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
                 catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}
             return ""; }
     
