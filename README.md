@@ -4,12 +4,22 @@
   <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
 </div><br>
 
+## Why use OpenVapour?
+For those not well inversed with internet piracy, not getting your device infected can be a real struggle. I have no idea how many viruses I must have downloaded as a kid searching for "free minecraft". OpenVapour aims to change that by making torrenting as simple as possible by scraping the results of reputable torrenting sites for you. No longer will you click on fake ad download buttons or download from a fake domain. The code is all entirely open source so you yourself can see exactly what OpenVapour is doing.
+
+With site specific bypasses and enhancements, OpenVapour is unchallenged in the safety and speed it provides to the user. Of course, you should always use a VPN when using OpenVapour, but we'll handle the rest for you- just make sure you have a safe torrent downloader such as [qBittorrent](https://www.qbittorrent.org/) installed! (Don't use uTorrent! It suffers from the exact same ad and tracker rigged plagues that OpenVapour avoids!)
+
 This tool is in early access! Please report bugs [here!](https://github.com/lily-software/OpenVapour/issues) Additionally, this is a 2 year old project of mine that I recently came back to and improved, there is definitely room for optimisation and as such it may run poorly on low-end systems.
 
 ## Torrent Search Engine
 OpenVapour curates a series of torrent results from multiple reputable game torrenting sites (1.3.0+), or pcgamestorrents (pre-1.3.0). All "url shorteners", popups and ads are all bypassed to provide you with the smoothest experience possible with a beautiful UI.
-### Site-Specific Bypasses
-+ PCGamesTorrents : Better Search Capability, URL Shortener Bypass, Cloudflare Bypass
+### OpenVapour Sources
+Sources are listed and scored so you know who you're torrenting from, and if you should be skeptical about their trustworthiness. But don't just take my word for it, the source code lists the reasons I have scored them the way I have as well as the URL actually used to access the site (no, I'm not stupid enough to fall for fake mirror sites)
+<br>
+`Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
++ Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
++ Seven-Gamers (8 | 7) : Automatic .torrent to Magnet
++ PCGamesTorrents (7 | 8) : Better Search Capability, URL Shortener Bypass, Cloudflare Bypass
 
 ## Torrent Downloading
 **OpenVapour is not a torrent client! An external torrent client capable of interpreting 'magnet' links is required!**
