@@ -15,10 +15,10 @@ namespace OpenVapour.Steam {
         // Trustworthiness ratings are decided based on history and general community view on site
         // Quality ratings are based on easiness to install, DRM, ads, etc
         internal static readonly Dictionary<TorrentSource, Tuple<byte, byte>> SourceScores = new Dictionary<TorrentSource, Tuple<byte, byte>> {
-            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte>(6, 8) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
+            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte>(7, 8) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
             { TorrentSource.FitgirlRepacks, new Tuple<byte, byte>(10, 10) }, // extremely trustworthy lightweight repacks
-            { TorrentSource.SteamRIP, new Tuple<byte, byte>(9, 8) }, // reliable multi-platform games, but lacks torrent links on many
-            { TorrentSource.SevenGamers, new Tuple<byte, byte>(7, 8) }, // trustworthy, but usually uses ISOs detracting from easiness
+            { TorrentSource.SteamRIP, new Tuple<byte, byte>(8, 8) }, // reliable multi-platform games, but lacks torrent links on many
+            { TorrentSource.SevenGamers, new Tuple<byte, byte>(8, 7) }, // trustworthy, but usually uses ISOs detracting from easiness
             { TorrentSource.GOG, new Tuple<byte, byte>(9, 5) }, // trustworthy, but absolutely garbage installers
             { TorrentSource.Unknown, new Tuple<byte, byte>(0, 0) } // always trust sources fabricated from the void
         }; }
