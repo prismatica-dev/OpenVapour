@@ -352,17 +352,8 @@ namespace OpenVapour {
                 magnetbutton.Text = "Queued";
                 Update();
 
-                switch (currenttorrent.Source) {
-                    case TorrentSource.PCGamesTorrents:
-                        magnet = await GetMagnet(currenttorrent.TorrentUrl);
-                        break;
-                    case TorrentSource.FitgirlRepacks:
-                        magnet = currenttorrent.TorrentUrl;
-                        break;
-                    case TorrentSource.Unknown:
-                    default:
-                        MessageBox.Show("[UNKNOWN SOURCE] Please report this error");
-                        break; }
+                magnet = await currenttorrent.GetMagnet();
+
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame.AppId);

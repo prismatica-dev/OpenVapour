@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Policy;
 using System.Threading.Tasks;
 
@@ -38,7 +39,8 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/78.0.4093.147",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/79.0.4143.50",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/92.0.1",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" };
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52",
+            "Mozilla/5.0 (Windows NT 10.0; rv:113.0) Gecko/20100101 Firefox/113.0" };
         private static readonly Random rng = new Random();
         public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
@@ -46,7 +48,8 @@ namespace OpenVapour.Web {
         public const int Timeout = 25;
         public static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
 
-        public static async Task<string> GetWebString(string Url, int MaxTimeout = 2000) {
+        public static async Task<string> GetWebString(string Url, int MaxTimeout = 2000, bool FullSpoof = false) {
+
             Console.WriteLine($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
@@ -56,14 +59,46 @@ namespace OpenVapour.Web {
             } else LastTimeout.Add(baseUrl, DateTime.Now);
             
             Console.WriteLine($"[1] http prepare '{Url}'");
-            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
+            using (HttpClient client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false }) { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate"));
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+
+                if (FullSpoof) {
+                    client.DefaultRequestHeaders.Host = GetBaseUrl(Url).Replace("https://", "").Replace("http://", "");
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("text/html"));
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/xml;q=0.9");
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("image/avif"));
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("image/webp"));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept","*/*;q=0.8");
+                    client.DefaultRequestHeaders.Add("TE", "Trailers");
+
+                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
+                    client.DefaultRequestHeaders.Add("Accept-Language", "en;q=0.5");
+                    if (rng.Next(0, 3) == 1) client.DefaultRequestHeaders.Add("DNT", "1");
+                    client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                    client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+                    client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+                    client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+                    client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
+                    client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1"); }
+
+                Console.WriteLine("Default Headers:");
+                foreach (var header in client.DefaultRequestHeaders)
+                    Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+
                 try {
                     Console.WriteLine($"[2] http get '{Url}'");
                     HttpResponseMessage response = await client.GetAsync(Url);
+                    Console.WriteLine($"[2.1] http get '{Url}'");
                     response.EnsureSuccessStatusCode();
+                    Console.WriteLine($"[2.2] http get '{Url}'");
+
 
                     string content = "";
                     using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {

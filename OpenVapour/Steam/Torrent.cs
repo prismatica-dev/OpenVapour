@@ -70,7 +70,7 @@ namespace OpenVapour.Steam {
                         Name = GetBetween(JSON, "<title>", "</title>");
                         Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                         Image = GetBetween(JSON, "src=\"", "\"");
-                        TorrentUrl = GetBetween(JSON, "a href=\"", "\"");
+                        TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
                     break;
                     
                     case TorrentSource.FitgirlRepacks:
@@ -78,14 +78,46 @@ namespace OpenVapour.Steam {
                         Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
                         Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                         Image = GetBetween(JSON, "src=\"", "\"");
-                        TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}";
+                        TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}"; // direct magnet
+                        break;
+
+                    case TorrentSource.SteamRIP:
+                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                        Name = GetBetween(JSON, "<title>", "</title>");
+                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                        Image = GetBetween(JSON, "<p style=\"text-align: center;\"><a href=\"", "\"");
+                        TorrentUrl = GetBetween(GetBetween(JSON, "clearfix", "</item"), "<p style=\"text-align: center;\"><a href=\"", "\"");
+                        break;
+
+                    case TorrentSource.SevenGamers:
+                        Url = GetBetween(JSON, "<a itemprop=\"url\" href=\"", "\"");
+                        Name = GetBetween(JSON, "title=\"", "\"");
+                        Description = GetBetween(JSON, "<p itemprop=\"description\" class=\"edgtf-post-excerpt\">", "</p>");
+                        Image = GetBetween(JSON, "src=\"", "\"");
+                        TorrentUrl = $"{Url}{(Url.EndsWith("/")?"":"/")}#torrent"; // needs to load page, download page then .torrent
                         break;
 
                     case TorrentSource.Unknown:
                     default:
                         Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
-                        break;
-                    }}}
+                        break; }}
+            
+            public async Task<string> GetMagnet() {
+                switch (Source) {
+                    case TorrentSource.PCGamesTorrents:
+                        return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
+
+                    case TorrentSource.FitgirlRepacks:
+                        return TorrentUrl;
+
+                    case TorrentSource.SevenGamers:
+                        return $"https://www.seven-gamers.com/fm/{GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl), "<a class=\"maxbutton-2 maxbutton maxbutton-torrent\" target=\"_blank\" rel=\"nofollow noopener\" href=\"", "\"")), "<a class=\"btn btn-primary main-btn py-3 d-flex w-100\" href=\"", "\"")}";
+
+                    case TorrentSource.Unknown:
+                    default:
+                        throw new Exception($"Torrent source '{TorrentUrl}' is unknown or unsupported"); }}}
+
+        public static string MagnetFromTorrent(byte[] TorrentFile) => $"magnet:?xt=urn:btih:{Convert.ToBase64String(TorrentFile)}";
 
         public static string FixRSSUnicode(string Content) {
             bool Fixed = false;
@@ -101,8 +133,6 @@ namespace OpenVapour.Steam {
                         Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
                     } else Fixed = true; } else Fixed = true; }
             return Content; }
-
-        public static async Task<string> GetMagnet(string EncodedUrl) => GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(EncodedUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
         public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
             List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
@@ -145,7 +175,7 @@ namespace OpenVapour.Steam {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
                         // scrape the rss2 feed to avoid cloudflare
-                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/");
+                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                         Console.WriteLine($"[PCGT] found {items.Count():N0} torrents!");
 
@@ -160,16 +190,47 @@ namespace OpenVapour.Steam {
                         
                     case TorrentSource.FitgirlRepacks:
                         string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
-                        Console.WriteLine(fitgirlrss);
                         string[] fitgirlitems = fitgirlrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                         Console.WriteLine($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
-
+                        
+                        // skip first non-item result
                         if (fitgirlitems.Count() > 1)
                             for (int i = 1; i < fitgirlitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
                                 results.Add(torrent);
                                 Console.WriteLine("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
+                        break;
+
+                    case TorrentSource.SteamRIP:
+                        break;
+                        // no url shortener bypass implemented yet
+                        string steamriprss = await WebCore.GetWebString($"https://steamrip.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
+                        string[] steamripitems = steamriprss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                        // skip first non-item result
+                        if (steamripitems.Count() > 1)
+                            for (int i = 1; i < steamripitems.Count(); i++) {
+                                if (steamripitems[i].Contains("TORRENT")) {
+                                    ResultTorrent torrent = new ResultTorrent(Source, steamripitems[i]);
+                                    results.Add(torrent);
+                                    Console.WriteLine("found torrent " + torrent.Url);
+                                    resulturls.Add(GetBetween(steamripitems[i], "\t<link>", "</link>")); }}
+                        break;
+
+                    case TorrentSource.SevenGamers:
+                        break;
+                        // seven-gamers cannot be supported using TLS 1.2
+                        string sevengamershtml = await WebCore.GetWebString($"https://www.seven-gamers.com/", 5000, false);
+                        string[] sevengamersitems = sevengamershtml.Split(new string[] { "<div class=\"edgtf-post-image\">" }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                        // skip first non-item result
+                        if (sevengamersitems.Count() > 1)
+                            for (int i = 1; i < sevengamersitems.Count(); i++) {
+                                ResultTorrent torrent = new ResultTorrent(Source, sevengamersitems[i]);
+                                results.Add(torrent);
+                                Console.WriteLine("found torrent " + torrent.Url);
+                                resulturls.Add(GetBetween(sevengamersitems[i], "<a itemprop=\"url\" href=\"", "\"")); }
                         break;
 
                     case TorrentSource.Unknown:
