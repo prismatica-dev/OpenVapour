@@ -4,6 +4,11 @@
   <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
 </div><br>
 
+## Why use OpenVapour?
+For those not well inversed with internet piracy, not getting your device infected can be a real struggle. I have no idea how many viruses I must have downloaded as a kid searching for "free minecraft". OpenVapour aims to change that by making torrenting as simple as possible by scraping the results of reputable torrenting sites for you. No longer will you click on fake ad download buttons or download from a fake domain. The code is all entirely open source so you yourself can see exactly what OpenVapour is doing.
+
+With site specific bypasses and enhancements, OpenVapour is unchallenged in the safety and speed it provides to the user. Of course, you should always use a VPN when using OpenVapour, but we'll handle the rest for you- just make sure you have a safe torrent downloader such as [qBittorrent](https://www.qbittorrent.org/) installed! (Don't use uTorrent! It suffers from the exact same ad and tracker rigged plagues that OpenVapour avoids!)
+
 This tool is in early access! Please report bugs [here!](https://github.com/lily-software/OpenVapour/issues) Additionally, this is a 2 year old project of mine that I recently came back to and improved, there is definitely room for optimisation and as such it may run poorly on low-end systems.
 
 ## Torrent Search Engine
