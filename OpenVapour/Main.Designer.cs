@@ -219,9 +219,9 @@
             this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
             this.sourcename.MinimumSize = new System.Drawing.Size(0, 75);
             this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(167, 75);
+            this.sourcename.Size = new System.Drawing.Size(185, 75);
             this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Steam\r\nTrustworthiness: 5/5\r\nQuality: 5/5";
+            this.sourcename.Text = "Source: Unknown\r\nTrustworthiness: 10/10\r\nQuality: 10/10";
             this.sourcename.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // gamedescpanel
@@ -450,8 +450,9 @@
             this.store.TabIndex = 2;
             this.store.Visible = false;
             this.store.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
-            this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
+            this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             // 
             // Main
             // 

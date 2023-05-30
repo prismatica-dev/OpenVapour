@@ -243,9 +243,12 @@ namespace OpenVapour {
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true; }
 
         private void LoadTorrent(ResultTorrent game, Image art) {
-            currenttorrent = game; magnetbutton.Text = "Magnet"; MagnetButtonContainer.Visible = true; 
+            currenttorrent = game; 
+            if (game.Source != TorrentSource.KaOs) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
+            else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
+            MagnetButtonContainer.Visible = true; 
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {game.Source}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
+            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
@@ -265,15 +268,18 @@ namespace OpenVapour {
 
             popup.Visible = true;
             hover = true;
+            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
             if ((bool)pbl[2]) await Task.Delay(20000);
             else await Task.Delay(1000);
-            popup.Visible = false; }
+            popup.Visible = false;
+            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
         private void GameHoverEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[0];
             Panel popup = (Panel)pbl[3];
             popup.Visible = false;
-            hover = false; }
+            hover = false;
+            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
         private void GameClickEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> _, out List<Image> pbs);
             if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
@@ -363,8 +369,11 @@ namespace OpenVapour {
         private async void Magnet(object sender, EventArgs e) {
             string magnet = "";
             try {
-                magnetbutton.Text = "Queued";
+                magnetbutton.Text = "Fetching";
                 Update();
+                if (currenttorrent.Source == TorrentSource.KaOs) {
+                    Process.Start(currenttorrent.Url);
+                    return; }
 
                 magnet = await currenttorrent.GetMagnet();
 
@@ -376,7 +385,8 @@ namespace OpenVapour {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
-                    magnetbutton.Text = "Success"; }
+                    magnetbutton.Text = "Success"; 
+                    Cache.HomepageGame(currentgame); }
             } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Open Failed"; }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();
@@ -403,11 +413,11 @@ namespace OpenVapour {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
-            Console.WriteLine("uwu!");
             if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
             else {
                 LockWindowUpdate(IntPtr.Zero);
                 store.Update();
                 if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }}
         private void BackgroundTearingFix(object sender, MouseEventArgs e) {
-            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }}}
+            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+        private void BackgroundTearingFix(object sender, EventArgs e) {}}}

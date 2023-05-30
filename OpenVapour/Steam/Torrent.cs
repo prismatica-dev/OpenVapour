@@ -6,10 +6,11 @@ using static OpenVapour.Steam.Utilities;
 using OpenVapour.Web;
 using static OpenVapour.Steam.TorrentSources;
 using System.Windows.Forms.VisualStyles;
+using System.Windows;
 
 namespace OpenVapour.Steam {
     internal class TorrentSources {
-        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs }
+        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs, Crackhub }
 
         // Source Ratings
         // Name, Trustworthiness, Quality
@@ -24,7 +25,37 @@ namespace OpenVapour.Steam {
             { TorrentSource.Dodi, new Tuple<byte, byte>(9, 9) }, // trustworthy repacks
             { TorrentSource.KaOs, new Tuple<byte, byte>(10, 9) }, // trustworthy repacks
             { TorrentSource.Unknown, new Tuple<byte, byte>(0, 0) } // always trust sources fabricated from the void
-        }; }
+        }; 
+        
+        internal static string GetSourceName(TorrentSource Source) {
+            switch (Source) {
+                case TorrentSource.PCGamesTorrents:
+                    // fully integrated
+                    return "pcgamestorrents.com";
+                case TorrentSource.FitgirlRepacks:
+                    // fully integrated
+                    return "fitgirl-repacks.site";
+                case TorrentSource.SteamRIP:
+                    // pending (likely) removal
+                    return "steamrip.com";
+                case TorrentSource.SevenGamers:
+                    // pending TLS fix for integration
+                    return "seven-gamers.com";
+                case TorrentSource.KaOs:
+                    // pending url shortener bypass
+                    return "kaoskrew.org";
+                case TorrentSource.Dodi:
+                    // pending integration
+                    return "dodi-repacks.site";
+                case TorrentSource.GOG:
+                    // pending investigation for integration
+                    return "freegogpcgames.com";
+                case TorrentSource.Crackhub:
+                    // pending investigation for integration
+                    return "crackhub.site";
+                case TorrentSource.Unknown:
+                default:
+                    return "Unknown"; }}}
 
     internal class Torrent {
         public static string[] PCGTGameList = new string[] { };
@@ -63,18 +94,38 @@ namespace OpenVapour.Steam {
                             return torrent;
 
                         case TorrentSource.KaOs:
+                            // KaOs is a forum where uploaders use various formats. trying to introduce compatibility with these formats is hell.
                             string desc = "";
                             string img = "";
+                            string trurl = "";
+
+                            // description
                             if (html.Contains("<blockquote class=\"uncited\"><div>"))
-                                desc = GetBetween(html, "<blockquote class=\"uncited\"><div>", "</div>");
-                            if (html.Contains("<img src=\"https://i.ibb.co\""))
+                                desc = GetBetween(html, "<blockquote class=\"uncited\"><div>", "</div>").Replace("\\/", "/");
+
+                            // image
+                            if (html.Contains("class=\"postimage\""))
+                                img = GetBetween(html, "<img src=\"", "\" class=\"postimage\"");
+                            if (html.Contains("<img src=\"https://i.ibb.co\"") && img.Length == 0)
                                 img = $"https://i.ibb.co{GetBetween(html, "<img src=\"https://i.ibb.co", "\"")}";
+                            if (html.Contains(".png") && img.Length == 0)
+                                img = $"{GetBetween(html, "src=\"", ".png\"")}";
+                            if (html.Contains(".jpg") && img.Length == 0)
+                                img = $"{GetBetween(html, "src=\"", ".jpg\"")}";
+
+                            // magnet url
+                            trurl = GetBetween(html.Substring(Math.Max(0, html.IndexOf("Filehost Mirrors"))), "<a href=\"", "\"");
+                            if (trurl.Length == 0) {
+                                string[] lineHtml = html.Split('\n');
+                                foreach (string line in lineHtml)
+                                    if ((line.ToLower().Contains("magnet") || line.ToLower().Contains("torrent")) && line.ToLower().Contains("href"))
+                                        trurl = GetBetween(line, "href=\"", "\""); }
 
                             ResultTorrent t = new ResultTorrent(source, "") {
                                 JSON = "", Url = Url, Name = Name,
                                 Description = desc, // not all posts have this
                                 Image = img, // chances are not all posts have this either
-                                TorrentUrl = GetBetween(html.Substring(Math.Max(0, html.IndexOf("Filehost Mirrors"))), "<a href=\"", "\"") };
+                                TorrentUrl = trurl };
                             return t;
 
                         case TorrentSource.Unknown:
@@ -135,6 +186,11 @@ namespace OpenVapour.Steam {
                     case TorrentSource.SevenGamers:
                         return $"https://www.seven-gamers.com/fm/{GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl), "<a class=\"maxbutton-2 maxbutton maxbutton-torrent\" target=\"_blank\" rel=\"nofollow noopener\" href=\"", "\"")), "<a class=\"btn btn-primary main-btn py-3 d-flex w-100\" href=\"", "\"")}";
 
+                    case TorrentSource.KaOs:
+                        // despite all my rage, even if held at gunpoint i would refuse to try to find a stupid linkvertise bypass
+                        // it will just force you to the site instead
+                        return Url;
+
                     case TorrentSource.Unknown:
                     default:
                         throw new Exception($"Torrent source '{TorrentUrl}' is unknown or unsupported"); }}}
@@ -154,7 +210,7 @@ namespace OpenVapour.Steam {
                     if (int.TryParse(unicode, out int n)) {
                         Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
                     } else Fixed = true; } else Fixed = true; }
-            return Content; }
+            return Content.Replace("\\/", "/"); }
 
         public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
             List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
@@ -209,19 +265,22 @@ namespace OpenVapour.Steam {
                         foreach (string game in KaOSGameList) {
                             string rawname = GetBetween(game, "class=\"postlink\">", "</a>");
                             string name = rawname;
-                            if (rawname.Contains("MULT")) name = GetBetween($"a{name}", "a", "MULT");
+                            if (rawname.Contains(".v")) {
+                                string _ = rawname.Substring(rawname.IndexOf(".v") + 2, 1);
+                                if (_.ToLower() == _.ToUpper()) name = GetBetween($"a{name}", "a", ".v"); }
+                            else if (rawname.Contains("MULT")) name = GetBetween($"a{name}", "a", "MULT");
                             else if (rawname.Contains("REPACK")) name = GetBetween($"a{name}", "a", "REPACK");
                             name = name.Replace(".", " ").Trim();
                             if (name.Length == 0) continue;
 
-                            Console.WriteLine($"found {name}");
+                            // Console.WriteLine($"found {name}");
                             string filtname = FilterAlphanumeric(name.ToLower());
                             int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
-                            // really bad backup search algorithm
-                            if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
+                            // KaOs labels things annoyingly, meaning more unrelated results
+                            if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 3 && filtname.Length >= 4 && filtName.Length >= 4)) {
                                 string url = GetBetween(game, "<a href=\"", "\"");
-                                Console.WriteLine("search result found! " + url);
+                                Console.WriteLine($"[KaOs] search result found! {url}");
                                 if (!resulturls.Contains(url))
                                 results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.KaOs, url, name)); }}
                         break;
