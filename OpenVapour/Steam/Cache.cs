@@ -26,8 +26,12 @@ namespace OpenVapour.Steam {
         internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(game.ApiJSON));
         internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
 
-        internal static void HomepageGame(string AppId) {
-            CheckCache(); if (AppId.Length > 0) File.WriteAllText($"{DedicatedStorage}\\Games\\{AppId}", ""); }
+        internal static void HomepageGame(SteamGame game) {
+            CheckCache(); 
+            if (game == null) return;
+            if (game.AppId.Length == 0) return;
+            CacheSteamGame(game);
+            File.WriteAllText($"{DedicatedStorage}\\Games\\{game.AppId}", ""); }
         internal static void BlacklistID(string AppId, string Reason = "") {
             CheckCache(); if (AppId.Length > 0) File.WriteAllText($"{DedicatedStorage}\\Blacklist\\{AppId}", Reason == ""?"Blacklist reason not provided.":$"Blacklisted for: {Reason}"); }
         internal static void WhitelistID(string AppId) {
@@ -37,8 +41,13 @@ namespace OpenVapour.Steam {
             CheckCache();
             try {
                 if (File.Exists($"{DedicatedCache}\\Games\\{AppId}")) {
-                    string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
-                    SteamGame game = new SteamGame(cached);
-                    return game; }
-            } catch (Exception ex) { HandleException($"LoadCachedSteamGame({AppId}", ex); File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
-            return new SteamGame(AppId.ToString()); }}}
+                    if (DateTime.Now - File.GetLastWriteTime($"{DedicatedCache}\\Games\\{AppId}") > TimeSpan.FromDays(.8d))
+                        File.Delete($"{DedicatedCache}\\Games\\{AppId}");
+                    else {
+                        string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
+                        SteamGame game = new SteamGame(cached);
+                        return game; }}
+            } catch (Exception ex) { 
+                HandleException($"LoadCachedSteamGame({AppId}", ex); 
+                File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
+            return null; }}}

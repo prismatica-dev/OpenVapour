@@ -21,6 +21,7 @@ using System.Reflection;
 using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
 using System.Runtime.ExceptionServices;
+using System.Runtime.CompilerServices;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -316,13 +317,12 @@ namespace OpenVapour {
                         if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}*/}}
 
         private void SteamPage_Click(object sender, EventArgs e) => Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
-        public async void AsyncAddGame(int AppId) {
-            Task<SteamGame> getTask = GetGame(AppId);
-            Task cont = getTask.ContinueWith((game) => {
-                AddGame(game.Result);
-            });
-            await cont;
-            /*AddGame(await GetGame(AppId));*/ }
+
+        internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
+            Task<SteamGame> game = GetGame(AppId, Basic, Cache);
+            Task addgame = game.ContinueWith((result) => {
+                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
+            await addgame; }
 
         private async void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
@@ -343,7 +343,19 @@ namespace OpenVapour {
                 });
                 await gettask; }
 
+            foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
+                Task gettask = getresults.ContinueWith(async (results) => {
+                    foreach (Task<ResultTorrent> torrenttask in results.Result) {
+                        Task individualloading = torrenttask.ContinueWith((resulttorrent) => {
+                            Application.OpenForms[0].Invoke((MethodInvoker)async delegate { await AddTorrent(resulttorrent.Result); });
+                        });
+                        await individualloading; }});
+                await gettask; }
+
             List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(TorrentSource.PCGamesTorrents, _);
+            foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent);
+            ttorrents = await GetExtendedResults(TorrentSource.KaOs, _);
             foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent); }
 
         private async void Magnet(object sender, EventArgs e) {
@@ -356,22 +368,33 @@ namespace OpenVapour {
 
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
-                Cache.HomepageGame(currentgame.AppId);
+                Cache.HomepageGame(currentgame);
             } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copy Failed"; }
             try {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
-                    Process.Start(magnet); // Process.Start will throw an exception if no magnet-capable applications are installed
+                    Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
                     magnetbutton.Text = "Success"; }
             } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Open Failed"; }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
-        private async void MainShown(object sender, EventArgs e) {
-            store.Visible = true; toolbar.Visible = true; if (Directory.GetFiles(Utilities.RoamingAppData + "\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
-            foreach (string file in Directory.GetFiles(Utilities.RoamingAppData + "\\lily.software\\OpenVapour\\Storage\\Games")) {
-                try { AddGame(await GetGame(Convert.ToInt32(file.Substring(file.LastIndexOf("\\") + 1)))); } catch (Exception ex) { Utilities.HandleException($"MainShown(sender, e)", ex); }}
-            else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }
+        private async void LoadLibrary() {
+            if (Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
+                foreach (string file in Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
+                    try { 
+                        int id = Convert.ToInt32(file.Substring(file.LastIndexOf("\\") + 1));
+                        if (Cache.IsSteamGameCached(id)) { 
+                            SteamGame cached = Cache.LoadCachedSteamGame(id);
+                            if (cached != null) AddGame(Cache.LoadCachedSteamGame(id));
+                            else AsyncAddGame(id, false, true); }
+                        else AsyncAddGame(id, false, true); }
+                    catch (Exception ex) { Utilities.HandleException($"LoadLibrary()", ex); }}
+            else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
+
+        private void MainShown(object sender, EventArgs e) {
+            store.Visible = true; toolbar.Visible = true; 
+            LoadLibrary();
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
             textboxcursor.Start(); }}}

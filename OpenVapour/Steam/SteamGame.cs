@@ -99,8 +99,12 @@ namespace OpenVapour.SteamPseudoWebAPI {
             } catch (Exception ex) { HandleException($"SteamCore.ProcessResults(List<ResultGame>)", ex); }
             return games; }
 
-        public static async Task<SteamGame> GetGame(int AppId, bool Basic = false) {
+        public static async Task<SteamGame> GetGame(int AppId, bool Basic = false, bool Cache = false) {
             Console.WriteLine($"getting game '{AppId}' from steamapi");
             string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
             Console.WriteLine("returning relevant json,,,");
-            return new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8)); }}}
+            if (Cache) {
+                SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
+                CacheSteamGame(game);
+                return game;
+            } else return new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8)); }}}
