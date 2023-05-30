@@ -34,12 +34,12 @@
             this.exit = new System.Windows.Forms.Button();
             this.storeselect = new System.Windows.Forms.Label();
             this.searchtextbox = new System.Windows.Forms.Panel();
-            this.store = new System.Windows.Forms.FlowLayoutPanel();
             this.popuppanel = new System.Windows.Forms.Panel();
             this.popupdesc = new System.Windows.Forms.Label();
             this.popuptitle = new System.Windows.Forms.Label();
             this.popupart = new System.Windows.Forms.PictureBox();
             this.gamepanel = new System.Windows.Forms.Panel();
+            this.sourcename = new System.Windows.Forms.Label();
             this.gamedescpanel = new System.Windows.Forms.Panel();
             this.gamedesc = new System.Windows.Forms.Label();
             this.closemenu = new System.Windows.Forms.Label();
@@ -54,10 +54,10 @@
             this.visitbutton = new System.Windows.Forms.Button();
             this.gamename = new System.Windows.Forms.Label();
             this.gameart = new System.Windows.Forms.PictureBox();
-            this.sourcename = new System.Windows.Forms.Label();
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
+            this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -147,18 +147,6 @@
             this.searchtextbox.TabIndex = 5;
             this.searchtextbox.Click += new System.EventHandler(this.Searchtextbox_Click);
             // 
-            // store
-            // 
-            this.store.AutoScroll = true;
-            this.store.BackColor = System.Drawing.Color.Transparent;
-            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.store.Location = new System.Drawing.Point(0, 25);
-            this.store.Name = "store";
-            this.store.Size = new System.Drawing.Size(11, 487);
-            this.store.TabIndex = 2;
-            this.store.Visible = false;
-            this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
-            // 
             // popuppanel
             // 
             this.popuppanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -221,6 +209,20 @@
             this.gamepanel.Size = new System.Drawing.Size(498, 464);
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
+            // 
+            // sourcename
+            // 
+            this.sourcename.AutoSize = true;
+            this.sourcename.BackColor = System.Drawing.Color.Transparent;
+            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
+            this.sourcename.Location = new System.Drawing.Point(148, 132);
+            this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
+            this.sourcename.MinimumSize = new System.Drawing.Size(0, 75);
+            this.sourcename.Name = "sourcename";
+            this.sourcename.Size = new System.Drawing.Size(167, 75);
+            this.sourcename.TabIndex = 12;
+            this.sourcename.Text = "Source: Steam\r\nTrustworthiness: 5/5\r\nQuality: 5/5";
+            this.sourcename.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // gamedescpanel
             // 
@@ -399,20 +401,6 @@
             this.gameart.TabIndex = 5;
             this.gameart.TabStop = false;
             // 
-            // sourcename
-            // 
-            this.sourcename.AutoSize = true;
-            this.sourcename.BackColor = System.Drawing.Color.Transparent;
-            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
-            this.sourcename.Location = new System.Drawing.Point(148, 132);
-            this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
-            this.sourcename.MinimumSize = new System.Drawing.Size(0, 75);
-            this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(167, 75);
-            this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Steam\r\nTrustworthiness: 5/5\r\nQuality: 5/5";
-            this.sourcename.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-            // 
             // realsearchtb
             // 
             this.realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -451,12 +439,26 @@
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // store
+            // 
+            this.store.AutoScroll = true;
+            this.store.BackColor = System.Drawing.Color.Transparent;
+            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.store.Location = new System.Drawing.Point(0, 25);
+            this.store.Name = "store";
+            this.store.Size = new System.Drawing.Size(11, 487);
+            this.store.TabIndex = 2;
+            this.store.Visible = false;
+            this.store.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
+            this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
+            this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(800, 512);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);
@@ -474,6 +476,7 @@
             this.TransparencyKey = System.Drawing.Color.Snow;
             this.Load += new System.EventHandler(this.Main_Load);
             this.Shown += new System.EventHandler(this.MainShown);
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             this.toolbar.ResumeLayout(false);
             this.toolbar.PerformLayout();
@@ -503,7 +506,7 @@
 
         #endregion
         private System.Windows.Forms.Panel toolbar;
-        private System.Windows.Forms.FlowLayoutPanel store;
+        private OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel store;
         private System.Windows.Forms.Label storeselect;
         private System.Windows.Forms.Panel popuppanel;
         private System.Windows.Forms.Label popupdesc;

@@ -241,7 +241,7 @@ namespace OpenVapour.Steam {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
                         // scrape the rss2 feed to avoid cloudflare
-                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
+                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                         Console.WriteLine($"[PCGT] found {items.Count():N0} torrents!");
 
@@ -255,7 +255,7 @@ namespace OpenVapour.Steam {
                     break; 
                         
                     case TorrentSource.FitgirlRepacks:
-                        string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
+                        string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] fitgirlitems = fitgirlrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                         Console.WriteLine($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
                         

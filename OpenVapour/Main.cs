@@ -20,8 +20,8 @@ using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
 using System.Reflection;
 using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
-using System.Runtime.ExceptionServices;
-using System.Runtime.CompilerServices;
+using Graphics = OpenVapour.OpenVapourAPI.Graphics;
+using System.Runtime.InteropServices;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -53,12 +53,13 @@ namespace OpenVapour {
 
             Bitmap img = new Bitmap(150, 225);
             states = new List<Image> {
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
-                Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
+                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 0, 0)),
+                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 117, 225)),
+                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 225, 177)) };
 
             store.Location = new Point(0, 25);
             store.Size = new Size(Width + SystemInformation.VerticalScrollBarWidth, Height - 25);
+
             DrawSearchBox(sender, e); }
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -127,11 +128,15 @@ namespace OpenVapour {
 
         internal void ClearStore() => store.Controls.Clear();
 
-        internal async Task AddTorrent(ResultTorrent torrent) => await AddTorrent(Task.FromResult(torrent));
-        internal async Task AddTorrent(Task<ResultTorrent> torrenttask) {
-            ResultTorrent torrent = await torrenttask;
+        internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
+            Task add = torrenttask.ContinueWith((result) => {
+                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); 
+            await add; }
+
+        internal void AddTorrent(ResultTorrent torrent) {
             PictureBox panel = new PictureBox { Size = new Size(225, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
             try {
+                // fetch image
                 Image img = new Bitmap(1, 1);
                 if (torrent.Image.Length > 0)
                     if (Cache.IsBitmapCached(torrent.Url)) img = Cache.GetCachedBitmap(torrent.Url);
@@ -141,11 +146,18 @@ namespace OpenVapour {
                         MemoryStream ms = new MemoryStream(bytes);
                         img = Image.FromStream(ms);
                         Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
-                // green states for torrents
+
+                // resize panel to appropriate proportions
+                float MaximumSize = Math.Max(img.Width, img.Height);
+                panel.Size = new Size(
+                    Math.Max((int)Math.Round(img.Width / MaximumSize * 225), 150),
+                    Math.Max((int)Math.Round(img.Height / MaximumSize * 225), 150));
+
+                // green labelled states for torrents
                 List<Image> states = new List<Image> {
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 207, 61)), // passive state
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 255, 74)), // click state
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 33, 236, 92)) }; // hover state
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 207, 61), 20, Font, torrent.Source.ToString()), // passive state
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 255, 74), 20, Font, torrent.Source.ToString()), // click state
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 33, 236, 92), 20, Font, torrent.Source.ToString()) }; // hover state
                 List<object> metalist = new List<object> { states, torrent, true };
                 panel.Image = states[0];
                 panel.Tag = metalist;
@@ -161,7 +173,7 @@ namespace OpenVapour {
                 Update(); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
-        internal async void AddGame(SteamGame game) {
+        internal void AddGame(SteamGame game) {
             if (InvokeRequired) {
                 Invoke((MethodInvoker)delegate { AddGame(game); });
                 return; }
@@ -180,20 +192,20 @@ namespace OpenVapour {
             panel.MouseUp += GameClickEnd;
             store.Controls.Add(panel);
             Update();
-            await LoadGameBitmap(game, panel); }
+            LoadGameBitmap(game, panel); }
 
-        internal async Task LoadGameBitmap(SteamGame game, PictureBox output) {
+        internal async void LoadGameBitmap(SteamGame game, PictureBox output) {
             try {
                 if (InvokeRequired) {
-                    Invoke((MethodInvoker)async delegate { await LoadGameBitmap(game, output); });
+                    Invoke((MethodInvoker)delegate { LoadGameBitmap(game, output); });
                     return; }
                 Bitmap img = await GetShelf(Convert.ToInt32(game.AppId));
                 Task<Bitmap> shelfTask = GetShelf(Convert.ToInt32(game.AppId));
                 Task cont = shelfTask.ContinueWith((shelf) => {
                     List<Image> states = new List<Image> {
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 0, 0, 0)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 117, 225)),
-                    Graphics.Shadow.AddOuterShadow(img, Color.FromArgb(125, 117, 225, 177)) };
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 0, 0)),
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 117, 225)),
+                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 225, 177)) };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -324,7 +336,7 @@ namespace OpenVapour {
                 Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
             await addgame; }
 
-        private async void TorrentSearch(object sender, EventArgs e) {
+        private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
             AddGame(currentgame);
             gamepanel.Visible = false;
@@ -339,24 +351,14 @@ namespace OpenVapour {
                 Task<List<ResultTorrent>> getresults = GetResults(source, _);
                 Task gettask = getresults.ContinueWith((results) => {
                     foreach (ResultTorrent torrent in results.Result)
-                        Application.OpenForms[0].Invoke((MethodInvoker)async delegate { await AddTorrent(torrent); });
-                });
-                await gettask; }
+                        Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(torrent); });
+                }); }
 
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                 Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                 Task gettask = getresults.ContinueWith(async (results) => {
                     foreach (Task<ResultTorrent> torrenttask in results.Result) {
-                        Task individualloading = torrenttask.ContinueWith((resulttorrent) => {
-                            Application.OpenForms[0].Invoke((MethodInvoker)async delegate { await AddTorrent(resulttorrent.Result); });
-                        });
-                        await individualloading; }});
-                await gettask; }
-
-            List<Task<ResultTorrent>> ttorrents = await GetExtendedResults(TorrentSource.PCGamesTorrents, _);
-            foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent);
-            ttorrents = await GetExtendedResults(TorrentSource.KaOs, _);
-            foreach (Task<ResultTorrent> torrent in ttorrents) await AddTorrent(torrent); }
+                        await AsyncAddTorrent(torrenttask); }}); }}
 
         private async void Magnet(object sender, EventArgs e) {
             string magnet = "";
@@ -379,7 +381,7 @@ namespace OpenVapour {
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
-        private async void LoadLibrary() {
+        private void LoadLibrary() {
             if (Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
                 foreach (string file in Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
                     try { 
@@ -397,4 +399,15 @@ namespace OpenVapour {
             LoadLibrary();
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
-            textboxcursor.Start(); }}}
+            textboxcursor.Start(); }
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool LockWindowUpdate(IntPtr hWnd);
+        private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
+            Console.WriteLine("uwu!");
+            if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
+            else {
+                LockWindowUpdate(IntPtr.Zero);
+                store.Update();
+                if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }}
+        private void BackgroundTearingFix(object sender, MouseEventArgs e) {
+            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }}}

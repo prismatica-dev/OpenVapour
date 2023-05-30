@@ -73,7 +73,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\Shadow.cs" />
+    <Compile Include="OpenVapourAPI\Graphics.cs" />
+    <Compile Include="OpenVapourAPI\FixedFlowLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OpenVapourAPI\FixedFlowLayoutPanel.Designer.cs">
+      <DependentUpon>FixedFlowLayoutPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="OpenVapourAPI\UserSettings.cs" />
     <Compile Include="Steam\Cache.cs" />
     <Compile Include="Steam\Torrent.cs" />
