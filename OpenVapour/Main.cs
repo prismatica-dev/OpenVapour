@@ -240,7 +240,8 @@ namespace OpenVapour {
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
-            gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true; }
+            gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; 
@@ -252,7 +253,8 @@ namespace OpenVapour {
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
-            gamepanel.BringToFront(); gamepanelopen = true; }
+            gamepanel.BringToFront(); gamepanelopen = true;
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
         private void GameClickStart(object sender, MouseEventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out _, out List<Image> pbs);
@@ -297,7 +299,8 @@ namespace OpenVapour {
             time.Tick += delegate {
                 if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
                 else if (OpenNext) { LoadGame(game, pbs[0]); panelgame = ""; time.Enabled = false; }
-                else { panelgame = ""; time.Enabled = false; }};
+                else { panelgame = ""; time.Enabled = false; }
+                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));};
             time.Enabled = true; }
 
         private void ClosePanelTorrent(bool OpenNext, List<object> List) {
