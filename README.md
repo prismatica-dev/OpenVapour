@@ -14,12 +14,26 @@ This tool is in early access! Please report bugs [here!](https://github.com/lily
 ## Torrent Search Engine
 OpenVapour curates a series of torrent results from multiple reputable game torrenting sites (1.3.0+), or pcgamestorrents (pre-1.3.0). All "url shorteners", popups and ads are all bypassed to provide you with the smoothest experience possible with a beautiful UI.
 ### OpenVapour Sources
-Sources are listed and scored so you know who you're torrenting from, and if you should be skeptical about their trustworthiness. But don't just take my word for it, the source code lists the reasons I have scored them the way I have as well as the URL actually used to access the site (no, I'm not stupid enough to fall for fake mirror sites)
+Sources are listed and scored so you know who you're torrenting from, and if you should be skeptical about their trustworthiness. But don't just take my word for it, the source code lists the reasons I have scored them the way I have as well as the URL actually used to access the site (no, I'm not stupid enough to fall for fake mirror sites). Sources are listed in arbitary order.
 <br>
+#### Torrent Sources
 `Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
 + Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
-+ Seven-Gamers (8 | 7) : Automatic .torrent to Magnet
-+ PCGamesTorrents (7 | 8) : Better Search Capability, URL Shortener Bypass, Cloudflare Bypass
++ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass
++ Seven-Gamers <b>[PENDING HTTP REQUEST FIX]</b> (8 | 7) : Automatic .torrent to Magnet
++ KaOsKrew <b>[PENDING SHORTENER BYPASS]</b> (10 | 9) : Extended Search Capability, Forum Interpreter
++ SteamRIP <b>[PENDING SHORTENER BYPASS]</b> (8 | 8) : Cloudflare Bypass
++ Non-DRM GOG <b>[PENDING INTEGRATION]</b> (7 | 6)
++ Dodi-Repacks <b>[PENDING INTEGRATION]</b> (9 | 8)
+
+#### Direct Download Sources [Not Currently Implemented]
+`Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
++ IGG-Games <b>[PENDING INTEGRATION]</b> (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass
++ KaOSKrew <b>[PENDING SHORTENER BYPASS]</b> (10 | 9) : Extended Search Capability, Forum Interpreter
++ SteamRIP <b>[PENDING SHORTENER BYPASS]</b> (8 | 8) : Cloudflare Bypass
++ Crackhub <b>[PENDING INTEGRATION]</b> (8 | 8)
+
+<b>All sources can be toggled on/off and all torrents are clearly labelled with the site they come from as well as its expected trustworthiness and quality. Outright malicious sources will never be included, the most 'untrustworthy' source implemented is IGG/PCGamesTorrents due to past controversies involving doxxing another game-redistribution service, their own DRM as well as a now-removed moderator embedding malware. I personally use it regardless and have never had an issue outside of issues specific to the site which are bypassed by OpenVapour.</br>
 
 ## Torrent Downloading
 **OpenVapour is not a torrent client! An external torrent client capable of interpreting 'magnet' links is required!**
