@@ -297,6 +297,8 @@
             this.steampage.Text = "Steam Page";
             this.steampage.UseVisualStyleBackColor = false;
             this.steampage.Click += new System.EventHandler(this.SteamPage_Click);
+            this.steampage.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
+            this.steampage.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // TorrentSearchContainer
             // 
@@ -324,6 +326,8 @@
             this.torrentsearch.Text = "Torrent Search";
             this.torrentsearch.UseVisualStyleBackColor = false;
             this.torrentsearch.Click += new System.EventHandler(this.TorrentSearch);
+            this.torrentsearch.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
+            this.torrentsearch.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // MagnetButtonContainer
             // 
@@ -352,6 +356,8 @@
             this.magnetbutton.Text = "Magnet";
             this.magnetbutton.UseVisualStyleBackColor = false;
             this.magnetbutton.Click += new System.EventHandler(this.Magnet);
+            this.magnetbutton.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
+            this.magnetbutton.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // VisitButtonContainer
             // 
@@ -379,13 +385,15 @@
             this.visitbutton.TabIndex = 11;
             this.visitbutton.Text = "View Site";
             this.visitbutton.UseVisualStyleBackColor = false;
+            this.visitbutton.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
+            this.visitbutton.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // gamename
             // 
             this.gamename.AutoSize = true;
             this.gamename.BackColor = System.Drawing.Color.Transparent;
             this.gamename.Font = new System.Drawing.Font("Segoe UI Light", 22.25F);
-            this.gamename.Location = new System.Drawing.Point(146, 7);
+            this.gamename.Location = new System.Drawing.Point(139, 7);
             this.gamename.MaximumSize = new System.Drawing.Size(350, 50);
             this.gamename.Name = "gamename";
             this.gamename.Size = new System.Drawing.Size(203, 41);

@@ -11,20 +11,27 @@ using System.Windows;
 namespace OpenVapour.Steam {
     internal class TorrentSources {
         internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs, Crackhub }
+        internal enum DirectSource { Unknown, IGGGames, KaOs, SteamRIP, Crackhub }
 
         // Source Ratings
-        // Name, Trustworthiness, Quality
+        // Name, Trustworthiness, Quality, EnabledByDefault
         // Trustworthiness ratings are decided based on history and general community view on site
         // Quality ratings are based on easiness to install, DRM, ads, etc
-        internal static readonly Dictionary<TorrentSource, Tuple<byte, byte>> SourceScores = new Dictionary<TorrentSource, Tuple<byte, byte>> {
-            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte>(7, 8) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
-            { TorrentSource.FitgirlRepacks, new Tuple<byte, byte>(10, 10) }, // extremely trustworthy lightweight repacks
-            { TorrentSource.SteamRIP, new Tuple<byte, byte>(8, 8) }, // reliable multi-platform games, but lacks torrent links on many
-            { TorrentSource.SevenGamers, new Tuple<byte, byte>(8, 7) }, // trustworthy, but usually uses ISOs detracting from easiness
-            { TorrentSource.GOG, new Tuple<byte, byte>(9, 5) }, // trustworthy, but absolutely garbage installers
-            { TorrentSource.Dodi, new Tuple<byte, byte>(9, 9) }, // trustworthy repacks
-            { TorrentSource.KaOs, new Tuple<byte, byte>(10, 9) }, // trustworthy repacks
-            { TorrentSource.Unknown, new Tuple<byte, byte>(0, 0) } // always trust sources fabricated from the void
+        internal static readonly Dictionary<TorrentSource, Tuple<byte, byte, bool>> SourceScores = new Dictionary<TorrentSource, Tuple<byte, byte, bool>> {
+            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte, bool>(6, 8, true) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
+            { TorrentSource.FitgirlRepacks, new Tuple<byte, byte, bool>(10, 10, true) }, // extremely trustworthy lightweight repacks
+            { TorrentSource.SteamRIP, new Tuple<byte, byte, bool>(8, 8, false) }, // reliable multi-platform games, but lacks torrent links on many
+            { TorrentSource.SevenGamers, new Tuple<byte, byte, bool>(8, 7, false) }, // trustworthy, but usually uses ISOs detracting from easiness
+            { TorrentSource.GOG, new Tuple<byte, byte, bool>(7, 6, true) }, // trustworthy torrent mirror, but absolutely garbage installers
+            { TorrentSource.Dodi, new Tuple<byte, byte, bool>(9, 8, false) }, // trustworthy repacks
+            { TorrentSource.KaOs, new Tuple<byte, byte, bool>(10, 9, false) }, // trustworthy repacks
+            { TorrentSource.Unknown, new Tuple<byte, byte, bool>(0, 0, false) } // never trust sources fabricated from the void
+        }; 
+        internal static readonly Dictionary<DirectSource, Tuple<byte, byte, bool>> DirectSourceScores = new Dictionary<DirectSource, Tuple<byte, byte, bool>> {
+            { DirectSource.IGGGames, new Tuple<byte, byte, bool>(6, 8, false) }, // igg, has had past embedded malware, drm and ad controversies
+            { DirectSource.SteamRIP, new Tuple<byte, byte, bool>(8, 8, false) }, // reliable multi-platform games
+            { DirectSource.KaOs, new Tuple<byte, byte, bool>(10, 9, false) }, // trustworthy repacks
+            { DirectSource.Unknown, new Tuple<byte, byte, bool>(0, 0, false) } // never trust sources fabricated from the void
         }; 
         
         internal static string GetSourceName(TorrentSource Source) {
@@ -170,6 +177,19 @@ namespace OpenVapour.Steam {
                         TorrentUrl = $"{Url}{(Url.EndsWith("/")?"":"/")}#torrent"; // needs to load page, download page then .torrent
                         break;
 
+                    case TorrentSource.GOG:
+                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                        Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
+                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                        string _ = GetBetween(JSON, "\t<link>", "</link>");
+                        if (_.EndsWith("/")) _ = _.Remove(_.Length - 1, 1);
+                        Console.WriteLine($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{_.Substring(_.LastIndexOf("/") + 1)}.jpg");
+                        string _t = _.Substring(_.LastIndexOf("/") + 1);
+                        _t = _t.Substring(0, 1).ToUpper() + _t.Substring(1);
+                        Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{_t}.jpg";
+                        TorrentUrl = Url;
+                        break;
+
                     case TorrentSource.Unknown:
                     default:
                         Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
@@ -241,27 +261,20 @@ namespace OpenVapour.Steam {
                     case TorrentSource.KaOs:
                         // being a forum, curating the official A-Z index is the safest way to download safely
                         if (KaOSGameList.Length == 0) {
-                            Console.WriteLine("getting index");
                             string rawgamelist = await WebCore.GetWebString("https://kaoskrew.org/viewtopic.php?t=5409", 5000);
                             if (rawgamelist.Length < 100) break;
-                            Console.WriteLine("trimming index");
                             rawgamelist = rawgamelist.Substring(Math.Max(0, rawgamelist.IndexOf("#</span>")));
                             
                             Console.WriteLine("building index");
                             List<string> internalIndex = new List<string>();
                             while (rawgamelist.Contains("<a href=\"https://kaoskrew.org/viewtopic.php?")) {
-                                Console.WriteLine("adding to index");
                                 internalIndex.Add($"<a href=\"https://kaoskrew.org/viewtopic.php?{GetBetween(rawgamelist, "\"https://kaoskrew.org/viewtopic.php?", "</a>")}</a>".Replace("&amp;", "&"));
-                                Console.WriteLine("trimming index");
-                                rawgamelist = rawgamelist.Substring(Math.Max(10, rawgamelist.IndexOf("<a href=\"https://kaoskrew.org/viewtopic.php?") + 10));
-                                Console.WriteLine("trimmed index"); }
+                                rawgamelist = rawgamelist.Substring(Math.Max(10, rawgamelist.IndexOf("<a href=\"https://kaoskrew.org/viewtopic.php?") + 10)); }
                             Console.WriteLine("built index");
                             KaOSGameList = internalIndex.ToArray();
-                            Console.WriteLine("saved index to memory");
                             internalIndex.Clear(); }
                                 
                         // process game list
-                        Console.WriteLine("checking against game index");
                         foreach (string game in KaOSGameList) {
                             string rawname = GetBetween(game, "class=\"postlink\">", "</a>");
                             string name = rawname;
@@ -325,6 +338,20 @@ namespace OpenVapour.Steam {
                                 results.Add(torrent);
                                 Console.WriteLine("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
+                        break;
+
+                    case TorrentSource.GOG:
+                        string gogrss = await WebCore.GetWebString($"https://freegogpcgames.com/search/{Uri.EscapeDataString(Name)}/feed/rss2", 10000);
+                        string[] gogitems = gogrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
+                        Console.WriteLine($"[GOG] found {gogitems.Count():N0} torrents!");
+                        
+                        // skip first non-item result
+                        if (gogitems.Count() > 1)
+                            for (int i = 1; i < gogitems.Count(); i++) {
+                                ResultTorrent torrent = new ResultTorrent(Source, gogitems[i]);
+                                results.Add(torrent);
+                                Console.WriteLine("found torrent " + torrent.Url);
+                                resulturls.Add(GetBetween(gogitems[i], "\t<link>", "</link>")); }
                         break;
 
                     case TorrentSource.SteamRIP:

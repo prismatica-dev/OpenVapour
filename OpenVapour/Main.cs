@@ -88,7 +88,7 @@ namespace OpenVapour {
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = game.Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.GetStrippedValue("detailed_description"), BackColor = Color.Transparent };
-            gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
+            gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
                 Image image = gameart.Image;
@@ -109,7 +109,7 @@ namespace OpenVapour {
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = gameimage };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = torrent.Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = torrent.Description, BackColor = Color.Transparent };
-            gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
+            gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
                 Image image = gameart.Image;
@@ -138,6 +138,7 @@ namespace OpenVapour {
             try {
                 // fetch image
                 Image img = new Bitmap(1, 1);
+                try {
                 if (torrent.Image.Length > 0)
                     if (Cache.IsBitmapCached(torrent.Url)) img = Cache.GetCachedBitmap(torrent.Url);
                     else {
@@ -146,6 +147,9 @@ namespace OpenVapour {
                         MemoryStream ms = new MemoryStream(bytes);
                         img = Image.FromStream(ms);
                         Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
+                } catch (Exception ex) {
+                    Utilities.HandleException($"AddTorrent({torrent.Url}) [Fetch Image]", ex);
+                    img = new Bitmap(150, 225); }
 
                 // resize panel to appropriate proportions
                 float MaximumSize = Math.Max(img.Width, img.Height);
@@ -170,7 +174,8 @@ namespace OpenVapour {
                 panel.MouseLeave += GameHoverEnd;
                 panel.MouseUp += GameClickEnd;
                 store.Controls.Add(panel);
-                Update(); }
+                Update();
+                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal void AddGame(SteamGame game) {
@@ -239,7 +244,7 @@ namespace OpenVapour {
             if (game.Name == "") return;
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
-            gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
+            gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
             BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
@@ -252,7 +257,7 @@ namespace OpenVapour {
             sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
-            gamename.Font = Utilities.FitFont(gamename.Font, gamename.Text, gamename.MaximumSize);
+            gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true;
             BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
@@ -337,7 +342,9 @@ namespace OpenVapour {
                     if (!Cache.IsSteamGameCached(game.AppId)) {
                         if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}*/}}
 
-        private void SteamPage_Click(object sender, EventArgs e) => Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
+        private void SteamPage_Click(object sender, EventArgs e) {
+            Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
         internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
             Task<SteamGame> game = GetGame(AppId, Basic, Cache);
@@ -349,6 +356,7 @@ namespace OpenVapour {
             ClearStore(); 
             AddGame(currentgame);
             gamepanel.Visible = false;
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Console.WriteLine(_);
             
@@ -366,13 +374,15 @@ namespace OpenVapour {
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                 Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                 Task gettask = getresults.ContinueWith(async (results) => {
-                    foreach (Task<ResultTorrent> torrenttask in results.Result) {
-                        await AsyncAddTorrent(torrenttask); }}); }}
+                    foreach (Task<ResultTorrent> torrenttask in results.Result)
+                        await AsyncAddTorrent(torrenttask); }); }}
 
         private async void Magnet(object sender, EventArgs e) {
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
             string magnet = "";
             try {
                 magnetbutton.Text = "Fetching";
+                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
                 Update();
                 if (currenttorrent.Source == TorrentSource.KaOs) {
                     Process.Start(currenttorrent.Url);
@@ -383,14 +393,21 @@ namespace OpenVapour {
                 Console.WriteLine("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame);
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Copy Failed"; }
+            } catch (Exception ex) { 
+                Utilities.HandleException("Magnet()", ex); 
+                magnetbutton.Text = "Copy Failed";
+                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
             try {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
                     magnetbutton.Text = "Success"; 
+                    BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
                     Cache.HomepageGame(currentgame); }
-            } catch (Exception ex) { Utilities.HandleException("Magnet()", ex); magnetbutton.Text = "Open Failed"; }}
+            } catch (Exception ex) { 
+                Utilities.HandleException("Magnet()", ex); 
+                magnetbutton.Text = "Open Failed";
+                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 

@@ -47,9 +47,7 @@ namespace OpenVapour.Web {
         // web requests
         public const int Timeout = 50;
         public static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
-
         public static async Task<string> GetWebString(string Url, int MaxTimeout = 2000, bool FullSpoof = false) {
-
             Console.WriteLine($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
@@ -66,15 +64,11 @@ namespace OpenVapour.Web {
 
                 if (FullSpoof) {
                     client.DefaultRequestHeaders.Host = GetBaseUrl(Url).Replace("https://", "").Replace("http://", "");
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("text/html"));
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/xml;q=0.9");
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("image/avif"));
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("image/webp"));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/avif"));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/webp"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Accept","*/*;q=0.8");
                     client.DefaultRequestHeaders.Add("TE", "Trailers");
 
@@ -88,17 +82,12 @@ namespace OpenVapour.Web {
                     client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
                     client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1"); }
 
-                Console.WriteLine("Default Headers:");
-                foreach (var header in client.DefaultRequestHeaders)
-                    Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
-
                 try {
                     Console.WriteLine($"[2] http get '{Url}'");
                     HttpResponseMessage response = await client.GetAsync(Url);
                     Console.WriteLine($"[2.1] http get '{Url}'");
                     response.EnsureSuccessStatusCode();
                     Console.WriteLine($"[2.2] http get '{Url}'");
-
 
                     string content = "";
                     using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
@@ -110,7 +99,6 @@ namespace OpenVapour.Web {
 
                         // Read the decompressed content as a string
                         content = await new StreamReader(decompressionStream ?? decompressedStream).ReadToEndAsync(); }
-
                     // string content = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"[done] http get '{Url}'");
                     return content; }
