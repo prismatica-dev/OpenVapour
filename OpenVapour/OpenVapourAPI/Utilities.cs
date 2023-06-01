@@ -86,14 +86,15 @@ namespace OpenVapour.Steam {
                     try {
                         Start = String.IndexOf(BetweenStart, 0) + BetweenStart.Length;
                         End = String.IndexOf(BetweenEnd, Start);
+                        string _ = String.Substring(Start, End - Start);
                         return String.Substring(Start, End - Start);
                     } catch (ArgumentOutOfRangeException) { return ""; }
-                else return String.Substring(String.IndexOf(BetweenStart + BetweenStart.Length));
+                else return String.Substring(String.IndexOf(BetweenStart) + BetweenStart.Length);
             else return ""; }
         internal static void HandleException(string Cause, Exception Result) { 
-            Console.WriteLine($"{Cause} threw exception '{Result.Message}'");
-            if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}' Stack Trace: '{Result.StackTrace}'");
-            else { File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}' Stack Trace: '{Result.StackTrace}'"); LogWritten = true; }}
+            Console.WriteLine($"{Cause} threw exception '{Result.Message}'\nat {Result.StackTrace}");
+            if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}'\nStack Trace: '{Result.StackTrace}'");
+            else { File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}'\nStack Trace: '{Result.StackTrace}'"); LogWritten = true; }}
         internal static float FitText(Font font, string text, Size size, float max) {
             bool fit = false;
             font = new Font(font.FontFamily, max, font.Style);
@@ -128,30 +129,27 @@ namespace OpenVapour.Steam {
             return new string(array, 0, i).Replace("  ", " "); }
 
         internal static string CompressString(string text) {
-            byte[] buffer = Encoding.UTF8.GetBytes(text);
-            var memoryStream = new MemoryStream();
-            using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true)) {
-                gZipStream.Write(buffer, 0, buffer.Length); }
+            try {
+                byte[] buffer = Encoding.UTF8.GetBytes(text);
+                using (MemoryStream memoryStream = new MemoryStream()) {
+                    using (GZipStream gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true)) {
+                        gZipStream.Write(buffer, 0, buffer.Length); }
 
-            memoryStream.Position = 0;
-            var compressedData = new byte[memoryStream.Length];
-            memoryStream.Read(compressedData, 0, compressedData.Length);
-            var gZipBuffer = new byte[compressedData.Length + 4];
-            Buffer.BlockCopy(compressedData, 0, gZipBuffer, 4, compressedData.Length);
-            Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gZipBuffer, 0, 4);
-            return Convert.ToBase64String(gZipBuffer); }
-
-        internal static string DecompressString(string compressedText) {
-            byte[] gZipBuffer = Convert.FromBase64String(compressedText);
-            using (var memoryStream = new MemoryStream()) {
-                int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
-                memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
-
-                var buffer = new byte[dataLength];
-                memoryStream.Position = 0;
-                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
-                    gZipStream.Read(buffer, 0, buffer.Length); }
-                return Encoding.UTF8.GetString(buffer); }}
+                    return Convert.ToBase64String(memoryStream.ToArray()); }
+            } catch (Exception ex) { HandleException($"CompressString({text})", ex); return ""; }}
+        internal static string DecompressString(string text) {
+            try {
+                byte[] compressedBytes = Convert.FromBase64String(text);
+                using (MemoryStream memoryStream = new MemoryStream(compressedBytes)) {
+                    using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
+                        using (MemoryStream decompressedStream = new MemoryStream()) {
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = gzipStream.Read(buffer, 0, buffer.Length)) > 0)
+                                decompressedStream.Write(buffer, 0, bytesRead);
+                            return Encoding.UTF8.GetString(decompressedStream.ToArray());;
+                        }}}
+            } catch (Exception ex) { HandleException($"DecompressString({text})", ex); return ""; }}
 
         internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
         internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");

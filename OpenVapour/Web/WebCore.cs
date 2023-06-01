@@ -57,53 +57,54 @@ namespace OpenVapour.Web {
             } else LastTimeout.Add(baseUrl, DateTime.Now);
             
             Console.WriteLine($"[1] http prepare '{Url}'");
-            using (HttpClient client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false }) { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+            using (HttpClientHandler handler = new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false,  }) {
+                using (HttpClient client = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
+                    client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                    client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
 
-                if (FullSpoof) {
-                    client.DefaultRequestHeaders.Host = GetBaseUrl(Url).Replace("https://", "").Replace("http://", "");
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/xml;q=0.9");
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/avif"));
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/webp"));
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept","*/*;q=0.8");
-                    client.DefaultRequestHeaders.Add("TE", "Trailers");
+                    if (FullSpoof) {
+                        client.DefaultRequestHeaders.Host = GetBaseUrl(Url).Replace("https://", "").Replace("http://", "");
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
+                        client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/xml;q=0.9");
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/avif"));
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/webp"));
+                        client.DefaultRequestHeaders.TryAddWithoutValidation("Accept","*/*;q=0.8");
+                        client.DefaultRequestHeaders.Add("TE", "Trailers");
 
-                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
-                    client.DefaultRequestHeaders.Add("Accept-Language", "en;q=0.5");
-                    if (rng.Next(0, 3) == 1) client.DefaultRequestHeaders.Add("DNT", "1");
-                    client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                    client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-                    client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
-                    client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
-                    client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
-                    client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1"); }
+                        client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
+                        client.DefaultRequestHeaders.Add("Accept-Language", "en;q=0.5");
+                        if (rng.Next(0, 3) == 1) client.DefaultRequestHeaders.Add("DNT", "1");
+                        client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                        client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+                        client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+                        client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+                        client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
+                        client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1"); }
 
-                try {
-                    Console.WriteLine($"[2] http get '{Url}'");
-                    HttpResponseMessage response = await client.GetAsync(Url);
-                    Console.WriteLine($"[2.1] http get '{Url}'");
-                    response.EnsureSuccessStatusCode();
-                    Console.WriteLine($"[2.2] http get '{Url}'");
+                    try {
+                        Console.WriteLine($"[2] http get '{Url}'");
+                        HttpResponseMessage response = await client.GetAsync(Url);
+                        Console.WriteLine($"[2.1] http get '{Url}'");
+                        response.EnsureSuccessStatusCode();
+                        Console.WriteLine($"[2.2] http get '{Url}'");
 
-                    string content = "";
-                    using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
-                        Stream decompressionStream = null;
-                        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
-                            decompressionStream = new GZipStream(decompressedStream, CompressionMode.Decompress);
-                        else if (response.Content.Headers.ContentEncoding.Contains("deflate"))
-                            decompressionStream = new DeflateStream(decompressedStream, CompressionMode.Decompress);
+                        string content = "";
+                        using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
+                            Stream decompressionStream = null;
+                            if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+                                decompressionStream = new GZipStream(decompressedStream, CompressionMode.Decompress);
+                            else if (response.Content.Headers.ContentEncoding.Contains("deflate"))
+                                decompressionStream = new DeflateStream(decompressedStream, CompressionMode.Decompress);
 
-                        // Read the decompressed content as a string
-                        content = await new StreamReader(decompressionStream ?? decompressedStream).ReadToEndAsync(); }
-                    // string content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"[done] http get '{Url}'");
-                    return content; }
-                catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
-                catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}
+                            // Read the decompressed content as a string
+                            content = await new StreamReader(decompressionStream ?? decompressedStream).ReadToEndAsync(); }
+                        // string content = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine($"[done] http get '{Url}'");
+                        return content; }
+                    catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
+                    catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}}
             return ""; }
     
         public static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);

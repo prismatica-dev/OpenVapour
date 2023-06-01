@@ -87,7 +87,7 @@ namespace OpenVapour {
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = game.Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.GetStrippedValue("detailed_description"), BackColor = Color.Transparent };
+            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.Description, BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
@@ -102,6 +102,7 @@ namespace OpenVapour {
             gameabout.BringToFront();
             gamename.BringToFront();
             popup.BringToFront();
+            popup.ControlRemoved += delegate { popup.Dispose(); };
             return popup; }
 
         internal Panel CreatePopUp(ResultTorrent torrent, Image gameimage) {
@@ -126,7 +127,27 @@ namespace OpenVapour {
 
             return popup; }
 
-        internal void ClearStore() => store.Controls.Clear();
+        internal void ClearStore() {
+            Console.WriteLine("clearing store!");
+            foreach (Control ctrl in store.Controls) {
+                if (ctrl.GetType() == typeof(PictureBox)) {
+                    Console.WriteLine("clearing memory of picturebox!");
+                    PictureBox pb = ctrl as PictureBox;
+                    InterpretPictureBox(pb, out _, out List<object> meta, out List<Image> i);
+                    Console.WriteLine("disposing states!");
+                    foreach (Image im in i) im.Dispose();
+                    Console.WriteLine("disposing list!");
+                    i.Clear();
+                    Console.WriteLine("disposing current image!");
+                    pb.Image?.Dispose();
+                    Console.WriteLine("disposed control!"); }
+                Console.WriteLine("purging control");
+                ctrl.Dispose();
+                Console.WriteLine("purged control"); }
+            Console.WriteLine("cleared all controls!");
+            //Console.WriteLine("clearing store!");
+            store.Controls.Clear(); 
+            }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -243,7 +264,7 @@ namespace OpenVapour {
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
-            panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.GetStrippedValue("detailed_description"); 
+            panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description; 
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
             BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }

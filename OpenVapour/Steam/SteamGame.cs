@@ -25,15 +25,16 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/"); // otherwise get it from the logo asset
                 if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_); }} // pray one of them worked
 
+        [Serializable]
         public class SteamGame {
-            public string ApiJSON { get; set; }
             public string Name { get; set; }
             public string AppId { get; set; }
-            public SteamGame(string apiJSON) { Console.WriteLine("processing new steamgame"); ApiJSON = apiJSON; AppId = GetImmediateValue("steam_appid"); Name = GetValue("name"); }
-            public string GetImmediateValue(string Key) => GetBetween(ApiJSON, $"{Key}\":", ",");
-            public string GetValue(string Key) => GetBetween(ApiJSON, $"\"{Key}\":\"", "\",");
-            public string GetStrippedValue(string Key) => StripTags(GetBetween(ApiJSON, $"\"{Key}\":\"", "\","));
-            public int GetIntValue(string Key) { try { return Convert.ToInt32(GetBetween(ApiJSON, $"\"{Key}\":", ",")); } catch (Exception ex) { HandleException($"SteamCore.SteamGame.ParseIntValue({Key})", ex); return 0; }}}
+            public string Description { get; set; }
+            public SteamGame(string apiJSON) { 
+                Console.WriteLine("processing new steamgame"); 
+                AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
+                Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
+                Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")); }}
 
         // cdn assets
         public const string header = "header";

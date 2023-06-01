@@ -451,7 +451,7 @@
             // 
             this.store.AutoScroll = true;
             this.store.BackColor = System.Drawing.Color.Transparent;
-            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.store.Location = new System.Drawing.Point(0, 25);
             this.store.Name = "store";
             this.store.Size = new System.Drawing.Size(11, 487);
@@ -467,7 +467,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(800, 512);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);

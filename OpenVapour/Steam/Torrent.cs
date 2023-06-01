@@ -65,7 +65,7 @@ namespace OpenVapour.Steam {
                     return "Unknown"; }}}
 
     internal class Torrent {
-        public static string[] PCGTGameList = new string[] { };
+        public static Tuple<string, string>[] PCGTGameList = new Tuple<string, string>[] { };
         public static string[] KaOSGameList = new string[] { };
         internal class ResultTorrent {
             public TorrentSource Source { get; set; }
@@ -74,15 +74,13 @@ namespace OpenVapour.Steam {
             public string Url { get; set; }
             public string Image { get; set; }
             public string TorrentUrl { get; set; }
-            public string JSON { get; set; }
             public static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 try {
                     string html = await WebCore.GetWebString(Url);
-
                     switch (source) {
                         case TorrentSource.PCGamesTorrents:
                             ResultTorrent torrent = new ResultTorrent(source, "") {
-                                JSON = "", Url = Url, Name = Name,
+                                Url = Url, Name = Name,
                                 Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>"),
                                 Image = GetBetween(html, "Download\" src=\"", "\""),
                                 TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"") };
@@ -129,7 +127,7 @@ namespace OpenVapour.Steam {
                                         trurl = GetBetween(line, "href=\"", "\""); }
 
                             ResultTorrent t = new ResultTorrent(source, "") {
-                                JSON = "", Url = Url, Name = Name,
+                                Url = Url, Name = Name,
                                 Description = desc, // not all posts have this
                                 Image = img, // chances are not all posts have this either
                                 TorrentUrl = trurl };
@@ -143,7 +141,7 @@ namespace OpenVapour.Steam {
 
             public ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;
-                this.JSON = JSON;
+                try {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
                         Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
@@ -193,7 +191,7 @@ namespace OpenVapour.Steam {
                     case TorrentSource.Unknown:
                     default:
                         Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
-                        break; }}
+                        break; }} catch (Exception ex) { HandleException($"ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
             
             public async Task<string> GetMagnet() {
                 switch (Source) {
@@ -240,19 +238,29 @@ namespace OpenVapour.Steam {
                 switch (Source) { 
                     case TorrentSource.PCGamesTorrents:
                         // check game list (sometimes results provided by pcgt are insufficient)
-                        if (PCGTGameList.Length == 0)
-                            PCGTGameList = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html", 10000), "<ul>", "</ul>\n<div").Split('\n');
+                        if (PCGTGameList.Length == 0) {
+                            string _ = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html", 10000), "<ul>", "</ul>\n<div");
+                            string[] split = _.Split('\n');
+                            // PCGTGameList = new Tuple<string, string>[split.Length];
+                            List<Tuple<string, string>> pcgtindex = new List<Tuple<string, string>>(split.Length);
+                            for (int i = 0; i < split.Length; i++) {
+                                string seg = split[i];
+                                string name = GetBetween(seg, "\">", "</a");
+                                if (name.Length > 0)
+                                    pcgtindex.Add(new Tuple<string, string>(name, CompressString(GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\"")))); }
+                            PCGTGameList = pcgtindex.ToArray();
+                            pcgtindex.Clear(); }
                 
                         // process game list
-                        foreach (string game in PCGTGameList) {
-                            if (game.StartsWith("<li><a")) {
-                                string name = GetBetween(game, "data-wpel-link=\"internal\">", "</a");
+                        foreach (Tuple<string, string> game in PCGTGameList) {
+                            if (game.Item1.Length > 0) {
+                                string name = game.Item1;
                                 string filtname = FilterAlphanumeric(name.ToLower());
                                 int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
                                 // really bad backup search algorithm
                                 if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
-                                    string url = GetBetween(game, "<a href=\"", "\"");
+                                    string url = $"https://pcgamestorrents.com/{DecompressString(game.Item2)}.html";
                                     Console.WriteLine("search result found! " + url);
                                     if (!resulturls.Contains(url))
                                         results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.PCGamesTorrents, url, name)); }}}
