@@ -58,6 +58,7 @@
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
             this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
+            this.toggleHomepage = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -197,6 +198,7 @@
             // 
             this.gamepanel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.gamepanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.gamepanel.Controls.Add(this.toggleHomepage);
             this.gamepanel.Controls.Add(this.sourcename);
             this.gamepanel.Controls.Add(this.gamedescpanel);
             this.gamepanel.Controls.Add(this.closemenu);
@@ -462,6 +464,22 @@
             this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
             this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             // 
+            // toggleHomepage
+            // 
+            this.toggleHomepage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatAppearance.BorderSize = 0;
+            this.toggleHomepage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 12F);
+            this.toggleHomepage.Location = new System.Drawing.Point(460, 175);
+            this.toggleHomepage.MaximumSize = new System.Drawing.Size(165, 44);
+            this.toggleHomepage.Name = "toggleHomepage";
+            this.toggleHomepage.Size = new System.Drawing.Size(32, 32);
+            this.toggleHomepage.TabIndex = 13;
+            this.toggleHomepage.Text = "⌂";
+            this.toggleHomepage.UseVisualStyleBackColor = false;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
@@ -543,6 +561,7 @@
         private System.Windows.Forms.Panel TorrentSearchContainer;
         private System.Windows.Forms.Panel MagnetButtonContainer;
         private System.Windows.Forms.Panel VisitButtonContainer;
+        private System.Windows.Forms.Button toggleHomepage;
     }
 }
 

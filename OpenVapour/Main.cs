@@ -50,6 +50,9 @@ namespace OpenVapour {
             LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
             BackgroundImage = background;
+            store.HorizontalScroll.Maximum = 0;
+            store.HorizontalScroll.Enabled = false;
+            store.HorizontalScroll.Visible = false;
 
             Bitmap img = new Bitmap(150, 225);
             states = new List<Image> {
@@ -353,7 +356,8 @@ namespace OpenVapour {
                 g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
-            } searchtextbox.BackgroundImage = bit; }
+            } searchtextbox.BackgroundImage = bit;
+            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
