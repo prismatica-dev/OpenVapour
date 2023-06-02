@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
-            this.managesources = new System.Windows.Forms.Button();
+            this.manageSettings = new System.Windows.Forms.Button();
             this.exit = new System.Windows.Forms.Button();
             this.storeselect = new System.Windows.Forms.Label();
             this.searchtextbox = new System.Windows.Forms.Panel();
@@ -78,7 +78,7 @@
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.toolbar.Controls.Add(this.managesources);
+            this.toolbar.Controls.Add(this.manageSettings);
             this.toolbar.Controls.Add(this.exit);
             this.toolbar.Controls.Add(this.storeselect);
             this.toolbar.Controls.Add(this.searchtextbox);
@@ -92,22 +92,22 @@
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
-            // managesources
+            // manageSettings
             // 
-            this.managesources.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.managesources.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.managesources.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.managesources.FlatAppearance.BorderSize = 0;
-            this.managesources.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.managesources.Font = new System.Drawing.Font("Segoe UI Light", 9F);
-            this.managesources.ForeColor = System.Drawing.Color.White;
-            this.managesources.Location = new System.Drawing.Point(480, 0);
-            this.managesources.Margin = new System.Windows.Forms.Padding(0);
-            this.managesources.Name = "managesources";
-            this.managesources.Size = new System.Drawing.Size(100, 25);
-            this.managesources.TabIndex = 7;
-            this.managesources.Text = "Manage Sources";
-            this.managesources.UseVisualStyleBackColor = false;
+            this.manageSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.manageSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageSettings.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageSettings.FlatAppearance.BorderSize = 0;
+            this.manageSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.manageSettings.Font = new System.Drawing.Font("Segoe UI Light", 9F);
+            this.manageSettings.ForeColor = System.Drawing.Color.White;
+            this.manageSettings.Location = new System.Drawing.Point(511, 0);
+            this.manageSettings.Margin = new System.Windows.Forms.Padding(0);
+            this.manageSettings.Name = "manageSettings";
+            this.manageSettings.Size = new System.Drawing.Size(69, 25);
+            this.manageSettings.TabIndex = 7;
+            this.manageSettings.Text = "Settings";
+            this.manageSettings.UseVisualStyleBackColor = false;
             // 
             // exit
             // 
@@ -573,7 +573,7 @@
         private System.Windows.Forms.Panel nogamesnotif;
         private System.Windows.Forms.Label nogamesmessage;
         private System.Windows.Forms.Button exit;
-        private System.Windows.Forms.Button managesources;
+        private System.Windows.Forms.Button manageSettings;
         private System.Windows.Forms.Button visitbutton;
         private System.Windows.Forms.Label sourcename;
         private System.Windows.Forms.Panel SteamPageContainer;

@@ -419,6 +419,7 @@ namespace OpenVapour {
             //torrents = await GetResults(TorrentSource.PCGamesTorrents, _);
 
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                if (SourceScores[source].Item3 != Implementation.Enabled) continue;
                 Task<List<ResultTorrent>> getresults = GetResults(source, _);
                 Task gettask = getresults.ContinueWith((results) => {
                     foreach (ResultTorrent torrent in results.Result)
@@ -426,6 +427,7 @@ namespace OpenVapour {
                 }); }
 
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                if (SourceScores[source].Item3 != Implementation.Enabled) continue;
                 Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                 Task gettask = getresults.ContinueWith(async (results) => {
                     foreach (Task<ResultTorrent> torrenttask in results.Result)

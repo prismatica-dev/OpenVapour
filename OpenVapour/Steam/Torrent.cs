@@ -14,26 +14,27 @@ namespace OpenVapour.Steam {
     internal class TorrentSources {
         internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs, Crackhub }
         internal enum DirectSource { Unknown, IGGGames, KaOs, SteamRIP, Crackhub }
+        internal enum Implementation { Enabled, Disabled, Unimplemented }
 
         // Source Ratings
         // Name, Trustworthiness, Quality, EnabledByDefault
         // Trustworthiness ratings are decided based on history and general community view on site
         // Quality ratings are based on easiness to install, DRM, ads, etc
-        internal static readonly Dictionary<TorrentSource, Tuple<byte, byte, bool>> SourceScores = new Dictionary<TorrentSource, Tuple<byte, byte, bool>> {
-            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte, bool>(6, 8, true) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
-            { TorrentSource.FitgirlRepacks, new Tuple<byte, byte, bool>(10, 10, true) }, // extremely trustworthy lightweight repacks
-            { TorrentSource.SteamRIP, new Tuple<byte, byte, bool>(8, 8, false) }, // reliable multi-platform games, but lacks torrent links on many
-            { TorrentSource.SevenGamers, new Tuple<byte, byte, bool>(8, 7, false) }, // trustworthy, but usually uses ISOs detracting from easiness
-            { TorrentSource.GOG, new Tuple<byte, byte, bool>(7, 6, true) }, // trustworthy torrent mirror, but absolutely garbage installers
-            { TorrentSource.Dodi, new Tuple<byte, byte, bool>(9, 8, false) }, // trustworthy repacks
-            { TorrentSource.KaOs, new Tuple<byte, byte, bool>(10, 9, false) }, // trustworthy repacks
-            { TorrentSource.Unknown, new Tuple<byte, byte, bool>(0, 0, false) } // never trust sources fabricated from the void
+        internal static Dictionary<TorrentSource, Tuple<byte, byte, Implementation>> SourceScores = new Dictionary<TorrentSource, Tuple<byte, byte, Implementation>> {
+            { TorrentSource.PCGamesTorrents, new Tuple<byte, byte, Implementation>(6, 8, Implementation.Enabled) }, // torrent version of igg, has had past embedded malware, drm and ad controversies
+            { TorrentSource.FitgirlRepacks, new Tuple<byte, byte, Implementation>(10, 10, Implementation.Enabled) }, // extremely trustworthy lightweight repacks
+            { TorrentSource.SteamRIP, new Tuple<byte, byte, Implementation>(8, 8, Implementation.Disabled) }, // reliable multi-platform games, but lacks torrent links on many
+            { TorrentSource.SevenGamers, new Tuple<byte, byte, Implementation>(8, 7, Implementation.Disabled) }, // trustworthy, but usually uses ISOs detracting from easiness
+            { TorrentSource.GOG, new Tuple<byte, byte, Implementation>(7, 6, Implementation.Enabled) }, // trustworthy torrent mirror, but absolutely garbage installers
+            { TorrentSource.Dodi, new Tuple<byte, byte, Implementation>(9, 8, Implementation.Unimplemented) }, // trustworthy repacks
+            { TorrentSource.KaOs, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Disabled) }, // trustworthy repacks
+            { TorrentSource.Unknown, new Tuple<byte, byte, Implementation>(0, 0, Implementation.Unimplemented) } // never trust sources fabricated from the void
         }; 
-        internal static readonly Dictionary<DirectSource, Tuple<byte, byte, bool>> DirectSourceScores = new Dictionary<DirectSource, Tuple<byte, byte, bool>> {
-            { DirectSource.IGGGames, new Tuple<byte, byte, bool>(6, 8, false) }, // igg, has had past embedded malware, drm and ad controversies
-            { DirectSource.SteamRIP, new Tuple<byte, byte, bool>(8, 8, false) }, // reliable multi-platform games
-            { DirectSource.KaOs, new Tuple<byte, byte, bool>(10, 9, false) }, // trustworthy repacks
-            { DirectSource.Unknown, new Tuple<byte, byte, bool>(0, 0, false) } // never trust sources fabricated from the void
+        internal static Dictionary<DirectSource, Tuple<byte, byte, Implementation>> DirectSourceScores = new Dictionary<DirectSource, Tuple<byte, byte, Implementation>> {
+            { DirectSource.IGGGames, new Tuple<byte, byte, Implementation>(6, 8, Implementation.Unimplemented) }, // igg, has had past embedded malware, drm and ad controversies
+            { DirectSource.SteamRIP, new Tuple<byte, byte, Implementation>(8, 8, Implementation.Unimplemented) }, // reliable multi-platform games
+            { DirectSource.KaOs, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Unimplemented) }, // trustworthy repacks
+            { DirectSource.Unknown, new Tuple<byte, byte, Implementation>(0, 0, Implementation.Unimplemented) } // never trust sources fabricated from the void
         }; 
         
         internal static string GetSourceName(TorrentSource Source) {
@@ -45,7 +46,7 @@ namespace OpenVapour.Steam {
                     // fully integrated
                     return "fitgirl-repacks.site";
                 case TorrentSource.SteamRIP:
-                    // pending (likely) removal
+                    // pending url shortener bypass
                     return "steamrip.com";
                 case TorrentSource.SevenGamers:
                     // pending TLS fix for integration
@@ -209,6 +210,10 @@ namespace OpenVapour.Steam {
                     case TorrentSource.KaOs:
                         // despite all my rage, even if held at gunpoint i would refuse to try to find a stupid linkvertise bypass
                         // it will just force you to the site instead
+                        return Url;
+
+                    case TorrentSource.SteamRIP:
+                        // pending megadb bypass
                         return Url;
 
                     case TorrentSource.Unknown:
@@ -389,7 +394,6 @@ namespace OpenVapour.Steam {
                         break;
 
                     case TorrentSource.SteamRIP:
-                        break;
                         // no url shortener bypass implemented yet
                         string steamriprss = await WebCore.GetWebString($"https://steamrip.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
                         string[] steamripitems = steamriprss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
@@ -405,7 +409,6 @@ namespace OpenVapour.Steam {
                         break;
 
                     case TorrentSource.SevenGamers:
-                        break;
                         // seven-gamers cannot be supported using TLS 1.2
                         string sevengamershtml = await WebCore.GetWebString($"https://www.seven-gamers.com/", 5000, false);
                         string[] sevengamersitems = sevengamershtml.Split(new string[] { "<div class=\"edgtf-post-image\">" }, StringSplitOptions.RemoveEmptyEntries);
