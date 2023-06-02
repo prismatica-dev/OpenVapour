@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static OpenVapour.Steam.TorrentSources;
+using static OpenVapour.Torrent.TorrentSources;
 
 namespace OpenVapour {
     internal partial class Settings : Form {

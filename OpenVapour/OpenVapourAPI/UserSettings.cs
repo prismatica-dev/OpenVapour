@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using static OpenVapour.Steam.TorrentSources;
+using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.Steam.Utilities;
 
 namespace OpenVapour.OpenVapourAPI {

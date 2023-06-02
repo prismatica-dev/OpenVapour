@@ -195,23 +195,4 @@ namespace OpenVapour.Steam {
             } catch (Exception ex) { HandleException($"DecompressString({bytes.Length} Bytes)", ex); return ""; }}
 
         internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
-        internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");
-
-        /// <summary>
-        /// returns true if appid is not a game (dlc / music / bundle) or if api call fails
-        /// </summary>
-        /// <param name="appid">appid to check</param>
-        /// <returns></returns>
-        internal static async Task<bool> IsDlc(string appid) {
-            bool isdlc = false;
-            try {
-                if (!Cache.IsBlacklisted(appid)) {
-                    if (!appid.Contains(",")) {
-                        string data = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails/?appids={appid}&filters=basic");
-
-                        if (!data.Contains("\"type\":\"game\"")) isdlc = true;
-                        if (data.Contains("\"success\":\"true\"") && isdlc && !Cache.IsBlacklisted(appid)) Cache.BlacklistID(appid, "DLC Content.");
-                    } else { Cache.BlacklistID(appid); isdlc = true; }}
-                else isdlc = true;
-            } catch (TargetInvocationException) { isdlc = true; } catch (Exception ex) { HandleException($"IsDlc({appid})", ex); }
-            return isdlc; }}}
+        internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, ""); }}

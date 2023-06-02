@@ -18,7 +18,7 @@ using Brushes = System.Drawing.Brushes;
 using Color = System.Drawing.Color;
 using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
 using System.Reflection;
-using static OpenVapour.Steam.TorrentSources;
+using static OpenVapour.Torrent.TorrentSources;
 using OpenVapour.OpenVapourAPI;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using System.Runtime.InteropServices;
