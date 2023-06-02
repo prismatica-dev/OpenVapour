@@ -38,6 +38,8 @@ namespace OpenVapour.Steam {
               ms.Position = 0;
               return new BinaryFormatter().Deserialize(ms); }}
         internal static bool IsHomepaged(string AppId) => File.Exists($"{DedicatedStorage}\\Games\\{AppId}");
+        internal static void RemoveHomepage(string AppId) {
+            if (IsHomepaged(AppId)) File.Delete($"{DedicatedStorage}\\Games\\{AppId}"); }
         internal static void HomepageGame(SteamGame game) {
             CheckCache(); 
             if (game == null || game.AppId.Length == 0) return;

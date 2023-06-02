@@ -22,7 +22,6 @@ using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using System.Runtime.InteropServices;
-using System.Net.Sockets;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -33,7 +32,6 @@ namespace OpenVapour {
         private bool hover = false;
         private bool gamepanelopen = false;
         private string panelgame = "";
-        internal Image vapour = new Bitmap(1, 1);
 
         private void Main_Load(object sender, EventArgs e) {
             WebRequest.DefaultWebProxy = null;
@@ -159,29 +157,20 @@ namespace OpenVapour {
             gameabout.BringToFront();
             gamename.BringToFront();
             popup.BringToFront();
-
             return popup; }
 
         internal void ClearStore() {
             Console.WriteLine("clearing store!");
             foreach (Control ctrl in store.Controls) {
                 if (ctrl.GetType() == typeof(PictureBox)) {
-                    Console.WriteLine("clearing memory of picturebox!");
                     PictureBox pb = ctrl as PictureBox;
                     InterpretPictureBox(pb, out _, out _, out List<Image> i);
-                    Console.WriteLine("disposing states!");
                     foreach (Image im in i) im.Dispose();
-                    Console.WriteLine("disposing list!");
                     i.Clear();
-                    Console.WriteLine("disposing current image!");
-                    pb.Image?.Dispose();
-                    Console.WriteLine("disposed control!"); }
-                Console.WriteLine("purging control");
-                ctrl.Dispose();
-                Console.WriteLine("purged control"); }
-            Console.WriteLine("cleared all controls!");
-            //Console.WriteLine("clearing store!");
-            store.Controls.Clear(); }
+                    pb.Image?.Dispose(); }
+                ctrl.Dispose();}
+            store.Controls.Clear();
+            ForceUpdate(); }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -229,8 +218,7 @@ namespace OpenVapour {
                 panel.MouseLeave += GameHoverEnd;
                 panel.MouseUp += GameClickEnd;
                 store.Controls.Add(panel);
-                Update();
-                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+                ForceUpdate(); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal void AddGame(SteamGame game) {
@@ -251,7 +239,7 @@ namespace OpenVapour {
             panel.MouseLeave += GameHoverEnd;
             panel.MouseUp += GameClickEnd;
             store.Controls.Add(panel);
-            Update();
+            ForceUpdate();
             LoadGameBitmap(game, panel); }
 
         internal async void LoadGameBitmap(SteamGame game, PictureBox output) {
@@ -302,7 +290,7 @@ namespace OpenVapour {
             toggleHomepage.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
 
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; 
@@ -315,7 +303,7 @@ namespace OpenVapour {
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true;
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
 
         private void GameClickStart(object sender, MouseEventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out _, out List<Image> pbs);
@@ -361,7 +349,7 @@ namespace OpenVapour {
                 if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
                 else if (OpenNext) { LoadGame(game, pbs[0]); panelgame = ""; time.Enabled = false; }
                 else { panelgame = ""; time.Enabled = false; }
-                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));};
+                ForceUpdate(); };
             time.Enabled = true; }
 
         private void ClosePanelTorrent(bool OpenNext, List<object> List) {
@@ -374,6 +362,7 @@ namespace OpenVapour {
                 if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
                 else if (OpenNext) { LoadTorrent(game, pbs[0]); panelgame = ""; time.Enabled = false; }
                 else { panelgame = ""; time.Enabled = false; }
+                ForceUpdate();
             }; time.Enabled = true; }
 
         private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, new List<object>());
@@ -389,19 +378,16 @@ namespace OpenVapour {
                 g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
             } searchtextbox.BackgroundImage = bit;
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
                 ClearStore(); 
-                await GetResults(realsearchtb.Text);
-                /*foreach (ResultGame game in await GetResults(realsearchtb.Text)) {
-                    if (!Cache.IsSteamGameCached(game.AppId)) {
-                        if (!Utilities.IsDlc(game.AppId.ToString())) { AsyncAddGame(game.AppId); await Task.Delay(50); }}}*/}}
+                await GetResults(realsearchtb.Text); }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
             Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
 
         internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
             Task<SteamGame> game = GetGame(AppId, Basic, Cache);
@@ -413,13 +399,9 @@ namespace OpenVapour {
             ClearStore(); 
             AddGame(currentgame);
             gamepanel.Visible = false;
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
+            ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Console.WriteLine(_);
-            
-            //List<ResultTorrent> torrents = await GetResults(TorrentSource.FitgirlRepacks, _);
-            //foreach (ResultTorrent torrent in torrents) await AddTorrent(torrent);
-            //torrents = await GetResults(TorrentSource.PCGamesTorrents, _);
 
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                 if (SourceScores[source].Item3 != Implementation.Enabled) continue;
@@ -437,12 +419,11 @@ namespace OpenVapour {
                         await AsyncAddTorrent(torrenttask); }); }}
 
         private async void Magnet(object sender, EventArgs e) {
-            BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
+            ForceUpdate();
             string magnet = "";
             try {
                 magnetbutton.Text = "Fetching";
-                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
-                Update();
+                ForceUpdate();
                 if (currenttorrent.Source == TorrentSource.KaOs || currenttorrent.Source == TorrentSource.SteamRIP) {
                     Process.Start(currenttorrent.Url);
                     return; }
@@ -455,18 +436,18 @@ namespace OpenVapour {
             } catch (Exception ex) { 
                 Utilities.HandleException("Magnet()", ex); 
                 magnetbutton.Text = "Copy Failed";
-                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+                ForceUpdate(); }
             try {
                 if (magnet.Length > 0) {
                     Console.WriteLine("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
                     magnetbutton.Text = "Success"; 
-                    BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
+                    ForceUpdate();
                     Cache.HomepageGame(currentgame); }
             } catch (Exception ex) { 
                 Utilities.HandleException("Magnet()", ex); 
                 magnetbutton.Text = "Open Failed";
-                BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }}
+                ForceUpdate(); }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
@@ -500,6 +481,7 @@ namespace OpenVapour {
         private void BackgroundTearingFix(object sender, MouseEventArgs e) {
             BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
         private void BackgroundTearingFix(object sender, EventArgs e) {}
+        private void ForceUpdate() => BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
 
         private void OpenSettings(object sender, EventArgs e) {
             Settings settings = new Settings(UserSettings.WindowTheme, UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores));
@@ -517,5 +499,13 @@ namespace OpenVapour {
 
         private void ClosingForm(object sender, FormClosingEventArgs e) {
             UserSettings.WindowSize = Size;
-            UserSettings.SaveSettings(UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores));
-        }}}
+            UserSettings.SaveSettings(UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores)); }
+
+        private void ToggleHomepage(object sender, EventArgs e) {
+            if (toggleHomepage.BackColor == Color.FromArgb(130, 0, 100, 0)) {
+                Cache.RemoveHomepage(currentgame.AppId);
+                toggleHomepage.BackColor = Color.FromArgb(130, 0, 0, 0); }
+            else { 
+                Cache.HomepageGame(currentgame);
+                toggleHomepage.BackColor = Color.FromArgb(130, 0, 100, 0); }
+            ForceUpdate(); }}}

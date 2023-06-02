@@ -242,6 +242,7 @@
             this.toggleHomepage.TabIndex = 13;
             this.toggleHomepage.Text = "⌂";
             this.toggleHomepage.UseVisualStyleBackColor = false;
+            this.toggleHomepage.Click += new System.EventHandler(this.ToggleHomepage);
             // 
             // sourcename
             // 
