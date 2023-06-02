@@ -10,8 +10,8 @@ using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace OpenVapour.Web {
-    public static class WebCore {
-        public static readonly string[] UserAgents = {
+    internal static class WebCore {
+        internal static readonly string[] UserAgents = {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0",
             "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:92.0) Gecko/20100101 Firefox/92.0",
@@ -42,12 +42,12 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52",
             "Mozilla/5.0 (Windows NT 10.0; rv:113.0) Gecko/20100101 Firefox/113.0" };
         private static readonly Random rng = new Random();
-        public static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
+        internal static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)];
 
         // web requests
-        public const int Timeout = 50;
-        public static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
-        public static async Task<string> GetWebString(string Url, int MaxTimeout = 2000, bool FullSpoof = false) {
+        internal const int Timeout = 50;
+        internal static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
+        internal static async Task<string> GetWebString(string Url, int MaxTimeout = 2000, bool FullSpoof = false) {
             Console.WriteLine($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
@@ -107,9 +107,9 @@ namespace OpenVapour.Web {
                     catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}}
             return ""; }
     
-        public static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
+        internal static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
 
-        public static string DecodeBlueMediaFiles(string EncodedUrl) {
+        internal static string DecodeBlueMediaFiles(string EncodedUrl) {
             Console.WriteLine("decoding " + EncodedUrl);
             EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
                 .Replace("https://bluemediafiles.eu/get-url.php?url=", "")

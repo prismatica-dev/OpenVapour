@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using static OpenVapour.Steam.TorrentSources;
 
 namespace OpenVapour {
-    public partial class Settings : Form {
+    internal partial class Settings : Form {
         internal Dictionary<string, Color> WindowTheme;
         internal Dictionary<TorrentSource, Implementation> TorrentSources;
         internal Dictionary<DirectSource, Implementation> DirectSources;
@@ -21,13 +21,13 @@ namespace OpenVapour {
             InitializeComponent();
             this.WindowTheme = WindowTheme; this.TorrentSources = TorrentSources; this.DirectSources = DirectSources; }
         
-        public const int WM_NCLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
+        internal const int WM_NCLBUTTONDOWN = 0xA1;
+        internal const int HT_CAPTION = 0x2;
 
         [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        internal static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [DllImport("user32.dll")]
-        public static extern bool ReleaseCapture();
+        internal static extern bool ReleaseCapture();
         protected override CreateParams CreateParams {
             get {
                 CreateParams handleParam = base.CreateParams;
@@ -65,7 +65,7 @@ namespace OpenVapour {
                 DirectSources[(DirectSource)c.Tag] = (c as CheckBox).Checked?Implementation.Enabled:Implementation.Disabled;
             Close(); }
 
-        public void DrawGradient() {
+        internal void DrawGradient() {
             Bitmap background = new Bitmap(Width, Height);
             LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }

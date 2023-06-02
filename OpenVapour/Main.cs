@@ -22,11 +22,13 @@ using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using System.Runtime.InteropServices;
+using OpenVapour.Web;
+using static OpenVapour.Steam.SteamInternals;
 
 namespace OpenVapour {
-    public partial class Main : Form {
-        public Main() { InitializeComponent(); }
-        public static List<Image> states = new List<Image>();
+    internal partial class Main : Form {
+        internal Main() { InitializeComponent(); }
+        internal static List<Image> states = new List<Image>();
         private SteamGame currentgame = new SteamGame("");
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
@@ -34,6 +36,8 @@ namespace OpenVapour {
         private string panelgame = "";
 
         private void Main_Load(object sender, EventArgs e) {
+            if (DesignMode) return;
+
             WebRequest.DefaultWebProxy = null;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             UpdateStyles();
@@ -66,22 +70,25 @@ namespace OpenVapour {
             store.Location = new Point(0, 0);
             store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
-
+            
+            foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
+                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = tag }.CheckedChanged += delegate { ForceUpdate(); };
+            
             DrawSearchBox(sender, e); }
 
-        public void DrawGradient() {
+        internal void DrawGradient() {
             Bitmap background = new Bitmap(Width, Height);
             LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
             BackgroundImage = background; }
 
-        public const int WM_NCLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
+        internal const int WM_NCLBUTTONDOWN = 0xA1;
+        internal const int HT_CAPTION = 0x2;
 
         [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        internal static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [DllImport("user32.dll")]
-        public static extern bool ReleaseCapture();
+        internal static extern bool ReleaseCapture();
         protected override CreateParams CreateParams {
             get {
                 CreateParams handleParam = base.CreateParams;
@@ -388,8 +395,11 @@ namespace OpenVapour {
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
+                List<SteamTag> tags = new List<SteamTag>();
+                foreach (Control ctrl in tagFilterContainer.Controls)
+                    if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
                 ClearStore(); 
-                await GetResults(realsearchtb.Text); }}
+                await GetResults(realsearchtb.Text, tags.ToArray()); }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
             Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
@@ -521,6 +531,17 @@ namespace OpenVapour {
             gamedesc.MaximumSize = new Size(gamepanel.Width - 17, 0);
             gamedesc.MinimumSize = new Size(gamepanel.Width - 17, gamepanel.Height - 219); }
 
-        private void ToggleFilterMenu(object sender, EventArgs e) {
-            
-        }}}
+        private void FilterSearchFocused(object sender, EventArgs e) { 
+            if (filterSearch.Text == "Search") filterSearch.Text = ""; 
+            ForceUpdate(); }
+
+        private void FilterSearchChanged(object sender, KeyEventArgs e) {
+            if (filterSearch.Text.Length > 1)
+                foreach (Control ctrl in tagFilterContainer.Controls) {
+                    string _ = (ctrl as CheckBox).Text.ToLower();
+                    ctrl.Visible = Utilities.GetLevenshteinDistance(filterSearch.Text.ToLower(), _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= filterSearch.Text.Length / 2; }
+                ForceUpdate(); }
+
+        private void ToggleFilterMenu(object sender, EventArgs e) { 
+            filtersPanel.Visible = !filtersPanel.Visible;
+            ForceUpdate(); }}}

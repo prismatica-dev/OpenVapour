@@ -88,6 +88,7 @@
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="Steam\Cache.cs" />
+    <Compile Include="Steam\SteamInternals.cs" />
     <Compile Include="Steam\Torrent.cs" />
     <Compile Include="OpenVapourAPI\Utilities.cs" />
     <Compile Include="Steam\SteamGame.cs" />

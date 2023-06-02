@@ -10,15 +10,16 @@ using OpenVapour.Web;
 using OpenVapour.Steam;
 using System.Windows.Forms;
 using System.Windows.Media;
+using static OpenVapour.Steam.SteamInternals;
 
 namespace OpenVapour.SteamPseudoWebAPI {
-    public class SteamCore {
-        public class ResultGame {
-            public string Name { get; set; }
-            public string Price { get; set; }
-            public int AppId { get; set; }
-            public async Task<Bitmap> Bitmap(string AssetName = library) => await GetCDNAsset(AppId, AssetName);
-            public ResultGame(string JSON) {
+    internal class SteamCore {
+        internal class ResultGame {
+            internal string Name { get; set; }
+            internal string Price { get; set; }
+            internal int AppId { get; set; }
+            internal async Task<Bitmap> Bitmap(string AssetName = library) => await GetCDNAsset(AppId, AssetName);
+            internal ResultGame(string JSON) {
                 Name = GetBetween(JSON, "name\":\"", "\"");
                 Console.WriteLine(JSON);
                 string _ = "";
@@ -27,25 +28,25 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_); }} // pray one of them worked
 
         [Serializable]
-        public class SteamGame {
-            public string Name { get; set; }
-            public string AppId { get; set; }
-            public string Description { get; set; }
-            public SteamGame(string apiJSON) { 
+        internal class SteamGame {
+            internal string Name { get; set; }
+            internal string AppId { get; set; }
+            internal string Description { get; set; }
+            internal SteamGame(string apiJSON) { 
                 Console.WriteLine("processing new steamgame"); 
                 AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
                 Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
                 Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")); }}
 
         // cdn assets
-        public const string header = "header";
-        public const string library = "library_600x900_2x";
-        public const string capsule = "capsule_sm_120";
+        internal const string header = "header";
+        internal const string library = "library_600x900_2x";
+        internal const string capsule = "capsule_sm_120";
 
-        public static async Task<Bitmap> GetHeader(int AppId) => await GetCDNAsset(AppId, header);
-        public static async Task<Bitmap> GetShelf(int AppId) => await GetCDNAsset(AppId, library);
-        public static async Task<Bitmap> GetCapsule(int AppId) => await GetCDNAsset(AppId, capsule);
-        public static async Task<Bitmap> GetCDNAsset(int AppId, string ImageName, bool Retry = false) {
+        internal static async Task<Bitmap> GetHeader(int AppId) => await GetCDNAsset(AppId, header);
+        internal static async Task<Bitmap> GetShelf(int AppId) => await GetCDNAsset(AppId, library);
+        internal static async Task<Bitmap> GetCapsule(int AppId) => await GetCDNAsset(AppId, capsule);
+        internal static async Task<Bitmap> GetCDNAsset(int AppId, string ImageName, bool Retry = false) {
             try {
                 if (IsSteamBitmapCached(AppId, ImageName)) return GetCachedSteamBitmap(AppId, ImageName);
                 HttpWebRequest req = WebRequest.CreateHttp($"https://steamcdn-a.akamaihd.net/steam/apps/{AppId}/{(Retry?header:ImageName)}.jpg");
@@ -58,7 +59,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 if (Retry || ImageName == header || !ex.Message.Contains("404")) return new Bitmap(1, 1);
                 else return await GetCDNAsset(AppId, ImageName, true); }}
 
-        public static async Task<List<ResultGame>> GetSuggestions(string Search) {
+        internal static async Task<List<ResultGame>> GetSuggestions(string Search) {
             List<ResultGame> suggestions = new List<ResultGame>();
             try {
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/suggest?cc=US&l=english&realm=1&origin=https:%2F%2Fstore.steampowered.com&f=jsonfull&term={Search}&require_type=game,software");
@@ -68,12 +69,15 @@ namespace OpenVapour.SteamPseudoWebAPI {
             } catch (Exception ex) { HandleException($"SteamCore.GetSuggestions({Search})", ex); }
             return suggestions; }
 
-        public static async Task<List<ResultGame>> GetResults(string Search, int MaxResults = 10) {
+        internal static async Task<List<ResultGame>> GetResults(string Search, SteamTag[] Tags = null, int MaxResults = 10) {
             List<ResultGame> results = new List<ResultGame>();
             int _r = 0;
             try {
                 // applied filter will only return games and software (no dlc or demos)
-                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&category1=998%2C994");
+                string tags = "";
+                if (Tags != null) tags = ProcessArray(Tags);
+
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994");
                 Console.WriteLine("processing results");
                 JSON = JSON.Substring(JSON.IndexOf("[") + 1);
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
@@ -91,7 +95,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
 
-        public static async Task<List<Task<SteamGame>>> ProcessResults(List<ResultGame> Results, bool Basic = true) {
+        internal static async Task<List<Task<SteamGame>>> ProcessResults(List<ResultGame> Results, bool Basic = true) {
             List<Task<SteamGame>> games = new List<Task<SteamGame>>();
             try {
                 foreach (ResultGame _ in Results) {
@@ -101,7 +105,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
             } catch (Exception ex) { HandleException($"SteamCore.ProcessResults(List<ResultGame>)", ex); }
             return games; }
 
-        public static async Task<SteamGame> GetGame(int AppId, bool Basic = false, bool Cache = false) {
+        internal static async Task<SteamGame> GetGame(int AppId, bool Basic = false, bool Cache = false) {
             try {
                 Console.WriteLine($"getting game '{AppId}' from steamapi");
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");

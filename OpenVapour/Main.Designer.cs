@@ -30,10 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
+            this.manageFilters = new System.Windows.Forms.Button();
             this.searchtextbox = new System.Windows.Forms.Panel();
             this.manageSettings = new System.Windows.Forms.Button();
             this.exit = new System.Windows.Forms.Button();
             this.storeselect = new System.Windows.Forms.Label();
+            this.store = new System.Windows.Forms.FlowLayoutPanel();
             this.popuppanel = new System.Windows.Forms.Panel();
             this.popupdesc = new System.Windows.Forms.Label();
             this.popuptitle = new System.Windows.Forms.Label();
@@ -59,8 +61,10 @@
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
-            this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
-            this.manageFilters = new System.Windows.Forms.Button();
+            this.filtersPanel = new System.Windows.Forms.Panel();
+            this.tagFilterContainer = new System.Windows.Forms.FlowLayoutPanel();
+            this.filterSearch = new System.Windows.Forms.TextBox();
+            this.tagFilterHeader = new System.Windows.Forms.Label();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -74,6 +78,7 @@
             this.VisitButtonContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
             this.nogamesnotif.SuspendLayout();
+            this.filtersPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -93,6 +98,24 @@
             this.toolbar.TabIndex = 1;
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            // 
+            // manageFilters
+            // 
+            this.manageFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.manageFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageFilters.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageFilters.FlatAppearance.BorderSize = 0;
+            this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.manageFilters.ForeColor = System.Drawing.Color.White;
+            this.manageFilters.Location = new System.Drawing.Point(555, 0);
+            this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
+            this.manageFilters.Name = "manageFilters";
+            this.manageFilters.Size = new System.Drawing.Size(25, 25);
+            this.manageFilters.TabIndex = 8;
+            this.manageFilters.Text = "+";
+            this.manageFilters.UseVisualStyleBackColor = false;
+            this.manageFilters.Click += new System.EventHandler(this.ToggleFilterMenu);
             // 
             // searchtextbox
             // 
@@ -152,6 +175,21 @@
             this.storeselect.TabIndex = 0;
             this.storeselect.Text = "OpenVapour v1.3.0 — FLOSS Torrent Search";
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            // 
+            // store
+            // 
+            this.store.AutoScroll = true;
+            this.store.BackColor = System.Drawing.Color.Transparent;
+            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.store.Location = new System.Drawing.Point(0, 25);
+            this.store.Name = "store";
+            this.store.Size = new System.Drawing.Size(11, 487);
+            this.store.TabIndex = 2;
+            this.store.Visible = false;
+            this.store.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
+            this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
+            this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             // 
             // popuppanel
             // 
@@ -492,38 +530,60 @@
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // store
+            // filtersPanel
             // 
-            this.store.AutoScroll = true;
-            this.store.BackColor = System.Drawing.Color.Transparent;
-            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.store.Location = new System.Drawing.Point(0, 25);
-            this.store.Name = "store";
-            this.store.Size = new System.Drawing.Size(11, 487);
-            this.store.TabIndex = 2;
-            this.store.Visible = false;
-            this.store.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
-            this.store.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
-            this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
-            this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
+            this.filtersPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.filtersPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.filtersPanel.Controls.Add(this.tagFilterContainer);
+            this.filtersPanel.Controls.Add(this.filterSearch);
+            this.filtersPanel.Controls.Add(this.tagFilterHeader);
+            this.filtersPanel.Location = new System.Drawing.Point(555, 25);
+            this.filtersPanel.Name = "filtersPanel";
+            this.filtersPanel.Size = new System.Drawing.Size(200, 318);
+            this.filtersPanel.TabIndex = 8;
+            this.filtersPanel.Visible = false;
             // 
-            // manageFilters
+            // tagFilterContainer
             // 
-            this.manageFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.manageFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.manageFilters.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.manageFilters.FlatAppearance.BorderSize = 0;
-            this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.manageFilters.ForeColor = System.Drawing.Color.White;
-            this.manageFilters.Location = new System.Drawing.Point(555, 0);
-            this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
-            this.manageFilters.Name = "manageFilters";
-            this.manageFilters.Size = new System.Drawing.Size(25, 25);
-            this.manageFilters.TabIndex = 8;
-            this.manageFilters.Text = "+";
-            this.manageFilters.UseVisualStyleBackColor = false;
-            this.manageFilters.Click += new System.EventHandler(this.ToggleFilterMenu);
+            this.tagFilterContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.tagFilterContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tagFilterContainer.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.tagFilterContainer.Font = new System.Drawing.Font("Segoe UI Light", 12.25F);
+            this.tagFilterContainer.ForeColor = System.Drawing.Color.White;
+            this.tagFilterContainer.Location = new System.Drawing.Point(0, 56);
+            this.tagFilterContainer.Name = "tagFilterContainer";
+            this.tagFilterContainer.Size = new System.Drawing.Size(200, 262);
+            this.tagFilterContainer.TabIndex = 1;
+            this.tagFilterContainer.WrapContents = false;
+            this.tagFilterContainer.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
+            this.tagFilterContainer.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
+            // 
+            // filterSearch
+            // 
+            this.filterSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.filterSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.filterSearch.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
+            this.filterSearch.Location = new System.Drawing.Point(0, 30);
+            this.filterSearch.Name = "filterSearch";
+            this.filterSearch.Size = new System.Drawing.Size(200, 26);
+            this.filterSearch.TabIndex = 2;
+            this.filterSearch.Text = "Search";
+            this.filterSearch.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.filterSearch.Enter += new System.EventHandler(this.FilterSearchFocused);
+            this.filterSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilterSearchChanged);
+            // 
+            // tagFilterHeader
+            // 
+            this.tagFilterHeader.AutoSize = true;
+            this.tagFilterHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.tagFilterHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tagFilterHeader.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
+            this.tagFilterHeader.ForeColor = System.Drawing.Color.White;
+            this.tagFilterHeader.Location = new System.Drawing.Point(0, 0);
+            this.tagFilterHeader.Name = "tagFilterHeader";
+            this.tagFilterHeader.Size = new System.Drawing.Size(122, 30);
+            this.tagFilterHeader.TabIndex = 0;
+            this.tagFilterHeader.Text = "Filter by Tag";
             // 
             // Main
             // 
@@ -532,6 +592,7 @@
             this.BackColor = System.Drawing.Color.Orchid;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(805, 512);
+            this.Controls.Add(this.filtersPanel);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);
             this.Controls.Add(this.popuppanel);
@@ -575,6 +636,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
             this.nogamesnotif.ResumeLayout(false);
             this.nogamesnotif.PerformLayout();
+            this.filtersPanel.ResumeLayout(false);
+            this.filtersPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -582,7 +645,7 @@
 
         #endregion
         private System.Windows.Forms.Panel toolbar;
-        private OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel store;
+        private System.Windows.Forms.FlowLayoutPanel store;
         private System.Windows.Forms.Label storeselect;
         private System.Windows.Forms.Panel popuppanel;
         private System.Windows.Forms.Label popupdesc;
@@ -613,6 +676,10 @@
         private System.Windows.Forms.Button toggleHomepage;
         private System.Windows.Forms.Panel toggleHomepageContainer;
         private System.Windows.Forms.Button manageFilters;
+        private System.Windows.Forms.Panel filtersPanel;
+        private System.Windows.Forms.FlowLayoutPanel tagFilterContainer;
+        private System.Windows.Forms.Label tagFilterHeader;
+        private System.Windows.Forms.TextBox filterSearch;
     }
 }
 

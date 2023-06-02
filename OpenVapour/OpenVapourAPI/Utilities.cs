@@ -115,10 +115,10 @@ namespace OpenVapour.Steam {
                     if (font.Size < .5f) fit = true;
                 } else fit = true; }
             return font; }
-        public static string SanitiseTags(string source) {
+        internal static string SanitiseTags(string source) {
             for (int i = 0; i < FilterCore.Length; i += 2) source = source.Replace(FilterCore[i], FilterCore[i + 1]);
             return source; }
-        public static string StripTags(string source) {
+        internal static string StripTags(string source) {
             source = SanitiseTags(source);
             char[] array = new char[source.Length];
             int i = 0;

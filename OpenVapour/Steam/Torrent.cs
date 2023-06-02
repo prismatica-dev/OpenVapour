@@ -115,16 +115,16 @@ namespace OpenVapour.Steam {
                     return "Unknown"; }}}
 
     internal class Torrent {
-        public static Tuple<byte[], byte[]>[] PCGTGameList = new Tuple<byte[], byte[]>[] { };
-        public static string[] KaOSGameList = new string[] { };
+        internal static Tuple<byte[], byte[]>[] PCGTGameList = new Tuple<byte[], byte[]>[] { };
+        internal static string[] KaOSGameList = new string[] { };
         internal class ResultTorrent {
-            public TorrentSource Source { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public string Url { get; set; }
-            public string Image { get; set; }
-            public string TorrentUrl { get; set; }
-            public static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
+            internal TorrentSource Source { get; set; }
+            internal string Name { get; set; }
+            internal string Description { get; set; }
+            internal string Url { get; set; }
+            internal string Image { get; set; }
+            internal string TorrentUrl { get; set; }
+            internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 try {
                     string html = await WebCore.GetWebString(Url);
                     switch (source) {
@@ -189,7 +189,7 @@ namespace OpenVapour.Steam {
                     } catch (Exception ex) { HandleException($"ResultTorrent.TorrentFromUrl({source}, {Url}, {Name})", ex); }
                 return new ResultTorrent(TorrentSource.Unknown, ""); }
 
-            public ResultTorrent(TorrentSource Source, string JSON) {
+            internal ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;
                 try {
                     switch (Source) {
@@ -253,7 +253,7 @@ namespace OpenVapour.Steam {
                             break; }
                     } catch (Exception ex) { HandleException($"ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
             
-            public async Task<string> GetMagnet() {
+            internal async Task<string> GetMagnet() {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
                         return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
@@ -280,9 +280,9 @@ namespace OpenVapour.Steam {
                     default:
                         throw new Exception($"Torrent source '{TorrentUrl}' is unknown or unsupported"); }}}
 
-        public static string MagnetFromTorrent(byte[] TorrentFile) => $"magnet:?xt=urn:btih:{Convert.ToBase64String(TorrentFile)}";
+        internal static string MagnetFromTorrent(byte[] TorrentFile) => $"magnet:?xt=urn:btih:{Convert.ToBase64String(TorrentFile)}";
 
-        public static string FixRSSUnicode(string Content) {
+        internal static string FixRSSUnicode(string Content) {
             bool Fixed = false;
             int iterations = 0;
             while (!Fixed) {
@@ -297,7 +297,7 @@ namespace OpenVapour.Steam {
                     } else Fixed = true; } else Fixed = true; }
             return Content.Replace("\\/", "/"); }
 
-        public static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
+        internal static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
             List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
             List<string> resulturls = new List<string>();
             string filtName = FilterAlphanumeric(Name.ToLower());
@@ -405,7 +405,7 @@ namespace OpenVapour.Steam {
             } catch (Exception ex) { HandleException($"TorrentCore.GetExtendedResults({Source}, {Name})", ex); }
             return results; }
 
-        public static async Task<List<ResultTorrent>> GetResults(TorrentSource Source, string Name) {
+        internal static async Task<List<ResultTorrent>> GetResults(TorrentSource Source, string Name) {
             List<ResultTorrent> results = new List<ResultTorrent>();
             List<string> resulturls = new List<string>();
             try {

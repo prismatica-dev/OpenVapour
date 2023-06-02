@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OpenVapour.OpenVapourAPI {
-    public partial class FixedFlowLayoutPanel : FlowLayoutPanel {
-        public FixedFlowLayoutPanel() : base() {
+    internal partial class FixedFlowLayoutPanel : FlowLayoutPanel {
+        internal FixedFlowLayoutPanel() : base() {
             SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.SupportsTransparentBackColor, true); }
             protected override void OnScroll(ScrollEventArgs se) {
                 Invalidate();
