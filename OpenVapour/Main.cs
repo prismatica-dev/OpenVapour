@@ -237,6 +237,9 @@ namespace OpenVapour {
                 Invoke((MethodInvoker)delegate { AddGame(game); });
                 return; }
 
+            try { if (!Cache.IsSteamGameCached(Convert.ToInt32(game.AppId))) Cache.CacheSteamGame(game);
+            } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Caching]", ex); }
+
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
             List<object> metalist = new List<object> { states, game, false };
             panel.Image = states[0];
@@ -250,7 +253,7 @@ namespace OpenVapour {
             panel.MouseLeave += GameHoverEnd;
             panel.MouseUp += GameClickEnd;
             store.Controls.Add(panel);
-            ForceUpdate();
+            try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Refresh]", ex);}
             LoadGameBitmap(game, panel); }
 
         internal async void LoadGameBitmap(SteamGame game, PictureBox output) {
@@ -399,7 +402,8 @@ namespace OpenVapour {
                 foreach (Control ctrl in tagFilterContainer.Controls)
                     if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
                 ClearStore(); 
-                await GetResults(realsearchtb.Text, tags.ToArray()); }}
+                int results = (int)Math.Floor(store.Width / 156f) * (int)Math.Floor(store.Height / 231f);
+                await GetResults(realsearchtb.Text, tags.ToArray(), results); }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
             Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");

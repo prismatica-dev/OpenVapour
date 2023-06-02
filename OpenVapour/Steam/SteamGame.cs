@@ -92,7 +92,7 @@ namespace OpenVapour.SteamPseudoWebAPI {
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
                     main?.Invoke((MethodInvoker)delegate { 
                         if (!IsSteamGameCached(last.AppId)) main.AsyncAddGame(last.AppId);
-                        else main.AddGame(Cache.LoadCachedSteamGame(last.AppId));
+                        else main.AddGame(LoadCachedSteamGame(last.AppId));
                     }); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
