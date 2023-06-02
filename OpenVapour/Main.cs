@@ -161,16 +161,19 @@ namespace OpenVapour {
 
         internal void ClearStore() {
             Console.WriteLine("clearing store!");
-            foreach (Control ctrl in store.Controls) {
-                if (ctrl.GetType() == typeof(PictureBox)) {
-                    PictureBox pb = ctrl as PictureBox;
-                    InterpretPictureBox(pb, out _, out _, out List<Image> i);
-                    foreach (Image im in i) im.Dispose();
-                    i.Clear();
-                    pb.Image?.Dispose(); }
-                ctrl.Dispose();}
-            store.Controls.Clear();
-            ForceUpdate(); }
+            try {
+                foreach (Control ctrl in store.Controls) {
+                    if (ctrl.GetType() == typeof(PictureBox)) {
+                        PictureBox pb = ctrl as PictureBox;
+                        InterpretPictureBox(pb, out _, out List<object> meta, out List<Image> i);
+                        if (meta[1] == currentgame || meta[1] == currenttorrent) continue;
+                        foreach (Image im in i) im.Dispose();
+                        i.Clear();
+                        pb.Image?.Dispose(); }
+                    ctrl.Dispose();
+                    ctrl.Parent = null; }
+            } catch (Exception ex) { Utilities.HandleException("ClearStore()", ex); }
+            store.Controls.Clear(); }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -222,6 +225,7 @@ namespace OpenVapour {
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
 
         internal void AddGame(SteamGame game) {
+            if (game == null || game.AppId.Length == 0) return;
             if (InvokeRequired) {
                 Invoke((MethodInvoker)delegate { AddGame(game); });
                 return; }
@@ -260,6 +264,7 @@ namespace OpenVapour {
                         metalist.RemoveAt(0); metalist.Insert(0, states);
                         metalist[2] = true;
                         metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output));
+                        ForceUpdate();
                         }); });
                 await cont;
             } catch(Exception ex) { Utilities.HandleException($"LoadGameBitmap(game, panel)", ex); }}
@@ -307,7 +312,8 @@ namespace OpenVapour {
 
         private void GameClickStart(object sender, MouseEventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out _, out List<Image> pbs);
-            pb.Image = pbs[2]; }
+            pb.Image = pbs[2];
+            ForceUpdate(); }
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[1];
@@ -319,18 +325,18 @@ namespace OpenVapour {
 
             popup.Visible = true;
             hover = true;
-            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
+            ForceUpdate();
             if ((bool)pbl[2]) await Task.Delay(20000);
             else await Task.Delay(1000);
             popup.Visible = false;
-            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
         private void GameHoverEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[0];
             Panel popup = (Panel)pbl[3];
             popup.Visible = false;
             hover = false;
-            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            ForceUpdate(); }
         private void GameClickEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> _, out List<Image> pbs);
             if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
@@ -473,13 +479,14 @@ namespace OpenVapour {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
-            if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
-            else {
-                LockWindowUpdate(IntPtr.Zero);
-                store.Update();
-                if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }}
-        private void BackgroundTearingFix(object sender, MouseEventArgs e) {
-            BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
+            try {
+                if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
+                else {
+                    LockWindowUpdate(IntPtr.Zero);
+                    Update();
+                    if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
+            } catch (Exception ex) { Utilities.HandleException("BackgroundTearingFix(sender, se)", ex); }}
+        private void BackgroundTearingFix(object sender, MouseEventArgs e) => ForceUpdate();
         private void BackgroundTearingFix(object sender, EventArgs e) {}
         private void ForceUpdate() => BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
 
@@ -508,4 +515,12 @@ namespace OpenVapour {
             else { 
                 Cache.HomepageGame(currentgame);
                 toggleHomepage.BackColor = Color.FromArgb(130, 0, 100, 0); }
-            ForceUpdate(); }}}
+            ForceUpdate(); }
+
+        private void Resized(object sender, EventArgs e) {
+            gamedesc.MaximumSize = new Size(gamepanel.Width - 17, 0);
+            gamedesc.MinimumSize = new Size(gamepanel.Width - 17, gamepanel.Height - 219); }
+
+        private void ToggleFilterMenu(object sender, EventArgs e) {
+            
+        }}}

@@ -36,6 +36,7 @@
             // torrentSourcesHeader
             // 
             this.torrentSourcesHeader.AutoSize = true;
+            this.torrentSourcesHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.torrentSourcesHeader.ForeColor = System.Drawing.Color.White;
             this.torrentSourcesHeader.Location = new System.Drawing.Point(0, 0);
             this.torrentSourcesHeader.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -43,11 +44,12 @@
             this.torrentSourcesHeader.Size = new System.Drawing.Size(149, 30);
             this.torrentSourcesHeader.TabIndex = 0;
             this.torrentSourcesHeader.Text = "Torrent Sources";
+            this.torrentSourcesHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // torrentSourcesContainer
             // 
             this.torrentSourcesContainer.AutoScroll = true;
-            this.torrentSourcesContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.torrentSourcesContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.torrentSourcesContainer.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.torrentSourcesContainer.Font = new System.Drawing.Font("Segoe UI Light", 10.75F);
             this.torrentSourcesContainer.Location = new System.Drawing.Point(5, 30);
@@ -59,6 +61,7 @@
             // directSourcesHeader
             // 
             this.directSourcesHeader.AutoSize = true;
+            this.directSourcesHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.directSourcesHeader.ForeColor = System.Drawing.Color.White;
             this.directSourcesHeader.Location = new System.Drawing.Point(0, 153);
             this.directSourcesHeader.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -66,11 +69,12 @@
             this.directSourcesHeader.Size = new System.Drawing.Size(138, 30);
             this.directSourcesHeader.TabIndex = 2;
             this.directSourcesHeader.Text = "Direct Sources";
+            this.directSourcesHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // directSourcesContainer
             // 
             this.directSourcesContainer.AutoScroll = true;
-            this.directSourcesContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.directSourcesContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.directSourcesContainer.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.directSourcesContainer.Font = new System.Drawing.Font("Segoe UI Light", 10.75F);
             this.directSourcesContainer.Location = new System.Drawing.Point(5, 186);
@@ -82,7 +86,7 @@
             // saveSettingsButton
             // 
             this.saveSettingsButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(0)))));
-            this.saveSettingsButton.FlatAppearance.BorderSize = 0;
+            this.saveSettingsButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.saveSettingsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveSettingsButton.ForeColor = System.Drawing.Color.White;
             this.saveSettingsButton.Location = new System.Drawing.Point(174, 2);
@@ -95,6 +99,7 @@
             // windowThemeHeader
             // 
             this.windowThemeHeader.AutoSize = true;
+            this.windowThemeHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.windowThemeHeader.ForeColor = System.Drawing.Color.White;
             this.windowThemeHeader.Location = new System.Drawing.Point(0, 279);
             this.windowThemeHeader.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -102,11 +107,12 @@
             this.windowThemeHeader.Size = new System.Drawing.Size(152, 30);
             this.windowThemeHeader.TabIndex = 5;
             this.windowThemeHeader.Text = "Window Theme";
+            this.windowThemeHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
             // themeColour1
             // 
             this.themeColour1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(149)))), ((int)(((byte)(255)))));
-            this.themeColour1.FlatAppearance.BorderSize = 0;
+            this.themeColour1.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.themeColour1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeColour1.ForeColor = System.Drawing.Color.White;
             this.themeColour1.Location = new System.Drawing.Point(5, 312);
@@ -119,7 +125,7 @@
             // themeColour2
             // 
             this.themeColour2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(173)))), ((int)(((byte)(101)))), ((int)(((byte)(255)))));
-            this.themeColour2.FlatAppearance.BorderSize = 0;
+            this.themeColour2.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.themeColour2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeColour2.ForeColor = System.Drawing.Color.White;
             this.themeColour2.Location = new System.Drawing.Point(101, 312);
@@ -133,7 +139,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.BackColor = System.Drawing.Color.MediumOrchid;
             this.ClientSize = new System.Drawing.Size(200, 348);
             this.Controls.Add(this.themeColour2);
             this.Controls.Add(this.themeColour1);

@@ -30,10 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
+            this.searchtextbox = new System.Windows.Forms.Panel();
             this.manageSettings = new System.Windows.Forms.Button();
             this.exit = new System.Windows.Forms.Button();
             this.storeselect = new System.Windows.Forms.Label();
-            this.searchtextbox = new System.Windows.Forms.Panel();
             this.popuppanel = new System.Windows.Forms.Panel();
             this.popupdesc = new System.Windows.Forms.Label();
             this.popuptitle = new System.Windows.Forms.Label();
@@ -60,6 +60,7 @@
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
             this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
+            this.manageFilters = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -78,6 +79,7 @@
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolbar.Controls.Add(this.manageFilters);
             this.toolbar.Controls.Add(this.searchtextbox);
             this.toolbar.Controls.Add(this.manageSettings);
             this.toolbar.Controls.Add(this.exit);
@@ -92,16 +94,27 @@
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
+            // searchtextbox
+            // 
+            this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.searchtextbox.Location = new System.Drawing.Point(580, 0);
+            this.searchtextbox.Name = "searchtextbox";
+            this.searchtextbox.Size = new System.Drawing.Size(200, 25);
+            this.searchtextbox.TabIndex = 5;
+            this.searchtextbox.Click += new System.EventHandler(this.Searchtextbox_Click);
+            // 
             // manageSettings
             // 
             this.manageSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.manageSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.manageSettings.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.manageSettings.FlatAppearance.BorderSize = 0;
             this.manageSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageSettings.Font = new System.Drawing.Font("Segoe UI Light", 9F);
             this.manageSettings.ForeColor = System.Drawing.Color.White;
-            this.manageSettings.Location = new System.Drawing.Point(511, 0);
+            this.manageSettings.Location = new System.Drawing.Point(486, 0);
             this.manageSettings.Margin = new System.Windows.Forms.Padding(0);
             this.manageSettings.Name = "manageSettings";
             this.manageSettings.Size = new System.Drawing.Size(69, 25);
@@ -139,17 +152,6 @@
             this.storeselect.TabIndex = 0;
             this.storeselect.Text = "OpenVapour v1.3.0 — FLOSS Torrent Search";
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
-            // 
-            // searchtextbox
-            // 
-            this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(580, 0);
-            this.searchtextbox.Name = "searchtextbox";
-            this.searchtextbox.Size = new System.Drawing.Size(200, 25);
-            this.searchtextbox.TabIndex = 5;
-            this.searchtextbox.Click += new System.EventHandler(this.Searchtextbox_Click);
             // 
             // popuppanel
             // 
@@ -219,10 +221,10 @@
             // 
             // toggleHomepageContainer
             // 
-            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
             this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
-            this.toggleHomepageContainer.Location = new System.Drawing.Point(465, 175);
+            this.toggleHomepageContainer.Location = new System.Drawing.Point(460, 178);
             this.toggleHomepageContainer.Name = "toggleHomepageContainer";
             this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
             this.toggleHomepageContainer.TabIndex = 14;
@@ -260,6 +262,9 @@
             // 
             // gamedescpanel
             // 
+            this.gamedescpanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamedescpanel.AutoScroll = true;
             this.gamedescpanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.gamedescpanel.Controls.Add(this.gamedesc);
@@ -299,6 +304,8 @@
             // 
             // gamebtns
             // 
+            this.gamebtns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamebtns.BackColor = System.Drawing.Color.Transparent;
             this.gamebtns.Controls.Add(this.SteamPageContainer);
             this.gamebtns.Controls.Add(this.TorrentSearchContainer);
@@ -500,6 +507,24 @@
             this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
             this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             // 
+            // manageFilters
+            // 
+            this.manageFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.manageFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageFilters.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.manageFilters.FlatAppearance.BorderSize = 0;
+            this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.manageFilters.ForeColor = System.Drawing.Color.White;
+            this.manageFilters.Location = new System.Drawing.Point(555, 0);
+            this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
+            this.manageFilters.Name = "manageFilters";
+            this.manageFilters.Size = new System.Drawing.Size(25, 25);
+            this.manageFilters.TabIndex = 8;
+            this.manageFilters.Text = "+";
+            this.manageFilters.UseVisualStyleBackColor = false;
+            this.manageFilters.Click += new System.EventHandler(this.ToggleFilterMenu);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
@@ -518,6 +543,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
+            this.MinimumSize = new System.Drawing.Size(405, 300);
             this.Name = "Main";
             this.Text = "OpenVapour";
             this.TransparencyKey = System.Drawing.Color.Snow;
@@ -526,6 +552,7 @@
             this.Shown += new System.EventHandler(this.MainShown);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            this.Resize += new System.EventHandler(this.Resized);
             this.toolbar.ResumeLayout(false);
             this.toolbar.PerformLayout();
             this.popuppanel.ResumeLayout(false);
@@ -585,6 +612,7 @@
         private System.Windows.Forms.Panel VisitButtonContainer;
         private System.Windows.Forms.Button toggleHomepage;
         private System.Windows.Forms.Panel toggleHomepageContainer;
+        private System.Windows.Forms.Button manageFilters;
     }
 }
 

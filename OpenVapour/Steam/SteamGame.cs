@@ -9,6 +9,7 @@ using static OpenVapour.Steam.Cache;
 using OpenVapour.Web;
 using OpenVapour.Steam;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace OpenVapour.SteamPseudoWebAPI {
     public class SteamCore {
@@ -101,11 +102,13 @@ namespace OpenVapour.SteamPseudoWebAPI {
             return games; }
 
         public static async Task<SteamGame> GetGame(int AppId, bool Basic = false, bool Cache = false) {
-            Console.WriteLine($"getting game '{AppId}' from steamapi");
-            string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
-            Console.WriteLine("returning relevant json,,,");
-            if (Cache) {
-                SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
-                CacheSteamGame(game);
-                return game;
-            } else return new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8)); }}}
+            try {
+                Console.WriteLine($"getting game '{AppId}' from steamapi");
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
+                Console.WriteLine("returning relevant json,,,");
+                if (Cache) {
+                    SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
+                    CacheSteamGame(game);
+                    return game;
+                } else return new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8)); 
+            } catch (Exception ex) { HandleException($"GetGame({AppId}, {Basic}, {Cache})", ex); return new SteamGame(""); }}}}

@@ -44,8 +44,10 @@ namespace OpenVapour.Steam {
                 case TorrentSource.FitgirlRepacks:
                     return Integration.Extended;
 
-                case TorrentSource.SteamRIP:
                 case TorrentSource.GOG:
+                    return Integration.Full;
+
+                case TorrentSource.SteamRIP:
                 case TorrentSource.KaOs:
                     return Integration.NoBypass;
 
@@ -60,13 +62,9 @@ namespace OpenVapour.Steam {
         internal static Integration GetIntegration(DirectSource Source) {
             switch (Source) {
                 case DirectSource.IGGGames:
-                    return Integration.None;
                 case DirectSource.KaOs:
-                    return Integration.None;
                 case DirectSource.SteamRIP:
-                    return Integration.None;
                 case DirectSource.Crackhub:
-                    return Integration.None;
                 case DirectSource.Unknown:
                 default:
                     return Integration.None; }}
@@ -194,56 +192,66 @@ namespace OpenVapour.Steam {
             public ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;
                 try {
-                switch (Source) {
-                    case TorrentSource.PCGamesTorrents:
-                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                        Name = GetBetween(JSON, "<title>", "</title>");
-                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                        Image = GetBetween(JSON, "src=\"", "\"");
-                        TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
-                    break;
+                    switch (Source) {
+                        case TorrentSource.PCGamesTorrents:
+                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                            Name = GetBetween(JSON, "<title>", "</title>");
+                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                            Image = GetBetween(JSON, "src=\"", "\"");
+                            TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
+                        break;
                     
-                    case TorrentSource.FitgirlRepacks:
-                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                        Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
-                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                        Image = GetBetween(JSON, "src=\"", "\"");
-                        TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}"; // direct magnet
-                        break;
+                        case TorrentSource.FitgirlRepacks:
+                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                            Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
+                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                            Image = GetBetween(JSON, "src=\"", "\"");
+                            TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}"; // direct magnet
+                            break;
 
-                    case TorrentSource.SteamRIP:
-                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                        Name = GetBetween(JSON, "<title>", "</title>");
-                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                        Image = GetBetween(JSON, "<p style=\"text-align: center;\"><a href=\"", "\"");
-                        TorrentUrl = GetBetween(GetBetween(JSON, "clearfix", "</item"), "<p style=\"text-align: center;\"><a href=\"", "\"");
-                        break;
+                        case TorrentSource.SteamRIP:
+                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                            Name = GetBetween(JSON, "<title>", "</title>");
+                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                            Image = GetBetween(JSON, "<p style=\"text-align: center;\"><a href=\"", "\"");
+                            TorrentUrl = GetBetween(GetBetween(JSON, "clearfix", "</item"), "<p style=\"text-align: center;\"><a href=\"", "\"");
+                            break;
 
-                    case TorrentSource.SevenGamers:
-                        Url = GetBetween(JSON, "<a itemprop=\"url\" href=\"", "\"");
-                        Name = GetBetween(JSON, "title=\"", "\"");
-                        Description = GetBetween(JSON, "<p itemprop=\"description\" class=\"edgtf-post-excerpt\">", "</p>");
-                        Image = GetBetween(JSON, "src=\"", "\"");
-                        TorrentUrl = $"{Url}{(Url.EndsWith("/")?"":"/")}#torrent"; // needs to load page, download page then .torrent
-                        break;
+                        case TorrentSource.SevenGamers:
+                            Url = GetBetween(JSON, "<a itemprop=\"url\" href=\"", "\"");
+                            Name = GetBetween(JSON, "title=\"", "\"");
+                            Description = GetBetween(JSON, "<p itemprop=\"description\" class=\"edgtf-post-excerpt\">", "</p>");
+                            Image = GetBetween(JSON, "src=\"", "\"");
+                            TorrentUrl = $"{Url}{(Url.EndsWith("/")?"":"/")}#torrent"; // needs to load page, download page then .torrent
+                            break;
 
-                    case TorrentSource.GOG:
-                        Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                        Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
-                        Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                        string _ = GetBetween(JSON, "\t<link>", "</link>");
-                        if (_.EndsWith("/")) _ = _.Remove(_.Length - 1, 1);
-                        Console.WriteLine($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{_.Substring(_.LastIndexOf("/") + 1)}.jpg");
-                        string _t = _.Substring(_.LastIndexOf("/") + 1);
-                        _t = _t.Substring(0, 1).ToUpper() + _t.Substring(1);
-                        Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{_t}.jpg";
-                        TorrentUrl = Url;
-                        break;
+                        case TorrentSource.GOG:
+                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
+                            Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
+                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
+                            string _ = GetBetween(JSON, "\t<link>", "</link>");
+                            if (_.EndsWith("/")) _ = _.Remove(_.Length - 1, 1);
+                            Console.WriteLine(_.Substring(_.LastIndexOf("/") + 1));
+                            string img = "";
+                            string imagepreprocessed = _.Substring(_.LastIndexOf("/") + 1).Replace("1-", "");
+                            string[] split = imagepreprocessed.Split('-');
+                            if (split.Length > 1) {
+                                string[] rebuild = new string[split.Length];
+                                for (int i = 0; i < split.Length; i++) {
+                                    if (split[i].Length > 0)
+                                        rebuild[i] = split[i].Substring(0, 1).ToUpper() + split[i].Substring(1); }
+                                img = string.Join("-", rebuild);
+                            } else img = imagepreprocessed.Substring(0, 1).ToUpper() + imagepreprocessed.Substring(1);
+                            Console.WriteLine($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg");
+                            Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg";
+                            TorrentUrl = Url;
+                            break;
 
-                    case TorrentSource.Unknown:
-                    default:
-                        Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
-                        break; }} catch (Exception ex) { HandleException($"ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
+                        case TorrentSource.Unknown:
+                        default:
+                            Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
+                            break; }
+                    } catch (Exception ex) { HandleException($"ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
             
             public async Task<string> GetMagnet() {
                 switch (Source) {
@@ -264,6 +272,9 @@ namespace OpenVapour.Steam {
                     case TorrentSource.SteamRIP:
                         // pending megadb bypass
                         return Url;
+
+                    case TorrentSource.GOG:
+                        return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
 
                     case TorrentSource.Unknown:
                     default:

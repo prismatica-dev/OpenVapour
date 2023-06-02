@@ -1,8 +1,10 @@
-﻿using System;
+﻿using OpenVapour.OpenVapourAPI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -39,12 +41,22 @@ namespace OpenVapour {
         private void SettingsLoad(object sender, EventArgs e) {
             themeColour1.BackColor = WindowTheme["background1"];
             themeColour2.BackColor = WindowTheme["background2"];
+            DrawGradient();
+
+            // disable horizontal scrollbars
+            torrentSourcesContainer.HorizontalScroll.Maximum = 0;
+            torrentSourcesContainer.HorizontalScroll.Enabled = false;
+            torrentSourcesContainer.HorizontalScroll.Visible = false;
+            directSourcesContainer.HorizontalScroll.Maximum = 0;
+            directSourcesContainer.HorizontalScroll.Enabled = false;
+            directSourcesContainer.HorizontalScroll.Visible = false;
+
             foreach (TorrentSource source in TorrentSources.Keys)
                 if (TorrentSources[source] != Implementation.Unimplemented)
-                    new CheckBox { Checked = TorrentSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(torrentSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth - 10, 30), Parent = torrentSourcesContainer, Text = GetSourceName(source), Tag = source };
+                    new CheckBox { Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = TorrentSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(torrentSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = torrentSourcesContainer, Text = GetSourceName(source), Tag = source };
             foreach (DirectSource source in DirectSources.Keys)
                 if (DirectSources[source] != Implementation.Unimplemented)
-                    new CheckBox { Checked = DirectSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(directSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth - 10, 30), Parent = directSourcesContainer, Text = GetSourceName(source), Tag = source }; }
+                    new CheckBox { Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = DirectSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(directSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = directSourcesContainer, Text = GetSourceName(source), Tag = source }; }
 
         private void CloseSettings(object sender, EventArgs e) {
             foreach (Control c in torrentSourcesContainer.Controls)
@@ -53,9 +65,16 @@ namespace OpenVapour {
                 DirectSources[(DirectSource)c.Tag] = (c as CheckBox).Checked?Implementation.Enabled:Implementation.Disabled;
             Close(); }
 
+        public void DrawGradient() {
+            Bitmap background = new Bitmap(Width, Height);
+            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
+            BackgroundImage = background; }
+
         private void UpdateTheme() {
             WindowTheme["background1"] = themeColour1.BackColor;
-            WindowTheme["background2"] = themeColour2.BackColor; }
+            WindowTheme["background2"] = themeColour2.BackColor;
+            DrawGradient(); }
 
         private void ChangeColour(object sender, EventArgs e) {
             ColorDialog cd = new ColorDialog { FullOpen = true, AnyColor = true, AllowFullOpen = true };
