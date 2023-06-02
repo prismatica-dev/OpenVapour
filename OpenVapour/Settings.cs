@@ -53,10 +53,10 @@ namespace OpenVapour {
 
             foreach (TorrentSource source in TorrentSources.Keys)
                 if (TorrentSources[source] != Implementation.Unimplemented)
-                    new CheckBox { Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = TorrentSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(torrentSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = torrentSourcesContainer, Text = GetSourceName(source), Tag = source };
+                    new CheckBox { ForeColor = GetIntegrationColor(GetIntegration(source)), Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = TorrentSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(torrentSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = torrentSourcesContainer, Text = GetSourceName(source), Tag = source };
             foreach (DirectSource source in DirectSources.Keys)
                 if (DirectSources[source] != Implementation.Unimplemented)
-                    new CheckBox { Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = DirectSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(directSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = directSourcesContainer, Text = GetSourceName(source), Tag = source }; }
+                    new CheckBox { ForeColor = GetIntegrationColor(GetIntegration(source)), Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = DirectSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(directSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = directSourcesContainer, Text = GetSourceName(source), Tag = source }; }
 
         private void CloseSettings(object sender, EventArgs e) {
             foreach (Control c in torrentSourcesContainer.Controls)

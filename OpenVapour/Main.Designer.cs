@@ -64,9 +64,9 @@
             this.filtersPanel = new System.Windows.Forms.Panel();
             this.tagFilterContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.filterSearch = new System.Windows.Forms.TextBox();
-            this.tagFilterHeader = new System.Windows.Forms.Label();
             this.filterControlsContainer = new System.Windows.Forms.Panel();
             this.resetFilters = new System.Windows.Forms.Button();
+            this.tagFilterHeader = new System.Windows.Forms.Label();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -575,19 +575,6 @@
             this.filterSearch.Enter += new System.EventHandler(this.FilterSearchFocused);
             this.filterSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilterSearchChanged);
             // 
-            // tagFilterHeader
-            // 
-            this.tagFilterHeader.AutoSize = true;
-            this.tagFilterHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.tagFilterHeader.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tagFilterHeader.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.tagFilterHeader.ForeColor = System.Drawing.Color.White;
-            this.tagFilterHeader.Location = new System.Drawing.Point(0, 0);
-            this.tagFilterHeader.Name = "tagFilterHeader";
-            this.tagFilterHeader.Size = new System.Drawing.Size(122, 30);
-            this.tagFilterHeader.TabIndex = 0;
-            this.tagFilterHeader.Text = "Filter by Tag";
-            // 
             // filterControlsContainer
             // 
             this.filterControlsContainer.BackColor = System.Drawing.Color.Transparent;
@@ -616,6 +603,19 @@
             this.resetFilters.Text = "↻ ";
             this.resetFilters.UseVisualStyleBackColor = false;
             this.resetFilters.Click += new System.EventHandler(this.ResetFilters);
+            // 
+            // tagFilterHeader
+            // 
+            this.tagFilterHeader.AutoSize = true;
+            this.tagFilterHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.tagFilterHeader.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tagFilterHeader.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
+            this.tagFilterHeader.ForeColor = System.Drawing.Color.White;
+            this.tagFilterHeader.Location = new System.Drawing.Point(0, 0);
+            this.tagFilterHeader.Name = "tagFilterHeader";
+            this.tagFilterHeader.Size = new System.Drawing.Size(122, 30);
+            this.tagFilterHeader.TabIndex = 0;
+            this.tagFilterHeader.Text = "Filter by Tag";
             // 
             // Main
             // 

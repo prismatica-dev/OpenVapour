@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,6 +63,24 @@ namespace OpenVapour.Torrent {
                 case DirectSource.Unknown:
                 default:
                     return Integration.None; }}
+
+        internal static Color GetIntegrationColor(Integration Integration) {
+            switch (Integration) {
+                case Integration.Extended:
+                    return Color.FromArgb(0, 80, 0);
+                case Integration.Full:
+                    return Color.FromArgb(50, 155, 40);
+                case Integration.Partial:
+                    return Color.Yellow;
+                case Integration.NoBypass:
+                    return Color.OrangeRed;
+                case Integration.Error:
+                    return Color.DarkRed;
+                case Integration.Dangerous:
+                    return Color.Black;
+                case Integration.None:
+                default:
+                    return Color.White; }}
 
         internal static string GetSourceName(TorrentSource Source) {
             switch (Source) {
