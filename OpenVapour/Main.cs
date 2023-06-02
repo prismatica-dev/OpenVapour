@@ -22,6 +22,7 @@ using static OpenVapour.Steam.TorrentSources;
 using OpenVapour.OpenVapourAPI;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using System.Runtime.InteropServices;
+using System.Net.Sockets;
 
 namespace OpenVapour {
     public partial class Main : Form {
@@ -60,17 +61,25 @@ namespace OpenVapour {
                 Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 117, 225)),
                 Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 225, 177)) };
 
-            store.Location = new Point(0, 25);
-            store.Size = new Size(Width + SystemInformation.VerticalScrollBarWidth, Height - 25);
+            Panel storeContainer = new Panel { 
+                BackColor = Color.FromArgb(0, 0, 0, 0),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                Size = new Size(Width - RESIZE_BUFFER_SIZE * 2, Height - 25 - RESIZE_BUFFER_SIZE), 
+                Location = new Point(RESIZE_BUFFER_SIZE, 25),
+                Parent = this };
+            store.Parent = storeContainer;
+            store.Location = new Point(0, 0);
+            store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
 
             DrawSearchBox(sender, e); }
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
         protected override CreateParams CreateParams {
             get {
@@ -81,6 +90,26 @@ namespace OpenVapour {
             if (e.Button == MouseButtons.Left) {
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0); }}
+
+        private const int RESIZE_HANDLE_SIZE = 5;
+        private const int RESIZE_BUFFER_SIZE = 3;
+        protected override void WndProc(ref Message m) {
+            switch (m.Msg) {
+                case 0x0084:
+                    base.WndProc(ref m);
+                    if ((int)m.Result == 0x01) {
+                        Point screenPoint = new Point(m.LParam.ToInt32());
+                        Point clientPoint = PointToClient(screenPoint);                        
+                        if (clientPoint.Y <= (Size.Height - RESIZE_HANDLE_SIZE)) {
+                            if (clientPoint.X <= RESIZE_HANDLE_SIZE) m.Result = (IntPtr)10;
+                            else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE)) m.Result = (IntPtr)2;
+                            else m.Result = (IntPtr)11;
+                        } else if (clientPoint.Y > RESIZE_HANDLE_SIZE) {
+                            if (clientPoint.X <= RESIZE_HANDLE_SIZE) m.Result = (IntPtr)16;
+                            else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE)) m.Result = (IntPtr)15;
+                            else m.Result = (IntPtr)17; }}
+                    return; }
+            base.WndProc(ref m); }
 
         internal Panel CreatePopUp(PictureBox selector) {
             List<object> pbo = (List<object>)selector.Tag;
@@ -136,7 +165,7 @@ namespace OpenVapour {
                 if (ctrl.GetType() == typeof(PictureBox)) {
                     Console.WriteLine("clearing memory of picturebox!");
                     PictureBox pb = ctrl as PictureBox;
-                    InterpretPictureBox(pb, out _, out List<object> meta, out List<Image> i);
+                    InterpretPictureBox(pb, out _, out _, out List<Image> i);
                     Console.WriteLine("disposing states!");
                     foreach (Image im in i) im.Dispose();
                     Console.WriteLine("disposing list!");
@@ -149,8 +178,7 @@ namespace OpenVapour {
                 Console.WriteLine("purged control"); }
             Console.WriteLine("cleared all controls!");
             //Console.WriteLine("clearing store!");
-            store.Controls.Clear(); 
-            }
+            store.Controls.Clear(); }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -248,14 +276,14 @@ namespace OpenVapour {
         private void GameClick (object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox _, out List<object> pbl, out List<Image> pbs);
             SteamGame game = (SteamGame)pbl[1];
-            if (!gamepanelopen) { LoadGame(game, pbs[0]); }
-            else if(panelgame != game.Name) { ClosePanel(true, pbl); }}
+            if (!gamepanelopen) LoadGame(game, pbs[0]);
+            else if(panelgame != game.Name) ClosePanel(true, pbl); }
 
         private void TorrentClick(object sender, EventArgs e) {
             try {
                 InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
                 ResultTorrent game = (ResultTorrent)pbl[1];
-                if (!gamepanelopen) { LoadTorrent(game, pbs[0]); } else if (panelgame != game.Name) ClosePanelTorrent(true, pbl);
+                if (!gamepanelopen) LoadTorrent(game, pbs[0]); else if (panelgame != game.Name) ClosePanelTorrent(true, pbl);
             } catch (Exception ex) { Utilities.HandleException($"TorrentClick(sender, e)", ex); }}
 
         private void ResizeGameArt() {
@@ -268,6 +296,7 @@ namespace OpenVapour {
             if (game.Name == "") return;
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description; 
+            toggleHomepage.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
             BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
@@ -276,7 +305,7 @@ namespace OpenVapour {
             currenttorrent = game; 
             if (game.Source != TorrentSource.KaOs) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
             else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
-            MagnetButtonContainer.Visible = true; 
+            MagnetButtonContainer.Visible = true; toggleHomepage.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
             sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 

@@ -39,6 +39,7 @@
             this.popuptitle = new System.Windows.Forms.Label();
             this.popupart = new System.Windows.Forms.PictureBox();
             this.gamepanel = new System.Windows.Forms.Panel();
+            this.toggleHomepage = new System.Windows.Forms.Button();
             this.sourcename = new System.Windows.Forms.Label();
             this.gamedescpanel = new System.Windows.Forms.Panel();
             this.gamedesc = new System.Windows.Forms.Label();
@@ -57,8 +58,8 @@
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
+            this.toggleHomepageContainer = new System.Windows.Forms.Panel();
             this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
-            this.toggleHomepage = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -71,6 +72,7 @@
             this.VisitButtonContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
             this.nogamesnotif.SuspendLayout();
+            this.toggleHomepageContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -85,7 +87,7 @@
             this.toolbar.ForeColor = System.Drawing.Color.White;
             this.toolbar.Location = new System.Drawing.Point(0, 0);
             this.toolbar.Name = "toolbar";
-            this.toolbar.Size = new System.Drawing.Size(800, 25);
+            this.toolbar.Size = new System.Drawing.Size(805, 25);
             this.toolbar.TabIndex = 1;
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
@@ -99,7 +101,7 @@
             this.managesources.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.managesources.Font = new System.Drawing.Font("Segoe UI Light", 9F);
             this.managesources.ForeColor = System.Drawing.Color.White;
-            this.managesources.Location = new System.Drawing.Point(475, 0);
+            this.managesources.Location = new System.Drawing.Point(480, 0);
             this.managesources.Margin = new System.Windows.Forms.Padding(0);
             this.managesources.Name = "managesources";
             this.managesources.Size = new System.Drawing.Size(100, 25);
@@ -116,7 +118,7 @@
             this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exit.Font = new System.Drawing.Font("Segoe UI Light", 8F);
             this.exit.ForeColor = System.Drawing.Color.White;
-            this.exit.Location = new System.Drawing.Point(775, 0);
+            this.exit.Location = new System.Drawing.Point(780, 0);
             this.exit.Margin = new System.Windows.Forms.Padding(0);
             this.exit.Name = "exit";
             this.exit.Size = new System.Drawing.Size(25, 25);
@@ -142,7 +144,7 @@
             this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(575, 0);
+            this.searchtextbox.Location = new System.Drawing.Point(580, 0);
             this.searchtextbox.Name = "searchtextbox";
             this.searchtextbox.Size = new System.Drawing.Size(200, 25);
             this.searchtextbox.TabIndex = 5;
@@ -196,9 +198,11 @@
             // 
             // gamepanel
             // 
-            this.gamepanel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.gamepanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamepanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gamepanel.Controls.Add(this.toggleHomepage);
+            this.gamepanel.Controls.Add(this.toggleHomepageContainer);
             this.gamepanel.Controls.Add(this.sourcename);
             this.gamepanel.Controls.Add(this.gamedescpanel);
             this.gamepanel.Controls.Add(this.closemenu);
@@ -208,9 +212,25 @@
             this.gamepanel.ForeColor = System.Drawing.Color.White;
             this.gamepanel.Location = new System.Drawing.Point(7, 32);
             this.gamepanel.Name = "gamepanel";
-            this.gamepanel.Size = new System.Drawing.Size(498, 464);
+            this.gamepanel.Size = new System.Drawing.Size(503, 464);
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
+            // 
+            // toggleHomepage
+            // 
+            this.toggleHomepage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatAppearance.BorderSize = 0;
+            this.toggleHomepage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toggleHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 12F);
+            this.toggleHomepage.Location = new System.Drawing.Point(-1, -1);
+            this.toggleHomepage.MaximumSize = new System.Drawing.Size(34, 34);
+            this.toggleHomepage.Name = "toggleHomepage";
+            this.toggleHomepage.Size = new System.Drawing.Size(34, 34);
+            this.toggleHomepage.TabIndex = 13;
+            this.toggleHomepage.Text = "⌂";
+            this.toggleHomepage.UseVisualStyleBackColor = false;
             // 
             // sourcename
             // 
@@ -238,6 +258,9 @@
             // 
             // gamedesc
             // 
+            this.gamedesc.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamedesc.AutoSize = true;
             this.gamedesc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.gamedesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F);
@@ -251,10 +274,11 @@
             // 
             // closemenu
             // 
+            this.closemenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.closemenu.AutoSize = true;
             this.closemenu.BackColor = System.Drawing.Color.Transparent;
             this.closemenu.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
-            this.closemenu.Location = new System.Drawing.Point(474, 0);
+            this.closemenu.Location = new System.Drawing.Point(479, 0);
             this.closemenu.Name = "closemenu";
             this.closemenu.Size = new System.Drawing.Size(24, 25);
             this.closemenu.TabIndex = 10;
@@ -449,11 +473,21 @@
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // toggleHomepageContainer
+            // 
+            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
+            this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
+            this.toggleHomepageContainer.Location = new System.Drawing.Point(465, 175);
+            this.toggleHomepageContainer.Name = "toggleHomepageContainer";
+            this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
+            this.toggleHomepageContainer.TabIndex = 14;
+            // 
             // store
             // 
             this.store.AutoScroll = true;
             this.store.BackColor = System.Drawing.Color.Transparent;
-            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.store.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.store.Location = new System.Drawing.Point(0, 25);
             this.store.Name = "store";
             this.store.Size = new System.Drawing.Size(11, 487);
@@ -464,29 +498,13 @@
             this.store.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
             this.store.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BackgroundTearingFix);
             // 
-            // toggleHomepage
-            // 
-            this.toggleHomepage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.toggleHomepage.FlatAppearance.BorderSize = 0;
-            this.toggleHomepage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.toggleHomepage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.toggleHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 12F);
-            this.toggleHomepage.Location = new System.Drawing.Point(460, 175);
-            this.toggleHomepage.MaximumSize = new System.Drawing.Size(165, 44);
-            this.toggleHomepage.Name = "toggleHomepage";
-            this.toggleHomepage.Size = new System.Drawing.Size(32, 32);
-            this.toggleHomepage.TabIndex = 13;
-            this.toggleHomepage.Text = "⌂";
-            this.toggleHomepage.UseVisualStyleBackColor = false;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(800, 512);
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(805, 512);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);
             this.Controls.Add(this.popuppanel);
@@ -526,6 +544,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
             this.nogamesnotif.ResumeLayout(false);
             this.nogamesnotif.PerformLayout();
+            this.toggleHomepageContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -562,6 +581,7 @@
         private System.Windows.Forms.Panel MagnetButtonContainer;
         private System.Windows.Forms.Panel VisitButtonContainer;
         private System.Windows.Forms.Button toggleHomepage;
+        private System.Windows.Forms.Panel toggleHomepageContainer;
     }
 }
 

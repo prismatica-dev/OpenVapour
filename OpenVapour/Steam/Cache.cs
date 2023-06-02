@@ -37,11 +37,10 @@ namespace OpenVapour.Steam {
               ms.Write(bytes, 0, bytes.Length);
               ms.Position = 0;
               return new BinaryFormatter().Deserialize(ms); }}
-
+        internal static bool IsHomepaged(string AppId) => File.Exists($"{DedicatedStorage}\\Games\\{AppId}");
         internal static void HomepageGame(SteamGame game) {
             CheckCache(); 
-            if (game == null) return;
-            if (game.AppId.Length == 0) return;
+            if (game == null || game.AppId.Length == 0) return;
             CacheSteamGame(game);
             File.WriteAllText($"{DedicatedStorage}\\Games\\{game.AppId}", ""); }
         internal static void BlacklistID(string AppId, string Reason = "") {
