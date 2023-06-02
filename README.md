@@ -19,12 +19,12 @@ Sources are listed and scored so you know who you're torrenting from, and if you
 #### Torrent Sources
 `Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
 + Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
-+ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass
-+ Seven-Gamers <b>[PENDING HTTP REQUEST FIX]</b> (8 | 7) : Automatic .torrent to Magnet
-+ KaOsKrew <b>[PENDING SHORTENER BYPASS]</b> (10 | 9) : Extended Search Capability, Forum Interpreter
-+ SteamRIP <b>[PENDING SHORTENER BYPASS]</b> (8 | 8) : Cloudflare Bypass
-+ Non-DRM GOG <b>[PENDING INTEGRATION]</b> (7 | 6)
-+ Dodi-Repacks <b>[PENDING INTEGRATION]</b> (9 | 8)
++ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass]
++ Non-DRM GOG (7 | 6) : Better Search Relevance
++ Seven-Gamers (8 | 7) : Automatic .torrent to Magnet <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
++ KaOsKrew (10 | 9) : Extended Search Capability, Forum Interpreter <b>[NO CURRENT SHORTENER BYPASS]</b>
++ SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
++ Dodi-Repacks (9 | 8) <b>[NOT IMPLEMENTED]</b>
 
 #### Direct Download Sources [Not Currently Implemented]
 `Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
