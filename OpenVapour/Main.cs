@@ -544,4 +544,9 @@ namespace OpenVapour {
 
         private void ToggleFilterMenu(object sender, EventArgs e) { 
             filtersPanel.Visible = !filtersPanel.Visible;
-            ForceUpdate(); }}}
+            ForceUpdate(); }
+
+        private void ResetFilters(object sender, EventArgs e) {
+            filterSearch.Text = "";
+            foreach (Control ctrl in tagFilterContainer.Controls)
+                (ctrl as CheckBox).Checked = false; }}}

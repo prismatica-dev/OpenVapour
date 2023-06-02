@@ -274,7 +274,7 @@ namespace OpenVapour.Steam {
                         return Url;
 
                     case TorrentSource.GOG:
-                        return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
+                        return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl, 3500), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
 
                     case TorrentSource.Unknown:
                     default:

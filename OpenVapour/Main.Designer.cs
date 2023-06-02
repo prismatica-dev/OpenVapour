@@ -65,6 +65,8 @@
             this.tagFilterContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.filterSearch = new System.Windows.Forms.TextBox();
             this.tagFilterHeader = new System.Windows.Forms.Label();
+            this.filterControlsContainer = new System.Windows.Forms.Panel();
+            this.resetFilters = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -79,6 +81,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
             this.nogamesnotif.SuspendLayout();
             this.filtersPanel.SuspendLayout();
+            this.filterControlsContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -536,7 +539,7 @@
             this.filtersPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.filtersPanel.Controls.Add(this.tagFilterContainer);
             this.filtersPanel.Controls.Add(this.filterSearch);
-            this.filtersPanel.Controls.Add(this.tagFilterHeader);
+            this.filtersPanel.Controls.Add(this.filterControlsContainer);
             this.filtersPanel.Location = new System.Drawing.Point(555, 25);
             this.filtersPanel.Name = "filtersPanel";
             this.filtersPanel.Size = new System.Drawing.Size(200, 318);
@@ -576,7 +579,7 @@
             // 
             this.tagFilterHeader.AutoSize = true;
             this.tagFilterHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.tagFilterHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tagFilterHeader.Dock = System.Windows.Forms.DockStyle.Left;
             this.tagFilterHeader.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
             this.tagFilterHeader.ForeColor = System.Drawing.Color.White;
             this.tagFilterHeader.Location = new System.Drawing.Point(0, 0);
@@ -584,6 +587,35 @@
             this.tagFilterHeader.Size = new System.Drawing.Size(122, 30);
             this.tagFilterHeader.TabIndex = 0;
             this.tagFilterHeader.Text = "Filter by Tag";
+            // 
+            // filterControlsContainer
+            // 
+            this.filterControlsContainer.BackColor = System.Drawing.Color.Transparent;
+            this.filterControlsContainer.Controls.Add(this.resetFilters);
+            this.filterControlsContainer.Controls.Add(this.tagFilterHeader);
+            this.filterControlsContainer.Dock = System.Windows.Forms.DockStyle.Top;
+            this.filterControlsContainer.Location = new System.Drawing.Point(0, 0);
+            this.filterControlsContainer.Name = "filterControlsContainer";
+            this.filterControlsContainer.Size = new System.Drawing.Size(200, 30);
+            this.filterControlsContainer.TabIndex = 3;
+            // 
+            // resetFilters
+            // 
+            this.resetFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.resetFilters.Dock = System.Windows.Forms.DockStyle.Right;
+            this.resetFilters.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.resetFilters.FlatAppearance.BorderSize = 0;
+            this.resetFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetFilters.Font = new System.Drawing.Font("Segoe UI Light", 12F);
+            this.resetFilters.ForeColor = System.Drawing.Color.White;
+            this.resetFilters.Location = new System.Drawing.Point(170, 0);
+            this.resetFilters.Margin = new System.Windows.Forms.Padding(0);
+            this.resetFilters.Name = "resetFilters";
+            this.resetFilters.Size = new System.Drawing.Size(30, 30);
+            this.resetFilters.TabIndex = 7;
+            this.resetFilters.Text = "↻ ";
+            this.resetFilters.UseVisualStyleBackColor = false;
+            this.resetFilters.Click += new System.EventHandler(this.ResetFilters);
             // 
             // Main
             // 
@@ -638,6 +670,8 @@
             this.nogamesnotif.PerformLayout();
             this.filtersPanel.ResumeLayout(false);
             this.filtersPanel.PerformLayout();
+            this.filterControlsContainer.ResumeLayout(false);
+            this.filterControlsContainer.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -680,6 +714,8 @@
         private System.Windows.Forms.FlowLayoutPanel tagFilterContainer;
         private System.Windows.Forms.Label tagFilterHeader;
         private System.Windows.Forms.TextBox filterSearch;
+        private System.Windows.Forms.Panel filterControlsContainer;
+        private System.Windows.Forms.Button resetFilters;
     }
 }
 
