@@ -74,12 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OpenVapourAPI\Graphics.cs" />
-    <Compile Include="OpenVapourAPI\FixedFlowLayoutPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="OpenVapourAPI\FixedFlowLayoutPanel.Designer.cs">
-      <DependentUpon>FixedFlowLayoutPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="OpenVapourAPI\UserSettings.cs" />
     <Compile Include="Settings.cs">
       <SubType>Form</SubType>
