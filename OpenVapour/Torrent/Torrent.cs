@@ -345,6 +345,7 @@ namespace OpenVapour.Steam {
                         if (gogitems.Count() > 1)
                             for (int i = 1; i < gogitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, gogitems[i]);
+                                if (GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower()) > Name.Length / 2) continue;
                                 results.Add(torrent);
                                 Console.WriteLine("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(gogitems[i], "\t<link>", "</link>")); }

@@ -87,11 +87,13 @@ namespace OpenVapour.SteamPseudoWebAPI {
                     results.Add(last);
                     Console.WriteLine($"removing result '{last.AppId}' from json,,,");
                     JSON = JSON.Substring(JSON.IndexOf("}") + 1);
-                    if (!IsSteamGameCached(last.AppId)) {
-                        Main main = null;
-                        Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
-                        main?.Invoke((MethodInvoker)delegate { main.AsyncAddGame(last.AppId);
-                        }); }}
+                    
+                    Main main = null;
+                    Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
+                    main?.Invoke((MethodInvoker)delegate { 
+                        if (!IsSteamGameCached(last.AppId)) main.AsyncAddGame(last.AppId);
+                        else main.AddGame(Cache.LoadCachedSteamGame(last.AppId));
+                    }); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
 
