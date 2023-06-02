@@ -46,11 +46,8 @@ namespace OpenVapour {
             Utilities.CheckAutoUpdateIntegrity();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
+            DrawGradient();
 
-            Bitmap background = new Bitmap(Width, Height);
-            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
-            BackgroundImage = background;
             store.HorizontalScroll.Maximum = 0;
             store.HorizontalScroll.Enabled = false;
             store.HorizontalScroll.Visible = false;
@@ -73,6 +70,12 @@ namespace OpenVapour {
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
 
             DrawSearchBox(sender, e); }
+
+        public void DrawGradient() {
+            Bitmap background = new Bitmap(Width, Height);
+            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
+            BackgroundImage = background; }
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -440,7 +443,7 @@ namespace OpenVapour {
                 magnetbutton.Text = "Fetching";
                 BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
                 Update();
-                if (currenttorrent.Source == TorrentSource.KaOs) {
+                if (currenttorrent.Source == TorrentSource.KaOs || currenttorrent.Source == TorrentSource.SteamRIP) {
                     Process.Start(currenttorrent.Url);
                     return; }
 
@@ -496,4 +499,23 @@ namespace OpenVapour {
                 if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }}
         private void BackgroundTearingFix(object sender, MouseEventArgs e) {
             BackgroundTearingFix(sender, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0)); }
-        private void BackgroundTearingFix(object sender, EventArgs e) {}}}
+        private void BackgroundTearingFix(object sender, EventArgs e) {}
+
+        private void OpenSettings(object sender, EventArgs e) {
+            Settings settings = new Settings(UserSettings.WindowTheme, UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores));
+            settings.ShowDialog();
+            UserSettings.WindowTheme = settings.WindowTheme;
+            UserSettings.WindowSize = Size;
+            foreach (TorrentSource ts in settings.TorrentSources.Keys) {
+                Tuple<byte, byte, Implementation> _ = SourceScores[ts];
+                SourceScores[ts] = new Tuple<byte, byte, Implementation>(_.Item1, _.Item2, settings.TorrentSources[ts]); }
+            foreach (DirectSource ds in settings.DirectSources.Keys) {
+                Tuple<byte, byte, Implementation> _ = DirectSourceScores[ds];
+                DirectSourceScores[ds] = new Tuple<byte, byte, Implementation>(_.Item1, _.Item2, settings.DirectSources[ds]); }
+            DrawGradient();
+            UserSettings.SaveSettings(settings.TorrentSources, settings.DirectSources); }
+
+        private void ClosingForm(object sender, FormClosingEventArgs e) {
+            UserSettings.WindowSize = Size;
+            UserSettings.SaveSettings(UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores));
+        }}}

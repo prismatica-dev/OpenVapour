@@ -39,6 +39,7 @@
             this.popuptitle = new System.Windows.Forms.Label();
             this.popupart = new System.Windows.Forms.PictureBox();
             this.gamepanel = new System.Windows.Forms.Panel();
+            this.toggleHomepageContainer = new System.Windows.Forms.Panel();
             this.toggleHomepage = new System.Windows.Forms.Button();
             this.sourcename = new System.Windows.Forms.Label();
             this.gamedescpanel = new System.Windows.Forms.Panel();
@@ -58,12 +59,12 @@
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
-            this.toggleHomepageContainer = new System.Windows.Forms.Panel();
             this.store = new OpenVapour.OpenVapourAPI.FixedFlowLayoutPanel();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
             this.gamepanel.SuspendLayout();
+            this.toggleHomepageContainer.SuspendLayout();
             this.gamedescpanel.SuspendLayout();
             this.gamebtns.SuspendLayout();
             this.SteamPageContainer.SuspendLayout();
@@ -72,16 +73,15 @@
             this.VisitButtonContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
             this.nogamesnotif.SuspendLayout();
-            this.toggleHomepageContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolbar.Controls.Add(this.searchtextbox);
             this.toolbar.Controls.Add(this.manageSettings);
             this.toolbar.Controls.Add(this.exit);
             this.toolbar.Controls.Add(this.storeselect);
-            this.toolbar.Controls.Add(this.searchtextbox);
             this.toolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.toolbar.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
             this.toolbar.ForeColor = System.Drawing.Color.White;
@@ -108,6 +108,7 @@
             this.manageSettings.TabIndex = 7;
             this.manageSettings.Text = "Settings";
             this.manageSettings.UseVisualStyleBackColor = false;
+            this.manageSettings.Click += new System.EventHandler(this.OpenSettings);
             // 
             // exit
             // 
@@ -215,6 +216,16 @@
             this.gamepanel.Size = new System.Drawing.Size(503, 464);
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
+            // 
+            // toggleHomepageContainer
+            // 
+            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
+            this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
+            this.toggleHomepageContainer.Location = new System.Drawing.Point(465, 175);
+            this.toggleHomepageContainer.Name = "toggleHomepageContainer";
+            this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
+            this.toggleHomepageContainer.TabIndex = 14;
             // 
             // toggleHomepage
             // 
@@ -473,16 +484,6 @@
             this.nogamesmessage.Text = "content you install will appear here";
             this.nogamesmessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // toggleHomepageContainer
-            // 
-            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
-            this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
-            this.toggleHomepageContainer.Location = new System.Drawing.Point(465, 175);
-            this.toggleHomepageContainer.Name = "toggleHomepageContainer";
-            this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
-            this.toggleHomepageContainer.TabIndex = 14;
-            // 
             // store
             // 
             this.store.AutoScroll = true;
@@ -519,6 +520,7 @@
             this.Name = "Main";
             this.Text = "OpenVapour";
             this.TransparencyKey = System.Drawing.Color.Snow;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClosingForm);
             this.Load += new System.EventHandler(this.Main_Load);
             this.Shown += new System.EventHandler(this.MainShown);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
@@ -530,6 +532,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).EndInit();
             this.gamepanel.ResumeLayout(false);
             this.gamepanel.PerformLayout();
+            this.toggleHomepageContainer.ResumeLayout(false);
             this.gamedescpanel.ResumeLayout(false);
             this.gamedescpanel.PerformLayout();
             this.gamebtns.ResumeLayout(false);
@@ -544,7 +547,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
             this.nogamesnotif.ResumeLayout(false);
             this.nogamesnotif.PerformLayout();
-            this.toggleHomepageContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

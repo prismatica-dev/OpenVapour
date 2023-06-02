@@ -12,9 +12,10 @@ using System.Windows.Forms;
 
 namespace OpenVapour.Steam {
     internal class TorrentSources {
-        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs, Crackhub }
+        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs }
         internal enum DirectSource { Unknown, IGGGames, KaOs, SteamRIP, Crackhub }
-        internal enum Implementation { Enabled, Disabled, Unimplemented }
+        internal enum Implementation { Unimplemented = -1, Enabled, Disabled }
+        internal enum Integration { None = -1, Extended, Full, Partial, NoBypass, Dangerous, Error }
 
         // Source Ratings
         // Name, Trustworthiness, Quality, EnabledByDefault
@@ -37,6 +38,39 @@ namespace OpenVapour.Steam {
             { DirectSource.Unknown, new Tuple<byte, byte, Implementation>(0, 0, Implementation.Unimplemented) } // never trust sources fabricated from the void
         }; 
         
+        internal static Integration GetIntegration(TorrentSource Source) {
+            switch (Source) {
+                case TorrentSource.PCGamesTorrents:
+                case TorrentSource.FitgirlRepacks:
+                    return Integration.Extended;
+
+                case TorrentSource.SteamRIP:
+                case TorrentSource.GOG:
+                case TorrentSource.KaOs:
+                    return Integration.NoBypass;
+
+                case TorrentSource.SevenGamers:
+                    return Integration.Error;
+
+                case TorrentSource.Dodi:
+                case TorrentSource.Unknown:
+                default:
+                    return Integration.None; }}
+        
+        internal static Integration GetIntegration(DirectSource Source) {
+            switch (Source) {
+                case DirectSource.IGGGames:
+                    return Integration.None;
+                case DirectSource.KaOs:
+                    return Integration.None;
+                case DirectSource.SteamRIP:
+                    return Integration.None;
+                case DirectSource.Crackhub:
+                    return Integration.None;
+                case DirectSource.Unknown:
+                default:
+                    return Integration.None; }}
+
         internal static string GetSourceName(TorrentSource Source) {
             switch (Source) {
                 case TorrentSource.PCGamesTorrents:
@@ -60,10 +94,25 @@ namespace OpenVapour.Steam {
                 case TorrentSource.GOG:
                     // pending investigation for integration
                     return "freegogpcgames.com";
-                case TorrentSource.Crackhub:
-                    // pending investigation for integration
-                    return "crackhub.site";
                 case TorrentSource.Unknown:
+                default:
+                    return "Unknown"; }}
+        
+        internal static string GetSourceName(DirectSource Source) {
+            switch (Source) {
+                case DirectSource.IGGGames:
+                    // not implemented
+                    return "igg-games.com";
+                case DirectSource.KaOs:
+                    // not implemented
+                    return "kaoskrew.org";
+                case DirectSource.SteamRIP:
+                    // not implemented
+                    return "steamrip.com";
+                case DirectSource.Crackhub:
+                    // not implemented
+                    return "crackhub.site";
+                case DirectSource.Unknown:
                 default:
                     return "Unknown"; }}}
 
