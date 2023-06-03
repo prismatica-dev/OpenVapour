@@ -113,13 +113,13 @@ namespace OpenVapour.Web {
             if (CacheIdentifier.Length == 0) CacheIdentifier = Url;
             try {
                 if (Url.Length > 0)
-                    if (Cache.IsBitmapCached(Url)) img = Cache.GetCachedBitmap(Url);
+                    if (Cache.IsBitmapCached(CacheIdentifier)) return Cache.GetCachedBitmap(CacheIdentifier);
                     else {
                         HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
                         req.Method = "GET";
                         req.UserAgent = GetRandomUserAgent();
                         Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
-                        Cache.CacheBitmap(CacheIdentifier, img);
+                        if (bmp.Width > 1 && bmp.Height > 1) Cache.CacheBitmap(CacheIdentifier, bmp);
                         return bmp; }
             } catch (Exception ex) {
                 Utilities.HandleException($"GetWebBitmap({Url}, {CacheIdentifier})", ex);

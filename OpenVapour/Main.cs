@@ -163,7 +163,7 @@ namespace OpenVapour {
                 //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 207, 61), 20, Font, torrent.Source.ToString()), // passive state
                 //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 255, 74), 20, Font, torrent.Source.ToString()), // click state
                 //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 33, 236, 92), 20, Font, torrent.Source.ToString()) }; // hover state
-                List<object> metalist = new List<object> { states, torrent, true };
+                List<object> metalist = new List<object> { states, torrent, false };
                 panel.Image = states[0];
                 panel.Tag = metalist;
                 Panel popup = CreatePopUp(panel, torrent.Name, torrent.Description);
@@ -208,21 +208,27 @@ namespace OpenVapour {
                 Task<Bitmap> imgTask = null;
                 string name = "";
                 string desc = "";
+                string overlay = "";
+                bool torrent = false;
+                Color baseState = Color.FromArgb(125, 0, 0, 0);
 
                 if (game is SteamGame sg) {
                     imgTask = GetShelf(Convert.ToInt32(sg.AppId));
                     name = sg.Name;
                     desc = sg.Description; }
                 else if (game is ResultTorrent rt) {
-                    imgTask = WebCore.GetWebBitmap(rt.Image, rt.Url);
+                    torrent = true;
+                    imgTask = WebCore.GetWebBitmap(rt.Image);
+                    overlay = GetSourceName(rt.Source);
+                    baseState = Color.FromArgb(125, GetIntegrationColor(GetIntegration(rt.Source)));
                     name = rt.Name;
                     desc = rt.Description; }
 
                 Task cont = imgTask.ContinueWith((img) => {
                     List<Image> states = new List<Image> {
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 0, 0, 0)),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225)),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177)) };
+                        Graphics.ManipulateDisplayBitmap(img.Result, baseState, 20, Font, torrent?overlay:"", baseState),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 20, Font, torrent?overlay:"", baseState),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 20, Font, torrent?overlay:"", baseState) };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -232,10 +238,10 @@ namespace OpenVapour {
 
                         if (game is ResultTorrent rt) {
                             // resize panel to appropriate proportions
-                            float MaximumSize = Math.Max(150, 225);
+                            float MaximumSize = Math.Max(img.Result.Width, img.Result.Height);
                             output.Size = new Size(
-                                Math.Max((int)Math.Round(150 / MaximumSize * 225), 150),
-                                Math.Max((int)Math.Round(225 / MaximumSize * 225), 150)); }
+                                Math.Max((int)Math.Round(img.Result.Width / MaximumSize * 225f), 150),
+                                Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
                         ForceUpdate();
                         }); });
                 await cont;
@@ -245,7 +251,7 @@ namespace OpenVapour {
             if (game.Name == "") return;
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description; 
-            toggleHomepage.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
+            toggleHomepageContainer.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
             ForceUpdate(); }
@@ -254,9 +260,9 @@ namespace OpenVapour {
             currenttorrent = game; 
             if (game.Source != TorrentSource.KaOs && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
             else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
-            MagnetButtonContainer.Visible = true; toggleHomepage.Visible = false;
+            MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}"; 
+            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {GetIntegrationSummary(GetIntegration(game.Source))}"; 
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
@@ -486,6 +492,8 @@ namespace OpenVapour {
             ForceUpdate(); }
 
         private void Resized(object sender, EventArgs e) {
+            gamename.MaximumSize = new Size(gamepanel.Width - 153, gamename.Height);
+            sourcename.MaximumSize = new Size(gamepanel.Width - 153, sourcename.Height);
             gamedesc.MaximumSize = new Size(gamepanel.Width - 17, 0);
             gamedesc.MinimumSize = new Size(gamepanel.Width - 17, gamepanel.Height - 219); }
 

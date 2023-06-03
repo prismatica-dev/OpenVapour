@@ -74,6 +74,7 @@ namespace OpenVapour.OpenVapourAPI {
             catch (Exception ex) { HandleException($"UpdateProgram({TagName})", ex); }}
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
+            if (String == null || BetweenStart == null || BetweenEnd == null) return "";
             int Start, End;
             if (String.Contains(BetweenStart) && String.Contains(BetweenEnd))
                 if (String.Substring(String.IndexOf(BetweenStart)).Contains(BetweenEnd))

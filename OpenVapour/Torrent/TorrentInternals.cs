@@ -79,6 +79,24 @@ namespace OpenVapour.Torrent {
                 default:
                     return Color.White; }}
 
+        internal static string GetIntegrationSummary(Integration Integration) {
+            switch (Integration) {
+                case Integration.Extended:
+                    return "⭐ This source is fully integrated with enhancements.";
+                case Integration.Full:
+                    return "This source is fully integrated.";
+                case Integration.Partial:
+                    return "⚠️ This source is partially integrated. Expect issues.";
+                case Integration.NoBypass:
+                    return "⚠️ This source has no URL shortener bypass. Be careful.";
+                case Integration.Error:
+                    return "🚨 This source often throws errors.";
+                case Integration.Dangerous:
+                    return "🚨 This source likely contains malicious content.";
+                case Integration.None:
+                default:
+                    return "This source is not integrated.\nYou should not be seeing this text."; }}
+
         internal static string GetSourceName(TorrentSource Source) {
             switch (Source) {
                 case TorrentSource.PCGamesTorrents:

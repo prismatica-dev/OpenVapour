@@ -56,8 +56,8 @@
             this.magnetbutton = new System.Windows.Forms.Button();
             this.VisitButtonContainer = new System.Windows.Forms.Panel();
             this.visitbutton = new System.Windows.Forms.Button();
-            this.gamename = new System.Windows.Forms.Label();
             this.gameart = new System.Windows.Forms.PictureBox();
+            this.gamename = new System.Windows.Forms.Label();
             this.realsearchtb = new System.Windows.Forms.TextBox();
             this.nogamesnotif = new System.Windows.Forms.Panel();
             this.nogamesmessage = new System.Windows.Forms.Label();
@@ -251,8 +251,8 @@
             this.gamepanel.Controls.Add(this.gamedescpanel);
             this.gamepanel.Controls.Add(this.closemenu);
             this.gamepanel.Controls.Add(this.gamebtns);
-            this.gamepanel.Controls.Add(this.gamename);
             this.gamepanel.Controls.Add(this.gameart);
+            this.gamepanel.Controls.Add(this.gamename);
             this.gamepanel.ForeColor = System.Drawing.Color.White;
             this.gamepanel.Location = new System.Drawing.Point(7, 32);
             this.gamepanel.Name = "gamepanel";
@@ -291,14 +291,14 @@
             // 
             this.sourcename.AutoSize = true;
             this.sourcename.BackColor = System.Drawing.Color.Transparent;
-            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 14F, System.Drawing.FontStyle.Italic);
-            this.sourcename.Location = new System.Drawing.Point(148, 132);
-            this.sourcename.MaximumSize = new System.Drawing.Size(350, 75);
-            this.sourcename.MinimumSize = new System.Drawing.Size(0, 75);
+            this.sourcename.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Italic);
+            this.sourcename.Location = new System.Drawing.Point(142, 102);
+            this.sourcename.MaximumSize = new System.Drawing.Size(350, 105);
+            this.sourcename.MinimumSize = new System.Drawing.Size(0, 105);
             this.sourcename.Name = "sourcename";
-            this.sourcename.Size = new System.Drawing.Size(185, 75);
+            this.sourcename.Size = new System.Drawing.Size(156, 105);
             this.sourcename.TabIndex = 12;
-            this.sourcename.Text = "Source: Unknown\r\nTrustworthiness: 10/10\r\nQuality: 10/10";
+            this.sourcename.Text = "Source: Unknown\r\nTrustworthiness: 10/10\r\nQuality: 10/10\r\nIntegration: Unknown";
             this.sourcename.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // gamedescpanel
@@ -474,6 +474,15 @@
             this.visitbutton.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.visitbutton.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
+            // gameart
+            // 
+            this.gameart.Location = new System.Drawing.Point(7, 7);
+            this.gameart.Name = "gameart";
+            this.gameart.Size = new System.Drawing.Size(133, 200);
+            this.gameart.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.gameart.TabIndex = 5;
+            this.gameart.TabStop = false;
+            // 
             // gamename
             // 
             this.gamename.AutoSize = true;
@@ -485,15 +494,6 @@
             this.gamename.Size = new System.Drawing.Size(203, 41);
             this.gamename.TabIndex = 6;
             this.gamename.Text = "Content Name";
-            // 
-            // gameart
-            // 
-            this.gameart.Location = new System.Drawing.Point(7, 7);
-            this.gameart.Name = "gameart";
-            this.gameart.Size = new System.Drawing.Size(133, 200);
-            this.gameart.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.gameart.TabIndex = 5;
-            this.gameart.TabStop = false;
             // 
             // realsearchtb
             // 

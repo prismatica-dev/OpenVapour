@@ -6,6 +6,7 @@ using System.Text;
 using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentSources;
+using static OpenVapour.OpenVapourAPI.Utilities;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Compression {
@@ -17,7 +18,7 @@ namespace OpenVapour.OpenVapourAPI {
                         gZipStream.Write(buffer, 0, buffer.Length); }
                     string _ = Convert.ToBase64String(memoryStream.ToArray());
                     return _; }
-            } catch (Exception ex) { Utilities.HandleException($"CompressString({text})", ex); return ""; }}
+            } catch (Exception ex) { HandleException($"CompressString({text})", ex); return ""; }}
         internal static byte[] CompressToBytes(string text) {
             try {
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
@@ -36,7 +37,7 @@ namespace OpenVapour.OpenVapourAPI {
                     Array.Copy(cmpr, cmprapp, cmpr.Length);
                     cmprapp[cmprapp.Length - 1] = 0;
                     return cmprapp; }
-            } catch (Exception ex) { Utilities.HandleException($"CompressToBytes({text})", ex); return new byte[1] { 1 }; }}
+            } catch (Exception ex) { HandleException($"CompressToBytes({text})", ex); return new byte[1] { 1 }; }}
         internal static string DecompressString(string text) {
             try {
                 byte[] compressedBytes = Convert.FromBase64String(text);
@@ -49,7 +50,7 @@ namespace OpenVapour.OpenVapourAPI {
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray());
                         }}}
-            } catch (Exception ex) { Utilities.HandleException($"DecompressString({text})", ex); return ""; }}
+            } catch (Exception ex) { HandleException($"DecompressString({text})", ex); return ""; }}
         internal static string DecompressFromBytes(byte[] bytes) {
             try {
                 if (bytes.Length < 2) return "";
@@ -68,10 +69,10 @@ namespace OpenVapour.OpenVapourAPI {
                             while ((bytesRead = gzipStream.Read(buffer, 0, buffer.Length)) > 0)
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
-            } catch (Exception ex) { Utilities.HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
-        internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name}\",\"appid\":\"{Game.AppId}\",\"description\":\"{Game.Description}\"";
-        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""));
+            } catch (Exception ex) { HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
+        internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name.Replace("\"", "QuotationMark")}\",\"appid\":\"{Game.AppId.Replace("\"", "QuotationMark")}\",\"description\":\"{Game.Description.Replace("\"", "QuotationMark")}\";";
+        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(GetBetween(Game, "\"name\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Game, "\"appid\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Game, "\"description\":\"", "\"").Replace("QuotationMark", "\""));
         internal static string SerializeTorrent(ResultTorrent Torrent) => 
-            $"\"name\":\"{Torrent.Name}\",\"description\":\"{Torrent.Description}\",\"url\":\"{Torrent.Url}\",\"torrent-url\":\"{Torrent.TorrentUrl}\",\"image\":\"{Torrent.Image}\",\"source\":\"{(int)Torrent.Source}\"";
+            $"\"name\":\"{Torrent.Name.Replace("\"", "QuotationMark")}\",\"description\":\"{Torrent.Description.Replace("\"", "QuotationMark")}\",\"url\":\"{Torrent.Url}\",\"torrent-url\":\"{Torrent.TorrentUrl.Replace("\"", "QuotationMark")}\",\"image\":\"{Torrent.Image}\",\"source\":\"{(int)Torrent.Source}\"";
         internal static ResultTorrent DeserializeTorrent(string Torrent) => 
-            new ResultTorrent(Utilities.GetBetween(Torrent, "\"name\":\"", "\""), Utilities.GetBetween(Torrent, "\"description\":\"", "\""), Utilities.GetBetween(Torrent, "\"url\":\"", "\""), Utilities.GetBetween(Torrent, "\"torrent-url\":\"", "\""), Utilities.GetBetween(Torrent, "\"image\":\"", "\""), (TorrentSource)Convert.ToInt32(Utilities.GetBetween(Torrent, "\"source\":\"", "\""))); }}
+            new ResultTorrent(GetBetween(Torrent, "\"name\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"description\":\"", "\""), GetBetween(Torrent, "\"url\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"torrent-url\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"image\":\"", "\"").Replace("QuotationMark", "\""), (TorrentSource)Convert.ToInt32(GetBetween(Torrent, "\"source\":\"", "\""))); }}
