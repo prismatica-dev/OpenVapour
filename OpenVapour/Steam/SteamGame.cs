@@ -18,7 +18,6 @@ namespace OpenVapour.Steam {
             internal async Task<Bitmap> Bitmap(string AssetName = library) => await GetCDNAsset(AppId, AssetName);
             internal ResultGame(string JSON) {
                 Name = GetBetween(JSON, "name\":\"", "\"");
-                Console.WriteLine(JSON);
                 string _ = "";
                 if (JSON.Contains("id\":")) _ = GetBetween(JSON, "id\":", ","); // try getting id from result
                 else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/"); // otherwise get it from the logo asset
@@ -30,12 +29,12 @@ namespace OpenVapour.Steam {
             internal string Description { get; set; }
             internal SteamGame(string Name, string AppId, string Description) {
                 Console.WriteLine("processing new steamgame from arguments");
-                this.Name = Name; this.AppId = AppId; this.Description = Description; }
+                this.Name = Name; this.AppId = AppId; this.Description = Description.Replace("\\/", "/"); }
             internal SteamGame(string apiJSON) { 
                 Console.WriteLine("processing new steamgame from json"); 
                 AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
                 Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
-                Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")); }}
+                Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")).Replace("\\/", "/"); }}
 
         // cdn assets
         internal const string header = "header";
