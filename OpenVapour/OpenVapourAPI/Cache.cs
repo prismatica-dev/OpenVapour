@@ -29,7 +29,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         
         internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(SerializeSteamGame(game)));
-        internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
+        internal static bool IsSteamGameCached(string AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
         internal static SteamGame LoadCachedSteamGame(string AppId) => DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
         
         internal static void CacheTorrent(ResultTorrent torrent) => File.WriteAllText($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(torrent.Url)}", CompressString(SerializeTorrent(torrent)));
@@ -54,7 +54,7 @@ namespace OpenVapour.OpenVapourAPI {
             try {
                 if (File.Exists(file)) {
                     if (DateTime.Now - File.GetLastWriteTime(file) > CacheTimeout) File.Delete(file);
-                    else return DecompressString(file); }
+                    else return DecompressString(File.ReadAllText(file)); }
             } catch (Exception ex) { 
                 HandleException($"LoadCompressedAsset({file}", ex); 
                 File.Delete(file); } 

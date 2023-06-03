@@ -185,7 +185,7 @@ namespace OpenVapour {
                 Invoke((MethodInvoker)delegate { AddGame(game); });
                 return; }
 
-            try { if (!Cache.IsSteamGameCached(Convert.ToInt32(game.AppId))) Cache.CacheSteamGame(game);
+            try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
             } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Caching]", ex); }
 
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
@@ -428,12 +428,12 @@ namespace OpenVapour {
             if (Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
                 foreach (string file in Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
                     try { 
-                        int id = Convert.ToInt32(file.Substring(file.LastIndexOf("\\") + 1));
+                        string id = file.Substring(file.LastIndexOf("\\") + 1);
                         if (Cache.IsSteamGameCached(id)) { 
                             SteamGame cached = Cache.LoadCachedSteamGame(id);
                             if (cached != null) AddGame(Cache.LoadCachedSteamGame(id));
-                            else AsyncAddGame(id, false, true); }
-                        else AsyncAddGame(id, false, true); }
+                            else AsyncAddGame(Convert.ToInt32(id), false, true); }
+                        else AsyncAddGame(Convert.ToInt32(id), false, true); }
                     catch (Exception ex) { Utilities.HandleException($"LoadLibrary()", ex); }}
             else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
 
