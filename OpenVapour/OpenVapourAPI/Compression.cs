@@ -69,8 +69,8 @@ namespace OpenVapour.OpenVapourAPI {
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
             } catch (Exception ex) { Utilities.HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
-        internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name}\",\"description\":\"{Game.Description}\",\"appid\":\"{Game.AppId}\"";
-        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\""));
+        internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name}\",\"appid\":\"{Game.AppId}\",\"description\":\"{Game.Description}\"";
+        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""));
         internal static string SerializeTorrent(ResultTorrent Torrent) => 
             $"\"name\":\"{Torrent.Name}\",\"description\":\"{Torrent.Description}\",\"url\":\"{Torrent.Url}\",\"torrent-url\":\"{Torrent.TorrentUrl}\",\"image\":\"{Torrent.Image}\",\"source\":\"{(int)Torrent.Source}\"";
         internal static ResultTorrent DeserializeTorrent(string Torrent) => 
