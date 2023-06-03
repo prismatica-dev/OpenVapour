@@ -3,9 +3,7 @@ using System.IO.Compression;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
 using static OpenVapour.SteamPseudoWebAPI.SteamCore;
-using System.Runtime.Remoting.Messaging;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Compression {
@@ -69,6 +67,5 @@ namespace OpenVapour.OpenVapourAPI {
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
             } catch (Exception ex) { Utilities.HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
-
         internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name}\",\"description\":\"{Game.Description}\",\"appid\":\"{Game.AppId}\"";
         internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\"")); }}

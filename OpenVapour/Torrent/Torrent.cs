@@ -202,38 +202,13 @@ namespace OpenVapour.Steam {
                         if (PCGTGameList.Length == 0) {
                             string list = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html", 20000), "<ul>", "</ul>\n<div");
                             string[] split = list.Split('\n');
-                            // PCGTGameList = new Tuple<string, string>[split.Length];
                             List<Tuple<byte[], byte[]>> pcgtindex = new List<Tuple<byte[], byte[]>>(split.Length);
-                            /*float totalname = 0;
-                            float sumname = 0;
-                            float totalurl = 0;
-                            float sumurl = 0;
-                            float ctotalname = 0;
-                            float csumname = 0;
-                            float ctotalurl = 0;
-                            float csumurl = 0;*/
                             for (int i = 0; i < split.Length; i++) {
                                 string seg = split[i];
                                 if (seg.StartsWith("li")) continue;
                                 string name = GetBetween(seg, "\">", "</a");
-                                if (name.Length > 0) {
-                                    /*string uwurl = GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\"");
-                                    byte[] compressedUrl = CompressToBytes(uwurl, out bool _, true);
-                                    sumname += name.Length * sizeof(char);
-                                    csumname += CompressToBytes(name, out _, true).Length;
-                                    totalname++; ctotalname++;
-                                    sumurl += uwurl.Length * sizeof(char);
-                                    csumurl += compressedUrl.Length;
-                                    totalurl++; ctotalurl++;*/
-                                    pcgtindex.Add(new Tuple<byte[], byte[]>(CompressToBytes(name), CompressToBytes(GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\"")))); 
-                                    }}
-                            /*Console.WriteLine($"Statistics\n" +
-                                $"Average Name Bytes: {sumname / totalname:N1}\n" +
-                                $"Average Compressed Name Bytes: {csumname / ctotalname:N1}\n" +
-                                $"Average Url Bytes: {sumurl / totalurl:N1}\n" +
-                                $"Average Compressed Url Bytes: {csumurl / ctotalurl:N1}\n\n" +
-                                $"Name Compression Ratio: {csumname / sumname:N2}\n" +
-                                $"Url Compression Ratio: {csumurl / sumurl:N2}");*/
+                                if (name.Length > 0)
+                                    pcgtindex.Add(new Tuple<byte[], byte[]>(CompressToBytes(name), CompressToBytes(GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\"")))); }
                             PCGTGameList = pcgtindex.ToArray();
                             pcgtindex.Clear(); }
                 
