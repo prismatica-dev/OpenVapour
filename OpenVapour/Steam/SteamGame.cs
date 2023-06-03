@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using System.Threading.Tasks;
+using OpenVapour.Web;
+using System.Windows.Forms;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.OpenVapourAPI.Cache;
 using static OpenVapour.Steam.SteamInternals;
-using OpenVapour.Web;
-using System.Windows.Forms;
 
-namespace OpenVapour.SteamPseudoWebAPI {
+namespace OpenVapour.Steam {
     internal class SteamCore {
         internal class ResultGame {
             internal string Name { get; set; }

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using static OpenVapour.OpenVapourAPI.Compression;
-using static OpenVapour.SteamPseudoWebAPI.SteamCore;
+using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.OpenVapourAPI.Utilities;
 
 namespace OpenVapour.OpenVapourAPI {

@@ -1,5 +1,4 @@
-﻿using OpenVapour.Steam;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Graphics {

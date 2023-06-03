@@ -1,6 +1,4 @@
-﻿using OpenVapour.SteamPseudoWebAPI;
-using OpenVapour.Steam;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -10,20 +8,20 @@ using System.Windows.Forms;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
-using static OpenVapour.Steam.Torrent;
-using static OpenVapour.SteamPseudoWebAPI.SteamCore;
 using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using OpenVapour.OpenVapourAPI;
+using static OpenVapour.Steam.SteamCore;
+using static OpenVapour.Steam.SteamInternals;
+using static OpenVapour.Torrent.Torrent;
+using static OpenVapour.Torrent.TorrentUtilities;
+using static OpenVapour.Torrent.TorrentSources;
 
 using Brushes = System.Drawing.Brushes;
 using Color = System.Drawing.Color;
 using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
-using System.Reflection;
-using static OpenVapour.Torrent.TorrentSources;
-using OpenVapour.OpenVapourAPI;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
-using System.Runtime.InteropServices;
-using OpenVapour.Web;
-using static OpenVapour.Steam.SteamInternals;
 
 namespace OpenVapour {
     internal partial class Main : Form {

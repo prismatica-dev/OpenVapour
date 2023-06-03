@@ -3,7 +3,7 @@ using System.IO.Compression;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static OpenVapour.SteamPseudoWebAPI.SteamCore;
+using static OpenVapour.Steam.SteamCore;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Compression {
