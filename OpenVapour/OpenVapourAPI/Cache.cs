@@ -2,15 +2,16 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using static OpenVapour.Steam.Utilities;
+using static OpenVapour.OpenVapourAPI.Compression;
 using static OpenVapour.SteamPseudoWebAPI.SteamCore;
+using static OpenVapour.OpenVapourAPI.Utilities;
 
-namespace OpenVapour.Steam {
+namespace OpenVapour.OpenVapourAPI {
     internal class Cache {
         internal static readonly string DedicatedAppdata = $"{RoamingAppData}\\lily.software\\OpenVapour";
         internal static readonly string DedicatedStorage = $"{RoamingAppData}\\lily.software\\OpenVapour\\Storage";
         internal static readonly string DedicatedCache = $"{RoamingAppData}\\lily.software\\OpenVapour\\Cache";
-
+        internal static readonly TimeSpan CacheTimeout = TimeSpan.FromDays(.8f);
         internal static void CheckCache() {
             if (!Directory.Exists($"{DedicatedStorage}\\Blacklist")) Directory.CreateDirectory($"{DedicatedStorage}\\Blacklist");
             if (!Directory.Exists($"{DedicatedStorage}\\Games")) Directory.CreateDirectory($"{DedicatedStorage}\\Games");
@@ -24,19 +25,8 @@ namespace OpenVapour.Steam {
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
-        internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(ObjectToString(game)));
+        internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(SerializeSteamGame(game)));
         internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
-
-        internal static string ObjectToString(object obj) {
-           using (MemoryStream ms = new MemoryStream()) {
-             new BinaryFormatter().Serialize(ms, obj);         
-             return Convert.ToBase64String(ms.ToArray()); }}
-        internal static object StringToObject(string base64String) {    
-           byte[] bytes = Convert.FromBase64String(base64String);
-           using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length)) {
-              ms.Write(bytes, 0, bytes.Length);
-              ms.Position = 0;
-              return new BinaryFormatter().Deserialize(ms); }}
         internal static bool IsHomepaged(string AppId) => File.Exists($"{DedicatedStorage}\\Games\\{AppId}");
         internal static void RemoveHomepage(string AppId) {
             if (IsHomepaged(AppId)) File.Delete($"{DedicatedStorage}\\Games\\{AppId}"); }
@@ -53,11 +43,11 @@ namespace OpenVapour.Steam {
             CheckCache();
             try {
                 if (File.Exists($"{DedicatedCache}\\Games\\{AppId}")) {
-                    if (DateTime.Now - File.GetLastWriteTime($"{DedicatedCache}\\Games\\{AppId}") > TimeSpan.FromDays(.8d))
+                    if (DateTime.Now - File.GetLastWriteTime($"{DedicatedCache}\\Games\\{AppId}") > CacheTimeout)
                         File.Delete($"{DedicatedCache}\\Games\\{AppId}");
                     else {
                         string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
-                        SteamGame game = (SteamGame)StringToObject(cached);
+                        SteamGame game = DeserializeSteamGame(cached);
                         return game; }}
             } catch (Exception ex) { 
                 HandleException($"LoadCachedSteamGame({AppId}", ex); 

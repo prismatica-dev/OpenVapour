@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static OpenVapour.Steam.Utilities;
+using static OpenVapour.OpenVapourAPI.Compression;
 using OpenVapour.Web;
 using static OpenVapour.Torrent.TorrentSources;
-using System.Windows.Forms.VisualStyles;
-using System.Windows;
-using System.Text;
-using System.Windows.Forms;
+using static OpenVapour.OpenVapourAPI.Utilities;
 
 namespace OpenVapour.Steam {
     internal class Torrent {

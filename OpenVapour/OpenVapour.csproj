@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OpenVapourAPI\Compression.cs" />
     <Compile Include="OpenVapourAPI\Graphics.cs" />
     <Compile Include="OpenVapourAPI\UserSettings.cs" />
     <Compile Include="Settings.cs">

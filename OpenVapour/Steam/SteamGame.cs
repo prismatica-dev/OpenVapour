@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using static OpenVapour.Steam.Utilities;
-using static OpenVapour.Steam.Cache;
-using OpenVapour.Web;
-using OpenVapour.Steam;
-using System.Windows.Forms;
-using System.Windows.Media;
+using static OpenVapour.OpenVapourAPI.Utilities;
+using static OpenVapour.OpenVapourAPI.Cache;
 using static OpenVapour.Steam.SteamInternals;
+using OpenVapour.Web;
+using System.Windows.Forms;
 
 namespace OpenVapour.SteamPseudoWebAPI {
     internal class SteamCore {
@@ -26,14 +23,16 @@ namespace OpenVapour.SteamPseudoWebAPI {
                 if (JSON.Contains("id\":")) _ = GetBetween(JSON, "id\":", ","); // try getting id from result
                 else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/"); // otherwise get it from the logo asset
                 if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_); }} // pray one of them worked
-
-        [Serializable]
+        
         internal class SteamGame {
             internal string Name { get; set; }
             internal string AppId { get; set; }
             internal string Description { get; set; }
+            internal SteamGame(string Name, string AppId, string Description) {
+                Console.WriteLine("processing new steamgame from arguments");
+                this.Name = Name; this.AppId = AppId; this.Description = Description; }
             internal SteamGame(string apiJSON) { 
-                Console.WriteLine("processing new steamgame"); 
+                Console.WriteLine("processing new steamgame from json"); 
                 AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
                 Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
                 Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")); }}

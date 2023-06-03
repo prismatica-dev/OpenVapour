@@ -1,20 +1,13 @@
-﻿using OpenVapour.Web;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace OpenVapour.Steam {
+namespace OpenVapour.OpenVapourAPI {
     internal class Utilities {
         // Constants
         private const string repo = "lily-software/OpenVapour";
@@ -67,7 +60,6 @@ namespace OpenVapour.Steam {
                 return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
             catch (Exception ex) { HandleException($"GetLatestTag()", ex); }
             return ""; }
-
         internal static void UpdateProgram(string TagName) {
             try {
                 // Download update
@@ -129,70 +121,6 @@ namespace OpenVapour.Steam {
                 if (_a == '<' || _a == '>') { tag = _a == '<'; continue; }
                 if (!tag) { array[i] = _a; i++; }}
             return new string(array, 0, i).Replace("  ", " "); }
-
-        internal static string CompressString(string text) {
-            try {
-                byte[] buffer = Encoding.UTF8.GetBytes(text);
-                using (MemoryStream memoryStream = new MemoryStream()) {
-                    using (GZipStream gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true)) {
-                        gZipStream.Write(buffer, 0, buffer.Length); }
-                    string _ = Convert.ToBase64String(memoryStream.ToArray());
-                    return _; }
-            } catch (Exception ex) { HandleException($"CompressString({text})", ex); return ""; }}
-        internal static byte[] CompressToBytes(string text) {
-            try {
-                byte[] buffer = Encoding.UTF8.GetBytes(text);
-                using (MemoryStream memoryStream = new MemoryStream()) {
-                    using (GZipStream gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true)) {
-                        gZipStream.Write(buffer, 0, buffer.Length); }
-                    byte[] compressed = memoryStream.ToArray();
-                    if (compressed.Length >= /*text.Length * sizeof(char)*/ Encoding.UTF8.GetByteCount(text)) {
-                        byte[] encoded = Encoding.UTF8.GetBytes(text);
-                        byte[] append = new byte[encoded.Length + 1];
-                        Array.Copy(encoded, append, encoded.Length);
-                        append[append.Length - 1] = 1;
-                        return append; }
-                    byte[] cmpr = memoryStream.ToArray();
-                    byte[] cmprapp = new byte[cmpr.Length + 1];
-                    Array.Copy(cmpr, cmprapp, cmpr.Length);
-                    cmprapp[cmprapp.Length - 1] = 0;
-                    return cmprapp; }
-            } catch (Exception ex) { HandleException($"CompressString({text})", ex); return new byte[1] { 1 }; }}
-        internal static string DecompressString(string text) {
-            try {
-                byte[] compressedBytes = Convert.FromBase64String(text);
-                using (MemoryStream memoryStream = new MemoryStream(compressedBytes)) {
-                    using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
-                        using (MemoryStream decompressedStream = new MemoryStream()) {
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = gzipStream.Read(buffer, 0, buffer.Length)) > 0)
-                                decompressedStream.Write(buffer, 0, bytesRead);
-                            return Encoding.UTF8.GetString(decompressedStream.ToArray());
-                        }}}
-            } catch (Exception ex) { HandleException($"DecompressString({text})", ex); return ""; }}
-        internal static string DecompressFromBytes(byte[] bytes) {
-            try {
-                if (bytes.Length < 2) return "";
-                byte skip = bytes.Last();
-
-                byte[] tmp = new byte[bytes.Length - 1];
-                Array.Copy(bytes, tmp, tmp.Length);
-                bytes = tmp;
-
-                if (skip == 1) return Encoding.UTF8.GetString(bytes)
-                        ;
-                //byte[] compressedBytes = Convert.FromBase64String(text);
-                using (MemoryStream memoryStream = new MemoryStream(bytes)) {
-                    using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
-                        using (MemoryStream decompressedStream = new MemoryStream()) {
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = gzipStream.Read(buffer, 0, buffer.Length)) > 0)
-                                decompressedStream.Write(buffer, 0, bytesRead);
-                            return Encoding.UTF8.GetString(decompressedStream.ToArray());
-                        }}}
-            } catch (Exception ex) { HandleException($"DecompressString({bytes.Length} Bytes)", ex); return ""; }}
 
         internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
         internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, ""); }}

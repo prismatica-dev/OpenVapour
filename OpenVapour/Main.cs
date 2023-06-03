@@ -36,8 +36,6 @@ namespace OpenVapour {
         private string panelgame = "";
 
         private void Main_Load(object sender, EventArgs e) {
-            if (DesignMode) return;
-
             WebRequest.DefaultWebProxy = null;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             UpdateStyles();
@@ -490,6 +488,7 @@ namespace OpenVapour {
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
             textboxcursor.Start(); }
+
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
