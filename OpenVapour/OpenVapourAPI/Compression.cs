@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using static OpenVapour.Steam.SteamCore;
+using static OpenVapour.Torrent.Torrent;
+using static OpenVapour.Torrent.TorrentSources;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Compression {
@@ -68,4 +70,8 @@ namespace OpenVapour.OpenVapourAPI {
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
             } catch (Exception ex) { Utilities.HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
         internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name}\",\"description\":\"{Game.Description}\",\"appid\":\"{Game.AppId}\"";
-        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\"")); }}
+        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(Utilities.GetBetween(Game, "\"name\":\"", "\""), Utilities.GetBetween(Game, "\"description\":\"", "\""), Utilities.GetBetween(Game, "\"appid\":\"", "\""));
+        internal static string SerializeTorrent(ResultTorrent Torrent) => 
+            $"\"name\":\"{Torrent.Name}\",\"description\":\"{Torrent.Description}\",\"url\":\"{Torrent.Url}\",\"torrent-url\":\"{Torrent.TorrentUrl}\",\"image\":\"{Torrent.Image}\",\"source\":\"{(int)Torrent.Source}\"";
+        internal static ResultTorrent DeserializeTorrent(string Torrent) => 
+            new ResultTorrent(Utilities.GetBetween(Torrent, "\"name\":\"", "\""), Utilities.GetBetween(Torrent, "\"description\":\"", "\""), Utilities.GetBetween(Torrent, "\"url\":\"", "\""), Utilities.GetBetween(Torrent, "\"torrent-url\":\"", "\""), Utilities.GetBetween(Torrent, "\"image\":\"", "\""), (TorrentSource)Convert.ToInt32(Utilities.GetBetween(Torrent, "\"source\":\"", "\""))); }}

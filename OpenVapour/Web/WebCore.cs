@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using OpenVapour.OpenVapourAPI;
+using OpenVapour.Torrent;
 
 namespace OpenVapour.Web {
     internal static class WebCore {
@@ -104,6 +107,24 @@ namespace OpenVapour.Web {
                     catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
                     catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}}
             return ""; }
+
+        internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
+            Bitmap img = new Bitmap(1, 1);
+            if (CacheIdentifier.Length == 0) CacheIdentifier = Url;
+            try {
+                if (Url.Length > 0)
+                    if (Cache.IsBitmapCached(Url)) img = Cache.GetCachedBitmap(Url);
+                    else {
+                        HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
+                        req.Method = "GET";
+                        req.UserAgent = GetRandomUserAgent();
+                        Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
+                        Cache.CacheBitmap(CacheIdentifier, img);
+                        return bmp; }
+            } catch (Exception ex) {
+                Utilities.HandleException($"GetWebBitmap({Url}, {CacheIdentifier})", ex);
+                img = new Bitmap(150, 225); }
+            return img; }
     
         internal static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
 

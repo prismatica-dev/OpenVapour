@@ -17,11 +17,8 @@ using static OpenVapour.Steam.SteamInternals;
 using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentUtilities;
 using static OpenVapour.Torrent.TorrentSources;
-
-using Brushes = System.Drawing.Brushes;
-using Color = System.Drawing.Color;
-using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
+using OpenVapour.Web;
 
 namespace OpenVapour {
     internal partial class Main : Form {
@@ -73,10 +70,8 @@ namespace OpenVapour {
             DrawSearchBox(sender, e); }
 
         internal void DrawGradient() {
-            Bitmap background = new Bitmap(Width, Height);
-            LinearGradientBrush gradientbrush = new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]);
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
-            BackgroundImage = background; }
+            BackgroundImage?.Dispose();
+            BackgroundImage = Graphics.DrawGradient(Width, Height); }
 
         internal const int WM_NCLBUTTONDOWN = 0xA1;
         internal const int HT_CAPTION = 0x2;
@@ -115,15 +110,14 @@ namespace OpenVapour {
                     return; }
             base.WndProc(ref m); }
 
-        internal Panel CreatePopUp(PictureBox selector) {
+        internal Panel CreatePopUp(PictureBox selector, string Name, string Description) {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
-            SteamGame game = (SteamGame)pbo[1];
 
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
-            Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = game.Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = game.Description.Substring(0, Math.Min(game.Description.Length, 150)), BackColor = Color.Transparent };
+            Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
+            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Substring(0, Math.Min(Description.Length, 150)), BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
@@ -139,27 +133,6 @@ namespace OpenVapour {
             gamename.BringToFront();
             popup.BringToFront();
             popup.ControlRemoved += delegate { popup.Dispose(); };
-            return popup; }
-
-        internal Panel CreatePopUp(ResultTorrent torrent, Image gameimage) {
-            Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false };
-            PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = gameimage };
-            Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = torrent.Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = torrent.Description.Substring(0, Math.Min(torrent.Description.Length, 150)), BackColor = Color.Transparent };
-            gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
-
-            if (gameart.Image != null) {
-                Image image = gameart.Image;
-                if (image.Height > image.Width) gameart.Size = new Size(107, 160);
-                else gameart.Size = new Size(107, 107); }
-
-            popup.Controls.Add(gameart);
-            popup.Controls.Add(gamename);
-            popup.Controls.Add(gameabout);
-            Controls.Add(popup);
-            gameabout.BringToFront();
-            gamename.BringToFront();
-            popup.BringToFront();
             return popup; }
 
         internal void ClearStore() {
@@ -182,51 +155,30 @@ namespace OpenVapour {
             Task add = torrenttask.ContinueWith((result) => {
                 Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); 
             await add; }
-
         internal void AddTorrent(ResultTorrent torrent) {
-            PictureBox panel = new PictureBox { Size = new Size(225, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
+            PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
             try {
-                // fetch image
-                Image img = new Bitmap(1, 1);
-                try {
-                if (torrent.Image.Length > 0)
-                    if (Cache.IsBitmapCached(torrent.Url)) img = Cache.GetCachedBitmap(torrent.Url);
-                    else {
-                        WebClient wc = new WebClient();
-                        byte[] bytes = wc.DownloadData(torrent.Image);
-                        MemoryStream ms = new MemoryStream(bytes);
-                        img = Image.FromStream(ms);
-                        Cache.CacheBitmap(torrent.Url, (Bitmap)img); }
-                } catch (Exception ex) {
-                    Utilities.HandleException($"AddTorrent({torrent.Url}) [Fetch Image]", ex);
-                    img = new Bitmap(150, 225); }
-
-                // resize panel to appropriate proportions
-                float MaximumSize = Math.Max(img.Width, img.Height);
-                panel.Size = new Size(
-                    Math.Max((int)Math.Round(img.Width / MaximumSize * 225), 150),
-                    Math.Max((int)Math.Round(img.Height / MaximumSize * 225), 150));
-
                 // green labelled states for torrents
-                List<Image> states = new List<Image> {
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 207, 61), 20, Font, torrent.Source.ToString()), // passive state
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 255, 74), 20, Font, torrent.Source.ToString()), // click state
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 33, 236, 92), 20, Font, torrent.Source.ToString()) }; // hover state
+                //List<Image> states = new List<Image> {
+                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 207, 61), 20, Font, torrent.Source.ToString()), // passive state
+                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 255, 74), 20, Font, torrent.Source.ToString()), // click state
+                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 33, 236, 92), 20, Font, torrent.Source.ToString()) }; // hover state
                 List<object> metalist = new List<object> { states, torrent, true };
                 panel.Image = states[0];
                 panel.Tag = metalist;
-                Panel popup = CreatePopUp(torrent, states[0]);
+                Panel popup = CreatePopUp(panel, torrent.Name, torrent.Description);
                 metalist.Add(popup);
-
-                panel.Click += TorrentClick;
-                panel.MouseEnter += GameHoverStart;
-                panel.MouseDown += GameClickStart;
-                panel.MouseLeave += GameHoverEnd;
-                panel.MouseUp += GameClickEnd;
-                store.Controls.Add(panel);
-                ForceUpdate(); }
+                
+                AddPanelEvents(panel);
+                ForceUpdate();
+                LoadGameTorrentBitmap(torrent, panel); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
-
+        
+        internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
+            Task<SteamGame> game = GetGame(AppId, Basic, Cache);
+            Task addgame = game.ContinueWith((result) => {
+                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
+            await addgame; }
         internal void AddGame(SteamGame game) {
             if (game == null || game.AppId.Length == 0) return;
             if (InvokeRequired) {
@@ -240,59 +192,54 @@ namespace OpenVapour {
             List<object> metalist = new List<object> { states, game, false };
             panel.Image = states[0];
             panel.Tag = metalist;
-            Panel popup = CreatePopUp(panel);
+            Panel popup = CreatePopUp(panel, game.Name, game.Description);
             metalist.Add(popup);
 
-            panel.Click += GameClick;
-            panel.MouseEnter += GameHoverStart;
-            panel.MouseDown += GameClickStart;
-            panel.MouseLeave += GameHoverEnd;
-            panel.MouseUp += GameClickEnd;
-            store.Controls.Add(panel);
+            AddPanelEvents(panel);
             try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Refresh]", ex);}
-            LoadGameBitmap(game, panel); }
+            LoadGameTorrentBitmap(game, panel); }
 
-        internal async void LoadGameBitmap(SteamGame game, PictureBox output) {
+        internal async void LoadGameTorrentBitmap(object game, PictureBox output) {
             try {
                 if (InvokeRequired) {
-                    Invoke((MethodInvoker)delegate { LoadGameBitmap(game, output); });
+                    Invoke((MethodInvoker)delegate { LoadGameTorrentBitmap(game, output); });
                     return; }
-                Bitmap img = await GetShelf(Convert.ToInt32(game.AppId));
-                Task<Bitmap> shelfTask = GetShelf(Convert.ToInt32(game.AppId));
-                Task cont = shelfTask.ContinueWith((shelf) => {
+
+                Task<Bitmap> imgTask = null;
+                string name = "";
+                string desc = "";
+
+                if (game is SteamGame sg) {
+                    imgTask = GetShelf(Convert.ToInt32(sg.AppId));
+                    name = sg.Name;
+                    desc = sg.Description; }
+                else if (game is ResultTorrent rt) {
+                    imgTask = WebCore.GetWebBitmap(rt.Image, rt.Url);
+                    name = rt.Name;
+                    desc = rt.Description; }
+
+                Task cont = imgTask.ContinueWith((img) => {
                     List<Image> states = new List<Image> {
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 0, 0)),
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 117, 225)),
-                    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 225, 177)) };
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 0, 0, 0)),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225)),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177)) };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
                         metalist.RemoveAt(0); metalist.Insert(0, states);
                         metalist[2] = true;
-                        metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output));
+                        metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output, name, desc));
+
+                        if (game is ResultTorrent rt) {
+                            // resize panel to appropriate proportions
+                            float MaximumSize = Math.Max(150, 225);
+                            output.Size = new Size(
+                                Math.Max((int)Math.Round(150 / MaximumSize * 225), 150),
+                                Math.Max((int)Math.Round(225 / MaximumSize * 225), 150)); }
                         ForceUpdate();
                         }); });
                 await cont;
             } catch(Exception ex) { Utilities.HandleException($"LoadGameBitmap(game, panel)", ex); }}
-
-        private void GameClick (object sender, EventArgs e) {
-            InterpretPictureBox(sender, out PictureBox _, out List<object> pbl, out List<Image> pbs);
-            SteamGame game = (SteamGame)pbl[1];
-            if (!gamepanelopen) LoadGame(game, pbs[0]);
-            else if(panelgame != game.Name) ClosePanel(true, pbl); }
-
-        private void TorrentClick(object sender, EventArgs e) {
-            try {
-                InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
-                ResultTorrent game = (ResultTorrent)pbl[1];
-                if (!gamepanelopen) LoadTorrent(game, pbs[0]); else if (panelgame != game.Name) ClosePanelTorrent(true, pbl);
-            } catch (Exception ex) { Utilities.HandleException($"TorrentClick(sender, e)", ex); }}
-
-        private void ResizeGameArt() {
-            if (gameart.Image == null) return;
-            Image image = gameart.Image;
-            if (image.Height > image.Width) gameart.Size = new Size(133, 200);
-            else gameart.Size = new Size(133, 133); }
 
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
@@ -305,7 +252,7 @@ namespace OpenVapour {
 
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; 
-            if (game.Source != TorrentSource.KaOs) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
+            if (game.Source != TorrentSource.KaOs && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
             else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
             MagnetButtonContainer.Visible = true; toggleHomepage.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
@@ -316,10 +263,39 @@ namespace OpenVapour {
             gamepanel.BringToFront(); gamepanelopen = true;
             ForceUpdate(); }
 
+        private void GameTorrentClick(object sender, EventArgs e) {
+            try {
+                InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
+                object game = pbl[1];
+                if (game is SteamGame steamgame) {
+                    if (!gamepanelopen) LoadGame(steamgame, pbs[0]); 
+                    else if (panelgame != steamgame.Name) ClosePanel(false, true, pbl);
+                } else if (game is ResultTorrent resulttorrent) {
+                    if (!gamepanelopen) LoadTorrent(resulttorrent, pbs[0]); 
+                    else if (panelgame != resulttorrent.Name) ClosePanel(true, true, pbl); }
+            } catch (Exception ex) { Utilities.HandleException($"GameTorrentClick(sender, e)", ex); }}
+
+        private void ResizeGameArt() {
+            if (gameart.Image == null) return;
+            Image image = gameart.Image;
+            if (image.Height > image.Width) gameart.Size = new Size(133, 200);
+            else gameart.Size = new Size(133, 133); }
+
+        internal void AddPanelEvents(PictureBox panel) {
+            panel.Click += GameTorrentClick;
+            panel.MouseEnter += GameHoverStart;
+            panel.MouseDown += GameClickStart;
+            panel.MouseLeave += GameHoverEnd;
+            panel.MouseUp += GameClickEnd;
+            store.Controls.Add(panel); }
+
         private void GameClickStart(object sender, MouseEventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out _, out List<Image> pbs);
             pb.Image = pbs[2];
             ForceUpdate(); }
+        private void GameClickEnd(object sender, EventArgs e) {
+            InterpretPictureBox(sender, out PictureBox pb, out List<object> _, out List<Image> pbs);
+            if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             pb.Image = pbs[1];
@@ -332,8 +308,7 @@ namespace OpenVapour {
             popup.Visible = true;
             hover = true;
             ForceUpdate();
-            if ((bool)pbl[2]) await Task.Delay(20000);
-            else await Task.Delay(1000);
+            if ((bool)pbl[2]) await Task.Delay(20000); else await Task.Delay(1000);
             popup.Visible = false;
             ForceUpdate(); }
         private void GameHoverEnd(object sender, EventArgs e) {
@@ -343,41 +318,29 @@ namespace OpenVapour {
             popup.Visible = false;
             hover = false;
             ForceUpdate(); }
-        private void GameClickEnd(object sender, EventArgs e) {
-            InterpretPictureBox(sender, out PictureBox pb, out List<object> _, out List<Image> pbs);
-            if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
         private static void InterpretPictureBox(object sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs) {
             pb = (PictureBox)sender;
             pbl = (List<object>)pb.Tag;
             pbs = (List<Image>)pbl[0]; }
 
-        private void ClosePanel(bool OpenNext, List<object> List) {
+        private void ClosePanel(bool IsTorrent, bool OpenNext, List<object> List) {
             Timer time = new Timer { Interval = 30 };
-            SteamGame game = null;
+            object game = null;
             List<Image> pbs = null;
 
-            if (OpenNext) { game = (SteamGame)List[1]; pbs = (List<Image>)List[0]; }
+            if (OpenNext && !IsTorrent) { game = (SteamGame)List[1]; pbs = (List<Image>)List[0]; }
+            else if (IsTorrent) { game = (ResultTorrent)List[1]; pbs = (List<Image>)List[0]; }
             time.Tick += delegate {
                 if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
-                else if (OpenNext) { LoadGame(game, pbs[0]); panelgame = ""; time.Enabled = false; }
-                else { panelgame = ""; time.Enabled = false; }
+                else { 
+                    if (OpenNext) 
+                        if (IsTorrent) LoadTorrent((ResultTorrent)game, pbs[0]);
+                        else LoadGame((SteamGame)game, pbs[0]);
+                    panelgame = ""; time.Enabled = false; }
                 ForceUpdate(); };
             time.Enabled = true; }
 
-        private void ClosePanelTorrent(bool OpenNext, List<object> List) {
-            Timer time = new Timer { Interval = 30 };
-            ResultTorrent game = null;
-            List<Image> pbs = null;
-
-            if (OpenNext) { game = (ResultTorrent)List[1]; pbs = (List<Image>)List[0]; }
-            time.Tick += delegate {
-                if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
-                else if (OpenNext) { LoadTorrent(game, pbs[0]); panelgame = ""; time.Enabled = false; }
-                else { panelgame = ""; time.Enabled = false; }
-                ForceUpdate();
-            }; time.Enabled = true; }
-
-        private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, new List<object>());
+        private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, false, new List<object>());
         private void Searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
 
         private void DrawSearchBox(object sender, EventArgs e) {
@@ -404,12 +367,6 @@ namespace OpenVapour {
         private void SteamPage_Click(object sender, EventArgs e) {
             Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
             ForceUpdate(); }
-
-        internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
-            Task<SteamGame> game = GetGame(AppId, Basic, Cache);
-            Task addgame = game.ContinueWith((result) => {
-                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
-            await addgame; }
 
         private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 

@@ -1,7 +1,12 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Graphics {
+        internal static Bitmap DrawGradient(int Width, int Height) {
+            Bitmap bitmap = new Bitmap(Width, Height);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap)) { g.FillRectangle(new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]), new Rectangle(0, 0, Width, Height)); }
+            return bitmap; }
         internal static Image ManipulateDisplayBitmap(Image image, Color color, int BorderRadius = 20, Font OverlayFont = null, string Overlay = "") {
             Bitmap shadow = new Bitmap(image.Width, image.Height);
             if (shadow.Width > BorderRadius * 2 && shadow.Height > BorderRadius * 2)

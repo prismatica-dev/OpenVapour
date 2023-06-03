@@ -11,7 +11,6 @@ using static OpenVapour.OpenVapourAPI.Compression;
 namespace OpenVapour.Torrent {
     internal class TorrentUtilities {
         internal static string MagnetFromTorrent(byte[] TorrentFile) => $"magnet:?xt=urn:btih:{Convert.ToBase64String(TorrentFile)}";
-
         internal static string FixRSSUnicode(string Content) {
             bool Fixed = false;
             int iterations = 0;

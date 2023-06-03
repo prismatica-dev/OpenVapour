@@ -4,6 +4,9 @@ using OpenVapour.Web;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.TorrentUtilities;
+using System.Threading;
+using OpenVapour.OpenVapourAPI;
+using System.Web.UI.WebControls;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {
@@ -17,28 +20,18 @@ namespace OpenVapour.Torrent {
             internal string Image { get; set; }
             internal string TorrentUrl { get; set; }
             internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
+                ResultTorrent t = new ResultTorrent(TorrentSource.Unknown, "");
                 try {
+                    if (Cache.IsTorrentCached(Url)) {
+                        ResultTorrent cached = Cache.LoadCachedTorrent(Url);
+                        if (cached != null) return cached; }
+
                     string html = await WebCore.GetWebString(Url);
                     switch (source) {
                         case TorrentSource.PCGamesTorrents:
-                            ResultTorrent torrent = new ResultTorrent(source, "") {
-                                Url = Url, Name = Name,
-                                Description = GetBetween(html, "<p class=\"uk-dropcap\">", "</p>"),
-                                Image = GetBetween(html, "Download\" src=\"", "\""),
-                                TorrentUrl = GetBetween(html, "uk-card-hover\"><a href=\"", "\"") };
-
-                            // fix description unicode bugs
-                            bool descriptionFixed = false;
-                            int iterations = 0;
-                            while (!descriptionFixed) {
-                                iterations++; if (iterations > 50) break; // prevent infinite loop
-                                string unicode = GetBetween(torrent.Description, "#", ";");
-                                if (unicode.Length > 0 && unicode.Length < 6) {
-                                    if (int.TryParse(unicode, out int n)) {
-                                        torrent.Description = torrent.Description.Replace($"#{unicode};", $"{(char)n}"); }
-                                    else descriptionFixed = true; }
-                                else descriptionFixed = true; }
-                            return torrent;
+                            t = new ResultTorrent(Name, FixRSSUnicode(GetBetween(html, "<p class=\"uk-dropcap\">", "</p>")), Url, GetBetween(html, "uk-card-hover\"><a href=\"", "\""), GetBetween(html, "Download\" src=\"", "\""), source);
+                            Cache.CacheTorrent(t);
+                            return t;
 
                         case TorrentSource.KaOs:
                             // KaOs is a forum where uploaders use various formats. trying to introduce compatibility with these formats is hell.
@@ -67,19 +60,17 @@ namespace OpenVapour.Torrent {
                                 foreach (string line in lineHtml)
                                     if ((line.ToLower().Contains("magnet") || line.ToLower().Contains("torrent")) && line.ToLower().Contains("href"))
                                         trurl = GetBetween(line, "href=\"", "\""); }
-
-                            ResultTorrent t = new ResultTorrent(source, "") {
-                                Url = Url, Name = Name,
-                                Description = desc, // not all posts have this
-                                Image = img, // chances are not all posts have this either
-                                TorrentUrl = trurl };
+                            t = new ResultTorrent(Name, desc, Url, trurl, img, source);
+                            Cache.CacheTorrent(t);
                             return t;
 
                         case TorrentSource.Unknown:
                         default:
                             return new ResultTorrent(source, ""); }
                     } catch (Exception ex) { HandleException($"ResultTorrent.TorrentFromUrl({source}, {Url}, {Name})", ex); }
-                return new ResultTorrent(TorrentSource.Unknown, ""); }
+                return t; }
+
+            internal ResultTorrent(string Name, string Description, string Url, string TorrentUrl, string Image, TorrentSource Source) { this.Name = Name; this.Description = Description; this.Url = Url; this.TorrentUrl = TorrentUrl; this.Image = Image; this.Source = Source; }
 
             internal ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;

@@ -4,6 +4,8 @@ using System.IO;
 using static OpenVapour.OpenVapourAPI.Compression;
 using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.OpenVapourAPI.Utilities;
+using static OpenVapour.Torrent.Torrent;
+using OpenVapour.Torrent;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Cache {
@@ -15,16 +17,25 @@ namespace OpenVapour.OpenVapourAPI {
             if (!Directory.Exists($"{DedicatedStorage}\\Blacklist")) Directory.CreateDirectory($"{DedicatedStorage}\\Blacklist");
             if (!Directory.Exists($"{DedicatedStorage}\\Games")) Directory.CreateDirectory($"{DedicatedStorage}\\Games");
             if (!Directory.Exists($"{DedicatedCache}\\Games")) Directory.CreateDirectory($"{DedicatedCache}\\Games");
+            if (!Directory.Exists($"{DedicatedCache}\\Torrents")) Directory.CreateDirectory($"{DedicatedCache}\\Torrents");
             if (!Directory.Exists($"{DedicatedCache}\\Images")) Directory.CreateDirectory($"{DedicatedCache}\\Images"); }
 
         internal static void CacheSteamBitmap(int AppId, string Asset, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
         internal static bool IsSteamBitmapCached(int AppId, string Asset) => File.Exists($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
         internal static Bitmap GetCachedSteamBitmap(int AppId, string Asset) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
+        
         internal static void CacheBitmap(string Name, Bitmap Image) => Image.Save($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static Bitmap GetCachedBitmap(string Name) => (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
-        internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
+        
         internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(SerializeSteamGame(game)));
+        internal static bool IsSteamGameCached(int AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
+        internal static SteamGame LoadCachedSteamGame(string AppId) => DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
+        
+        internal static void CacheTorrent(ResultTorrent torrent) => File.WriteAllText($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(torrent.Url)}", CompressString(SerializeTorrent(torrent)));
+        internal static bool IsTorrentCached(string Url) => File.Exists($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}");
+        internal static ResultTorrent LoadCachedTorrent(string Url) => DeserializeTorrent(LoadCompressedAsset($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}"));
+
         internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
         internal static bool IsHomepaged(string AppId) => File.Exists($"{DedicatedStorage}\\Games\\{AppId}");
         internal static void RemoveHomepage(string AppId) {
@@ -38,17 +49,13 @@ namespace OpenVapour.OpenVapourAPI {
             CheckCache(); if (AppId.Length > 0) File.WriteAllText($"{DedicatedStorage}\\Blacklist\\{AppId}", Reason == ""?"Blacklist reason not provided.":$"Blacklisted for: {Reason}"); }
         internal static void WhitelistID(string AppId) {
             if (File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}")) File.Delete($"{DedicatedStorage}\\Blacklist\\{AppId}"); }
-        internal static SteamGame LoadCachedSteamGame(int AppId) {
+        internal static string LoadCompressedAsset(string file) {
             CheckCache();
             try {
-                if (File.Exists($"{DedicatedCache}\\Games\\{AppId}")) {
-                    if (DateTime.Now - File.GetLastWriteTime($"{DedicatedCache}\\Games\\{AppId}") > CacheTimeout)
-                        File.Delete($"{DedicatedCache}\\Games\\{AppId}");
-                    else {
-                        string cached = DecompressString(File.ReadAllText($"{DedicatedCache}\\Games\\{AppId}"));
-                        SteamGame game = DeserializeSteamGame(cached);
-                        return game; }}
+                if (File.Exists(file)) {
+                    if (DateTime.Now - File.GetLastWriteTime(file) > CacheTimeout) File.Delete(file);
+                    else return DecompressString(file); }
             } catch (Exception ex) { 
-                HandleException($"LoadCachedSteamGame({AppId}", ex); 
-                File.Delete($"{DedicatedCache}\\Games\\{AppId}"); } 
+                HandleException($"LoadCompressedAsset({file}", ex); 
+                File.Delete(file); } 
             return null; }}}
