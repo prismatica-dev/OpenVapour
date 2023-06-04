@@ -6,6 +6,7 @@ using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.Torrent;
 using OpenVapour.Torrent;
+using System.Threading.Tasks;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Cache {
@@ -30,11 +31,17 @@ namespace OpenVapour.OpenVapourAPI {
         
         internal static void CacheSteamGame(SteamGame game) => File.WriteAllText($"{DedicatedCache}\\Games\\{game.AppId}", CompressString(SerializeSteamGame(game)));
         internal static bool IsSteamGameCached(string AppId) => File.Exists($"{DedicatedCache}\\Games\\{AppId}");
-        internal static SteamGame LoadCachedSteamGame(string AppId) => DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
+        internal static async Task<SteamGame> LoadCachedSteamGame(string AppId) { 
+            SteamGame cached = DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
+            if (cached.AppId.Length == 0) return await GetGame(Convert.ToInt32(AppId));
+            else return cached; }
         
         internal static void CacheTorrent(ResultTorrent torrent) => File.WriteAllText($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(torrent.Url)}", CompressString(SerializeTorrent(torrent)));
         internal static bool IsTorrentCached(string Url) => File.Exists($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}");
-        internal static ResultTorrent LoadCachedTorrent(string Url) => DeserializeTorrent(LoadCompressedAsset($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}"));
+        internal static ResultTorrent LoadCachedTorrent(string Url) {
+            ResultTorrent cached = DeserializeTorrent(LoadCompressedAsset($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}"));
+            if (cached.Url.Length == 0) return null;
+            else return cached; }
 
         internal static bool IsBlacklisted(string AppId) => File.Exists($"{DedicatedStorage}\\Blacklist\\{AppId}");
         internal static bool IsHomepaged(string AppId) => File.Exists($"{DedicatedStorage}\\Games\\{AppId}");

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.OpenVapourAPI.Cache;
 using static OpenVapour.Steam.SteamInternals;
+using System.ComponentModel.Design;
 
 namespace OpenVapour.Steam {
     internal class SteamCore {
@@ -28,7 +29,7 @@ namespace OpenVapour.Steam {
             internal string AppId { get; set; }
             internal string Description { get; set; }
             internal SteamGame(string Name, string AppId, string Description) {
-                Console.WriteLine("processing new steamgame from arguments");
+                Console.WriteLine($"processing new steamgame from arguments, SteamGame({Name}, {AppId}, {Description})");
                 this.Name = Name; this.AppId = AppId; this.Description = Description.Replace("\\/", "/"); }
             internal SteamGame(string apiJSON) { 
                 Console.WriteLine("processing new steamgame from json"); 
@@ -75,7 +76,7 @@ namespace OpenVapour.Steam {
                 string tags = "";
                 if (Tags != null) tags = ProcessArray(Tags);
 
-                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994");
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000);
                 Console.WriteLine("processing results");
                 JSON = JSON.Substring(JSON.IndexOf("[") + 1);
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
@@ -88,9 +89,9 @@ namespace OpenVapour.Steam {
                     
                     Main main = null;
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
-                    main?.Invoke((MethodInvoker)delegate { 
+                    main?.Invoke((MethodInvoker)async delegate { 
                         if (!IsSteamGameCached(last.AppId.ToString())) main.AsyncAddGame(last.AppId);
-                        else main.AddGame(LoadCachedSteamGame(last.AppId.ToString()));
+                        else main.AddGame(await LoadCachedSteamGame(last.AppId.ToString()));
                     }); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
@@ -105,14 +106,17 @@ namespace OpenVapour.Steam {
             } catch (Exception ex) { HandleException($"SteamCore.ProcessResults(List<ResultGame>)", ex); }
             return games; }
 
-        internal static async Task<SteamGame> GetGame(int AppId, bool Basic = false, bool Cache = false) {
+        internal static async Task<SteamGame> GetGame(int AppId, bool Basic = true) {
             try {
+                if (IsSteamGameCached(AppId.ToString())) {
+                    SteamGame cached = await LoadCachedSteamGame(AppId.ToString());
+                    if (cached.AppId.Length != 0) return cached;
+                    Console.WriteLine($"{AppId} fetching from cache failed!"); }
+
                 Console.WriteLine($"getting game '{AppId}' from steamapi");
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
                 Console.WriteLine("returning relevant json,,,");
-                if (Cache) {
-                    SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
-                    CacheSteamGame(game);
-                    return game;
-                } else return new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8)); 
-            } catch (Exception ex) { HandleException($"GetGame({AppId}, {Basic}, {Cache})", ex); return new SteamGame(""); }}}}
+                SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
+                CacheSteamGame(game);
+                return game;
+            } catch (Exception ex) { HandleException($"GetGame({AppId}, {Basic})", ex); return new SteamGame(""); }}}}

@@ -48,7 +48,7 @@ namespace OpenVapour.Web {
         // web requests
         internal const int Timeout = 50;
         internal static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
-        internal static async Task<string> GetWebString(string Url, int MaxTimeout = 2000, bool FullSpoof = false) {
+        internal static async Task<string> GetWebString(string Url, int MaxTimeout = 3500, bool FullSpoof = false) {
             Console.WriteLine($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {

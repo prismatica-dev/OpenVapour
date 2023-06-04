@@ -143,13 +143,16 @@ namespace OpenVapour {
                         PictureBox pb = ctrl as PictureBox;
                         InterpretPictureBox(pb, out _, out List<object> meta, out List<Image> i);
                         if (meta[1] == currentgame || meta[1] == currenttorrent) continue;
+                        if (i.Equals(states)) continue;
                         foreach (Image im in i) im.Dispose();
                         i.Clear();
                         pb.Image?.Dispose(); }
                     ctrl.Dispose();
                     ctrl.Parent = null; }
             } catch (Exception ex) { Utilities.HandleException("ClearStore()", ex); }
-            store.Controls.Clear(); }
+            Console.WriteLine("store assets disposed");
+            store.Controls.Clear();
+            Console.WriteLine("store cleared"); }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -174,8 +177,8 @@ namespace OpenVapour {
                 LoadGameTorrentBitmap(torrent, panel); }
             catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
         
-        internal async void AsyncAddGame(int AppId, bool Basic = false, bool Cache = false) {
-            Task<SteamGame> game = GetGame(AppId, Basic, Cache);
+        internal async void AsyncAddGame(int AppId, bool Basic = false) {
+            Task<SteamGame> game = GetGame(AppId, Basic);
             Task addgame = game.ContinueWith((result) => {
                 Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
             await addgame; }
@@ -225,6 +228,7 @@ namespace OpenVapour {
                     desc = rt.Description; }
 
                 Task cont = imgTask.ContinueWith((img) => {
+                    if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
                     List<Image> states = new List<Image> {
                         Graphics.ManipulateDisplayBitmap(img.Result, baseState, 20, Font, torrent?overlay:"", baseState),
                         Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 20, Font, torrent?overlay:"", baseState),
@@ -368,7 +372,9 @@ namespace OpenVapour {
                     if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
                 ClearStore(); 
                 int results = (int)Math.Floor(store.Width / 156f) * (int)Math.Floor(store.Height / 231f);
-                await GetResults(realsearchtb.Text, tags.ToArray(), results); }}
+                UseWaitCursor = true;
+                await GetResults(realsearchtb.Text, tags.ToArray(), results);
+                UseWaitCursor = false; }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
             Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
@@ -430,16 +436,16 @@ namespace OpenVapour {
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
-        private void LoadLibrary() {
+        private async void LoadLibrary() {
             if (Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
                 foreach (string file in Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
                     try { 
                         string id = file.Substring(file.LastIndexOf("\\") + 1);
                         if (Cache.IsSteamGameCached(id)) { 
-                            SteamGame cached = Cache.LoadCachedSteamGame(id);
-                            if (cached != null) AddGame(Cache.LoadCachedSteamGame(id));
-                            else AsyncAddGame(Convert.ToInt32(id), false, true); }
-                        else AsyncAddGame(Convert.ToInt32(id), false, true); }
+                            SteamGame cached = await Cache.LoadCachedSteamGame(id);
+                            if (cached != null) AddGame(cached);
+                            else AsyncAddGame(Convert.ToInt32(id), false); }
+                        else AsyncAddGame(Convert.ToInt32(id), false); }
                     catch (Exception ex) { Utilities.HandleException($"LoadLibrary()", ex); }}
             else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
 
