@@ -59,5 +59,15 @@ namespace OpenVapour.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon OpenVapour_Icon {
+            get {
+                object obj = ResourceManager.GetObject("OpenVapour-Icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

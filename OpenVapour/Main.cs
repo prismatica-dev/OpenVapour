@@ -19,10 +19,12 @@ using static OpenVapour.Torrent.TorrentUtilities;
 using static OpenVapour.Torrent.TorrentSources;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using OpenVapour.Web;
+using OpenVapour.Properties;
 
 namespace OpenVapour {
     internal partial class Main : Form {
-        internal Main() { InitializeComponent(); }
+        internal Main() {
+            InitializeComponent(); }
         internal static List<Image> states = new List<Image>();
         private SteamGame currentgame = new SteamGame("");
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
@@ -31,6 +33,7 @@ namespace OpenVapour {
         private string panelgame = "";
 
         private void Main_Load(object sender, EventArgs e) {
+            Icon = Resources.OpenVapour_Icon;
             WebRequest.DefaultWebProxy = null;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             UpdateStyles();
@@ -63,9 +66,6 @@ namespace OpenVapour {
             store.Location = new Point(0, 0);
             store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
-            
-            foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
-                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = tag }.CheckedChanged += delegate { ForceUpdate(); };
             
             DrawSearchBox(sender, e); }
 
@@ -446,6 +446,9 @@ namespace OpenVapour {
         private void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; 
             LoadLibrary();
+            foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
+                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = tag }.CheckedChanged += delegate { ForceUpdate(); };
+
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
             textboxcursor.Start(); }

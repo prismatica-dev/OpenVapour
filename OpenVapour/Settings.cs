@@ -1,4 +1,5 @@
 ﻿using OpenVapour.OpenVapourAPI;
+using OpenVapour.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,6 +40,7 @@ namespace OpenVapour {
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0); }}
 
         private void SettingsLoad(object sender, EventArgs e) {
+            Icon = Resources.OpenVapour_Icon;
             themeColour1.BackColor = WindowTheme["background1"];
             themeColour2.BackColor = WindowTheme["background2"];
             DrawGradient();
