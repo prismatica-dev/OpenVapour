@@ -49,6 +49,7 @@ namespace OpenVapour {
             store.HorizontalScroll.Maximum = 0;
             store.HorizontalScroll.Enabled = false;
             store.HorizontalScroll.Visible = false;
+            gamedesc.MouseWheel += BackgroundTearingFix;
 
             Bitmap img = new Bitmap(150, 225);
             states = new List<Image> {
@@ -350,13 +351,14 @@ namespace OpenVapour {
                 ForceUpdate(); };
             time.Enabled = true; }
 
-        private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, false, new List<object>());
+        private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, false, null);
         private void Searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
 
         private void DrawSearchBox(object sender, EventArgs e) {
             Bitmap bit = new Bitmap(searchtextbox.Width, searchtextbox.Height);
             string t = realsearchtb.Text;
             if (DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) t = t.Insert(realsearchtb.SelectionStart, "|");
+
 
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -371,7 +373,7 @@ namespace OpenVapour {
                 foreach (Control ctrl in tagFilterContainer.Controls)
                     if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
                 ClearStore(); 
-                int results = (int)Math.Floor(store.Width / 156f) * (int)Math.Floor(store.Height / 231f);
+                int results = Math.Max(10, (int)Math.Floor(store.Width / 156f) * (int)Math.Floor(store.Height / 231f));
                 UseWaitCursor = true;
                 await GetResults(realsearchtb.Text, tags.ToArray(), results);
                 UseWaitCursor = false; }}
@@ -501,10 +503,17 @@ namespace OpenVapour {
             ForceUpdate(); }
 
         private void Resized(object sender, EventArgs e) {
+            ClosePanel(false, false, null);
             gamename.MaximumSize = new Size(gamepanel.Width - 153, gamename.Height);
             sourcename.MaximumSize = new Size(gamepanel.Width - 153, sourcename.Height);
-            gamedesc.MaximumSize = new Size(gamepanel.Width - 17, 0);
-            gamedesc.MinimumSize = new Size(gamepanel.Width - 17, gamepanel.Height - 219); }
+            gamedescpanel.Size = new Size(gamepanel.Width + SystemInformation.VerticalScrollBarWidth, gamepanel.Height - 219);
+            gamedesc.MaximumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, 0);
+            gamedesc.MinimumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, gamedescpanel.Height);
+            gamedescpanel.AutoScroll = false;
+            gamedescpanel.VerticalScroll.Maximum = gamedesc.Height;
+            gamedescpanel.VerticalScroll.Enabled = true;
+            gamedescpanel.VerticalScroll.Visible = true;
+            gamedescpanel.AutoScroll = true; }
 
         private void FilterSearchFocused(object sender, EventArgs e) { 
             if (filterSearch.Text == "Search") filterSearch.Text = ""; 

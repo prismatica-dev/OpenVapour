@@ -303,9 +303,6 @@
             // 
             // gamedescpanel
             // 
-            this.gamedescpanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamedescpanel.AutoScroll = true;
             this.gamedescpanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.gamedescpanel.Controls.Add(this.gamedesc);
@@ -316,9 +313,6 @@
             // 
             // gamedesc
             // 
-            this.gamedesc.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.gamedesc.AutoSize = true;
             this.gamedesc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.gamedesc.Font = new System.Drawing.Font("Segoe UI Light", 12.25F);
@@ -633,10 +627,9 @@
             this.Controls.Add(this.nogamesnotif);
             this.Font = new System.Drawing.Font("Segoe UI Light", 24.25F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
-            this.MinimumSize = new System.Drawing.Size(405, 300);
+            this.MinimumSize = new System.Drawing.Size(805, 512);
             this.Name = "Main";
             this.Text = "OpenVapour";
             this.TransparencyKey = System.Drawing.Color.Snow;
