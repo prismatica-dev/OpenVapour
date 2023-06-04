@@ -410,11 +410,12 @@ namespace OpenVapour {
             ForceUpdate();
             string magnet = "";
             try {
-                magnetbutton.Text = "Fetching";
-                ForceUpdate();
                 if (currenttorrent.Source == TorrentSource.KaOs || currenttorrent.Source == TorrentSource.SteamRIP) {
                     Process.Start(currenttorrent.Url);
                     return; }
+
+                magnetbutton.Text = "Fetching";
+                ForceUpdate();
 
                 magnet = await currenttorrent.GetMagnet();
 
@@ -422,7 +423,7 @@ namespace OpenVapour {
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
-                Utilities.HandleException("Magnet()", ex); 
+                Utilities.HandleException("Magnet() [Clipboard]", ex); 
                 magnetbutton.Text = "Copy Failed";
                 ForceUpdate(); }
             try {
@@ -433,7 +434,7 @@ namespace OpenVapour {
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
             } catch (Exception ex) { 
-                Utilities.HandleException("Magnet()", ex); 
+                Utilities.HandleException("Magnet() [Process]", ex); 
                 magnetbutton.Text = "Open Failed";
                 ForceUpdate(); }}
 

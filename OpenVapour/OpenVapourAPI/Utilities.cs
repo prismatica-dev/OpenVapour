@@ -94,7 +94,7 @@ namespace OpenVapour.OpenVapourAPI {
             bool fit = false;
             font = new Font(font.FontFamily, max, font.Style);
             while (!fit) {
-                Size s = TextRenderer.MeasureText(text, font, size, TextFormatFlags.Default);
+                Size s = TextRenderer.MeasureText(text, font, size);
                 if (s.Width > size.Width || s.Height > size.Height) {
                     font = new Font(font.FontFamily, font.Size * .9f, font.Style);
                     if (font.Size < .5f) fit = true;
@@ -102,7 +102,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static Font FitFont(Font font, string text, Size size) {
             bool fit = false;
             while (!fit) {
-                Size s = TextRenderer.MeasureText(text, font, size, TextFormatFlags.Default);
+                Size s = TextRenderer.MeasureText(text, font, size);
                 if (s.Width > size.Width || s.Height > size.Height) {
                     font = new Font(font.FontFamily, font.Size * .9f, font.Style);
                     if (font.Size < .5f) fit = true;
