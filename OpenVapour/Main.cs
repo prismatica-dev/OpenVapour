@@ -23,8 +23,7 @@ using OpenVapour.Properties;
 
 namespace OpenVapour {
     internal partial class Main : Form {
-        internal Main() {
-            InitializeComponent(); }
+        internal Main() { InitializeComponent(); }
         internal static List<Image> states = new List<Image>();
         private SteamGame currentgame = new SteamGame("");
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
@@ -520,17 +519,31 @@ namespace OpenVapour {
             ForceUpdate(); }
 
         private void FilterSearchChanged(object sender, KeyEventArgs e) {
+            int visible = 0;
             if (filterSearch.Text.Length > 1)
                 foreach (Control ctrl in tagFilterContainer.Controls) {
-                    string _ = (ctrl as CheckBox).Text.ToLower();
-                    ctrl.Visible = Utilities.GetLevenshteinDistance(filterSearch.Text.ToLower(), _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= filterSearch.Text.Length / 2; }
-                ForceUpdate(); }
+                    CheckBox _cb = (ctrl as CheckBox);
+                    string _ =  _cb.Text.ToLower();
+                    bool _v = Utilities.GetLevenshteinDistance(filterSearch.Text.ToLower(), _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= filterSearch.Text.Length / 2;
+                    ctrl.Visible = _v;
+                    if (_v) visible++; }
+            else 
+                foreach (Control ctrl in tagFilterContainer.Controls) { 
+                    if ((ctrl as CheckBox).Checked) visible++;
+                    ctrl.Visible = (ctrl as CheckBox).Checked; }
+            filtersPanel.Height = Math.Min(318, 56 + visible * 33 + (visible>0?-3:0));
+            Application.DoEvents();
+            ForceUpdate(); }
 
         private void ToggleFilterMenu(object sender, EventArgs e) { 
             filtersPanel.Visible = !filtersPanel.Visible;
+            if (filtersPanel.Visible) filterSearch.Focus();
             ForceUpdate(); }
 
         private void ResetFilters(object sender, EventArgs e) {
             filterSearch.Text = "";
-            foreach (Control ctrl in tagFilterContainer.Controls)
-                (ctrl as CheckBox).Checked = false; }}}
+            foreach (Control ctrl in tagFilterContainer.Controls) {
+                (ctrl as CheckBox).Checked = false;
+                ctrl.Visible = false; }
+            filtersPanel.Height = 56;
+            ForceUpdate(); }}}

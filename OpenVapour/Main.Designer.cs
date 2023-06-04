@@ -536,7 +536,7 @@
             this.filtersPanel.Controls.Add(this.filterControlsContainer);
             this.filtersPanel.Location = new System.Drawing.Point(555, 25);
             this.filtersPanel.Name = "filtersPanel";
-            this.filtersPanel.Size = new System.Drawing.Size(200, 318);
+            this.filtersPanel.Size = new System.Drawing.Size(200, 56);
             this.filtersPanel.TabIndex = 8;
             this.filtersPanel.Visible = false;
             // 
@@ -549,7 +549,7 @@
             this.tagFilterContainer.ForeColor = System.Drawing.Color.White;
             this.tagFilterContainer.Location = new System.Drawing.Point(0, 56);
             this.tagFilterContainer.Name = "tagFilterContainer";
-            this.tagFilterContainer.Size = new System.Drawing.Size(200, 262);
+            this.tagFilterContainer.Size = new System.Drawing.Size(200, 0);
             this.tagFilterContainer.TabIndex = 1;
             this.tagFilterContainer.WrapContents = false;
             this.tagFilterContainer.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
