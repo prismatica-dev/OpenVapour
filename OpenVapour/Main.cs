@@ -45,9 +45,11 @@ namespace OpenVapour {
             Size = UserSettings.WindowSize;
             DrawGradient();
 
+            store.AutoScroll = false;
             store.HorizontalScroll.Maximum = 0;
             store.HorizontalScroll.Enabled = false;
             store.HorizontalScroll.Visible = false;
+            store.AutoScroll = true;
             gamedesc.MouseWheel += BackgroundTearingFix;
 
             Bitmap img = new Bitmap(150, 225);
