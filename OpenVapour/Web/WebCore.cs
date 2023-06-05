@@ -52,6 +52,8 @@ namespace OpenVapour.Web {
             Utilities.HandleLogging($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
+                if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    Utilities.HandleLogging($"GetWebString({Url}, {MaxTimeout}, {FullSpoof}) pending for {(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds:N2}ms");
                 while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
                     await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
                 LastTimeout[baseUrl] = DateTime.Now;
@@ -87,9 +89,7 @@ namespace OpenVapour.Web {
                     try {
                         Utilities.HandleLogging($"[2] http get '{Url}'");
                         HttpResponseMessage response = await client.GetAsync(Url);
-                        Utilities.HandleLogging($"[2.1] http get '{Url}'");
                         response.EnsureSuccessStatusCode();
-                        Utilities.HandleLogging($"[2.2] http get '{Url}'");
 
                         string content = "";
                         using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
@@ -109,6 +109,15 @@ namespace OpenVapour.Web {
             return ""; }
 
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
+            string baseUrl = GetBaseUrl(Url);
+            if (LastTimeout.ContainsKey(baseUrl)) {
+                if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) pending for {(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds:N2}ms");
+                while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
+                LastTimeout[baseUrl] = DateTime.Now;
+            } else LastTimeout.Add(baseUrl, DateTime.Now);
+
             Bitmap img = new Bitmap(1, 1);
             if (CacheIdentifier.Length == 0) CacheIdentifier = Url;
             try {
