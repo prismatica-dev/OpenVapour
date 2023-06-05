@@ -180,24 +180,28 @@ namespace OpenVapour {
                 Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
             await addgame; }
         internal void AddGame(SteamGame game) {
-            if (game == null || game.AppId.Length == 0) return;
-            if (InvokeRequired) {
-                Invoke((MethodInvoker)delegate { AddGame(game); });
-                return; }
+            try {
+                if (game == null) return;
+                if (string.IsNullOrEmpty(game.AppId)) return;
 
-            try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
-            } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Caching]", ex); }
+                if (InvokeRequired) {
+                    Invoke((MethodInvoker)delegate { AddGame(game); });
+                    return; }
 
-            PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
-            List<object> metalist = new List<object> { states, game, false };
-            panel.Image = states[0];
-            panel.Tag = metalist;
-            Panel popup = CreatePopUp(panel, game.Name, game.Description);
-            metalist.Add(popup);
+                try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
+                } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Caching]", ex); }
 
-            AddPanelEvents(panel);
-            try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
-            LoadGameTorrentBitmap(game, panel); }
+                PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
+                List<object> metalist = new List<object> { states, game, false };
+                panel.Image = states[0];
+                panel.Tag = metalist;
+                Panel popup = CreatePopUp(panel, game.Name, game.Description);
+                metalist.Add(popup);
+
+                AddPanelEvents(panel);
+                try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
+                LoadGameTorrentBitmap(game, panel);
+            } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId})", ex); }}
 
         internal async void LoadGameTorrentBitmap(object game, PictureBox output) {
             try {
