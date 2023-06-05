@@ -54,10 +54,10 @@ namespace OpenVapour {
             directSourcesContainer.HorizontalScroll.Visible = false;
 
             foreach (TorrentSource source in TorrentSources.Keys)
-                if (TorrentSources[source] != Implementation.Unimplemented)
+                if (GetIntegration(source) != Integration.None)
                     new CheckBox { ForeColor = GetIntegrationColor(GetIntegration(source)), Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = TorrentSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(torrentSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = torrentSourcesContainer, Text = GetSourceName(source), Tag = source };
             foreach (DirectSource source in DirectSources.Keys)
-                if (DirectSources[source] != Implementation.Unimplemented)
+                if (GetIntegration(source) != Integration.None)
                     new CheckBox { ForeColor = GetIntegrationColor(GetIntegration(source)), Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = DirectSources[source] == Implementation.Enabled, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(directSourcesContainer.Width - SystemInformation.VerticalScrollBarWidth, 30), Parent = directSourcesContainer, Text = GetSourceName(source), Tag = source }; }
 
         private void CloseSettings(object sender, EventArgs e) {
