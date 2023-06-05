@@ -70,9 +70,12 @@ namespace OpenVapour.OpenVapourAPI {
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
             } catch (Exception ex) { HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
-        internal static string SerializeSteamGame(SteamGame Game) => $"\"name\":\"{Game.Name.Replace("\"", "QuotationMark")}\",\"appid\":\"{Game.AppId.Replace("\"", "QuotationMark")}\",\"description\":\"{Game.Description.Replace("\"", "QuotationMark")}\";";
-        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(GetBetween(Game, "\"name\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Game, "\"appid\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Game, "\"description\":\"", "\"").Replace("QuotationMark", "\""));
+
+        internal static string SerializeProperty(string Property, string Value) => $"\"{Property.Replace("\"", "QuotationMark")}\":\"{Value.Replace("\"", "QuotationMark")}\"";
+        internal static string DeserializeProperty(string SerializedString, string Property) => GetBetween(SerializedString, $"\"{Property.Replace("\"", "QuotationMark")}\":\"", "\"").Replace("QuotationMark", "\"");
+        internal static string SerializeSteamGame(SteamGame Game) => $"{SerializeProperty("name", Game.Name)},{SerializeProperty("appid", Game.AppId)},{SerializeProperty("description", Game.Description)};";
+        internal static SteamGame DeserializeSteamGame(string Game) => new SteamGame(DeserializeProperty(Game, "name"), DeserializeProperty(Game, "appid"), DeserializeProperty(Game, "description"));
         internal static string SerializeTorrent(ResultTorrent Torrent) => 
-            $"\"name\":\"{Torrent.Name.Replace("\"", "QuotationMark")}\",\"description\":\"{Torrent.Description.Replace("\"", "QuotationMark")}\",\"url\":\"{Torrent.Url}\",\"torrent-url\":\"{Torrent.TorrentUrl.Replace("\"", "QuotationMark")}\",\"image\":\"{Torrent.Image}\",\"source\":\"{(int)Torrent.Source}\"";
+            $"{SerializeProperty("name", Torrent.Name)},{SerializeProperty("description", Torrent.Description)},{SerializeProperty("url", Torrent.Url)},{SerializeProperty("torrent-url", Torrent.TorrentUrl)},{SerializeProperty("image", Torrent.Image)},{SerializeProperty("source", ((int)Torrent.Source).ToString())};";
         internal static ResultTorrent DeserializeTorrent(string Torrent) => 
-            new ResultTorrent(GetBetween(Torrent, "\"name\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"description\":\"", "\""), GetBetween(Torrent, "\"url\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"torrent-url\":\"", "\"").Replace("QuotationMark", "\""), GetBetween(Torrent, "\"image\":\"", "\"").Replace("QuotationMark", "\""), (TorrentSource)Convert.ToInt32(GetBetween(Torrent, "\"source\":\"", "\""))); }}
+            new ResultTorrent(DeserializeProperty(Torrent, "name"), DeserializeProperty(Torrent, "description"), DeserializeProperty(Torrent, "url"), DeserializeProperty(Torrent, "torrent-url"), DeserializeProperty(Torrent, "image"), (TorrentSource)Convert.ToInt32(DeserializeProperty(Torrent, "source"))); }}
