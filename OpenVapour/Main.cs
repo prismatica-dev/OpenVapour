@@ -119,7 +119,7 @@ namespace OpenVapour {
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Substring(0, Math.Min(Description.Length, 150)), BackColor = Color.Transparent };
+            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 150)), BackColor = Color.Transparent };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
@@ -251,7 +251,7 @@ namespace OpenVapour {
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
             currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
-            panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description; 
+            panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description.Trim(); 
             toggleHomepageContainer.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
             gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
@@ -264,7 +264,7 @@ namespace OpenVapour {
             MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
             sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {GetIntegrationSummary(GetIntegration(game.Source))}"; 
-            gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description}"; 
+            gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description.Trim()}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true;
@@ -375,7 +375,7 @@ namespace OpenVapour {
                 UseWaitCursor = false; }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
-            Process.Start($"https://store.steampowered.com/app/{currentgame.AppId}");
+            Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{currentgame.AppId}") { UseShellExecute = true, Verb = "open" });
             ForceUpdate(); }
 
         private void TorrentSearch(object sender, EventArgs e) {
@@ -406,7 +406,7 @@ namespace OpenVapour {
             string magnet = "";
             try {
                 if (currenttorrent.Source == TorrentSource.KaOs || currenttorrent.Source == TorrentSource.SteamRIP) {
-                    Process.Start(currenttorrent.Url);
+                    Process.Start(new ProcessStartInfo(currenttorrent.Url) { UseShellExecute = true, Verb = "open" });
                     return; }
 
                 magnetbutton.Text = "Fetching";
@@ -424,7 +424,7 @@ namespace OpenVapour {
             try {
                 if (magnet.Length > 0) {
                     Utilities.HandleLogging("opening magnet url " + magnet);
-                    Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
+                    Process.Start(new ProcessStartInfo(magnet) { UseShellExecute = true, Verb = "open" });
                     magnetbutton.Text = "Success"; 
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }

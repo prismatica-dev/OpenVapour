@@ -70,7 +70,7 @@ namespace OpenVapour.OpenVapourAPI {
                 File.WriteAllText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat", $"@echo off\nping 127.0.0.1 -n 1 -w 500> nul\ndel \"{Assembly.GetExecutingAssembly().Location}\"\nrename \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.new.exe\" \"OpenVapour.exe\"\nstart \"\" \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.exe\"\n(goto) 2>nul & del \"%~f0\"");
 
                 // Run the batch file and immediately terminate process
-                Process.Start($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat");
+                Process.Start(new ProcessStartInfo($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat") { UseShellExecute = true, Verb = "open" });
                 Process.GetCurrentProcess().Kill(); }
             catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName})", ex); }}
 
