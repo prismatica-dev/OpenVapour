@@ -98,6 +98,7 @@
     <Compile Include="Torrent\TorrentInternals.cs" />
     <Compile Include="Torrent\TorrentUtilities.cs" />
     <Compile Include="Web\WebCore.cs" />
+    <Compile Include="Web\WebInternals.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
       <SubType>Designer</SubType>
