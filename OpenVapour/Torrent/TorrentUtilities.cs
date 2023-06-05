@@ -106,7 +106,7 @@ namespace OpenVapour.Torrent {
                     default:
                         // extended search capability not implemented / not needed
                         break; }
-            } catch (Exception ex) { HandleException($"TorrentCore.GetExtendedResults({Source}, {Name})", ex); }
+            } catch (Exception ex) { HandleException($"TorrentUtilities.GetExtendedResults({Source}, {Name})", ex); }
             return results; }
 
         internal static async Task<List<ResultTorrent>> GetResults(TorrentSource Source, string Name) {
@@ -193,5 +193,5 @@ namespace OpenVapour.Torrent {
                     default:
                         // search capability not implemented
                         break; }
-            } catch (Exception ex) { HandleException($"TorrentCore.GetResults({Source}, {Name})", ex); }
+            } catch (Exception ex) { HandleException($"TorrentUtilities.GetResults({Source}, {Name})", ex); }
             return results; }}}

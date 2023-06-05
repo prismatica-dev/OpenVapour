@@ -132,7 +132,7 @@ namespace OpenVapour.Torrent {
                         default:
                             Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
                             break; }
-                    } catch (Exception ex) { HandleException($"ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
+                    } catch (Exception ex) { HandleException($"ResultTorrent.ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
             
             internal async Task<string> GetMagnet() {
                 switch (Source) {

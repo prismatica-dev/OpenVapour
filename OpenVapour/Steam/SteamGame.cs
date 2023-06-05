@@ -102,7 +102,7 @@ namespace OpenVapour.Steam {
                     Task<SteamGame> g = GetGame(_.AppId, Basic);
                     games.Add(g);
                     await Task.Delay(50); }
-            } catch (Exception ex) { HandleException($"SteamCore.ProcessResults(List<ResultGame>)", ex); }
+            } catch (Exception ex) { HandleException($"SteamCore.ProcessResults(List<ResultGame>, {Basic})", ex); }
             return games; }
 
         internal static async Task<SteamGame> GetGame(int AppId, bool Basic = true) {
@@ -118,4 +118,4 @@ namespace OpenVapour.Steam {
                 SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
                 CacheSteamGame(game);
                 return game;
-            } catch (Exception ex) { HandleException($"GetGame({AppId}, {Basic})", ex); return new SteamGame(""); }}}}
+            } catch (Exception ex) { HandleException($"SteamCore.GetGame({AppId}, {Basic})", ex); return new SteamGame(""); }}}}

@@ -48,7 +48,7 @@ namespace OpenVapour.OpenVapourAPI {
             try {
                 // delete autoupdate remnants if present
                 if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat"); }
-            catch (Exception ex) { HandleException($"CheckAutoUpdateIntegrity()", ex); }}
+            catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
         internal static string GetLatestTag() {
             try {
                 // delete autoupdate remnants if present
@@ -59,7 +59,7 @@ namespace OpenVapour.OpenVapourAPI {
                 StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
 
                 return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
-            catch (Exception ex) { HandleException($"GetLatestTag()", ex); }
+            catch (Exception ex) { HandleException($"Utilities.GetLatestTag()", ex); }
             return ""; }
         internal static void UpdateProgram(string TagName) {
             try {
@@ -72,9 +72,10 @@ namespace OpenVapour.OpenVapourAPI {
                 // Run the batch file and immediately terminate process
                 Process.Start($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat");
                 Process.GetCurrentProcess().Kill(); }
-            catch (Exception ex) { HandleException($"UpdateProgram({TagName})", ex); }}
+            catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName})", ex); }}
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
+            try {
             if (String == null || BetweenStart == null || BetweenEnd == null) return "";
             int Start, End;
             if (String.Contains(BetweenStart) && String.Contains(BetweenEnd))
@@ -86,7 +87,10 @@ namespace OpenVapour.OpenVapourAPI {
                         return String.Substring(Start, End - Start);
                     } catch (ArgumentOutOfRangeException) { return ""; }
                 else return String.Substring(String.IndexOf(BetweenStart) + BetweenStart.Length);
-            else return ""; }
+            else return "";
+            } catch (Exception ex) { 
+                HandleException($"Utilities.GetBetween({String}, {BetweenStart}, {BetweenEnd})", ex); 
+                return ""; }}
 
         internal static void HandleLogging(string Log, bool IgnoreLog = false) {
             try {
@@ -97,7 +101,7 @@ namespace OpenVapour.OpenVapourAPI {
                 else { 
                     File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
                     LogWritten = true; }
-            } catch (Exception ex) { HandleException($"HandleLogging({Log})", ex, IgnoreLog); }}
+            } catch (Exception ex) { HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
 
         internal static void HandleException(string Cause, Exception Result, bool IgnoreLog = false) { 
             try {

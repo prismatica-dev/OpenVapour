@@ -18,7 +18,7 @@ namespace OpenVapour.OpenVapourAPI {
                         gZipStream.Write(buffer, 0, buffer.Length); }
                     string _ = Convert.ToBase64String(memoryStream.ToArray());
                     return _; }
-            } catch (Exception ex) { HandleException($"CompressString({text})", ex); return ""; }}
+            } catch (Exception ex) { HandleException($"Compression.CompressString({text})", ex); return ""; }}
         internal static byte[] CompressToBytes(string text) {
             try {
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
@@ -37,7 +37,7 @@ namespace OpenVapour.OpenVapourAPI {
                     Array.Copy(cmpr, cmprapp, cmpr.Length);
                     cmprapp[cmprapp.Length - 1] = 0;
                     return cmprapp; }
-            } catch (Exception ex) { HandleException($"CompressToBytes({text})", ex); return new byte[1] { 1 }; }}
+            } catch (Exception ex) { HandleException($"Compression.CompressToBytes({text})", ex); return new byte[1] { 1 }; }}
         internal static string DecompressString(string text) {
             try {
                 byte[] compressedBytes = Convert.FromBase64String(text);
@@ -50,7 +50,7 @@ namespace OpenVapour.OpenVapourAPI {
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray());
                         }}}
-            } catch (Exception ex) { HandleException($"DecompressString({text})", ex); return ""; }}
+            } catch (Exception ex) { HandleException($"Compression.DecompressString({text})", ex); return ""; }}
         internal static string DecompressFromBytes(byte[] bytes) {
             try {
                 if (bytes.Length < 2) return "";
@@ -69,7 +69,7 @@ namespace OpenVapour.OpenVapourAPI {
                             while ((bytesRead = gzipStream.Read(buffer, 0, buffer.Length)) > 0)
                                 decompressedStream.Write(buffer, 0, bytesRead);
                             return Encoding.UTF8.GetString(decompressedStream.ToArray()); }}}
-            } catch (Exception ex) { HandleException($"DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
+            } catch (Exception ex) { HandleException($"Compression.DecompressFromBytes({bytes.Length} Bytes)", ex); return ""; }}
 
         internal static string SerializeProperty(string Property, string Value) => $"\"{Property.Replace("\"", "QuotationMark")}\":\"{Value.Replace("\"", "QuotationMark")}\"";
         internal static string DeserializeProperty(string SerializedString, string Property) => GetBetween(SerializedString, $"\"{Property.Replace("\"", "QuotationMark")}\":\"", "\"").Replace("QuotationMark", "\"");

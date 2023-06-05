@@ -151,7 +151,7 @@ namespace OpenVapour {
                         pb.Image?.Dispose(); }
                     ctrl.Dispose();
                     ctrl.Parent = null; }
-            } catch (Exception ex) { Utilities.HandleException("ClearStore()", ex); }
+            } catch (Exception ex) { Utilities.HandleException("Main.ClearStore()", ex); }
             Utilities.HandleLogging("store assets disposed");
             store.Controls.Clear();
             Utilities.HandleLogging("store cleared"); }
@@ -163,11 +163,6 @@ namespace OpenVapour {
         internal void AddTorrent(ResultTorrent torrent) {
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
             try {
-                // green labelled states for torrents
-                //List<Image> states = new List<Image> {
-                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 207, 61), 20, Font, torrent.Source.ToString()), // passive state
-                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 255, 74), 20, Font, torrent.Source.ToString()), // click state
-                //    Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 33, 236, 92), 20, Font, torrent.Source.ToString()) }; // hover state
                 List<object> metalist = new List<object> { states, torrent, false };
                 panel.Image = states[0];
                 panel.Tag = metalist;
@@ -177,7 +172,7 @@ namespace OpenVapour {
                 AddPanelEvents(panel);
                 ForceUpdate();
                 LoadGameTorrentBitmap(torrent, panel); }
-            catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
+            catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
         
         internal async void AsyncAddGame(int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
@@ -191,7 +186,7 @@ namespace OpenVapour {
                 return; }
 
             try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
-            } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Caching]", ex); }
+            } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Caching]", ex); }
 
             PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand }; //panel.Paint += Utilities.dropShadow;
             List<object> metalist = new List<object> { states, game, false };
@@ -201,7 +196,7 @@ namespace OpenVapour {
             metalist.Add(popup);
 
             AddPanelEvents(panel);
-            try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"AddGame({game.AppId}) [Refresh]", ex);}
+            try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
             LoadGameTorrentBitmap(game, panel); }
 
         internal async void LoadGameTorrentBitmap(object game, PictureBox output) {
@@ -251,7 +246,7 @@ namespace OpenVapour {
                         ForceUpdate();
                         }); });
                 await cont;
-            } catch(Exception ex) { Utilities.HandleException($"LoadGameBitmap(game, panel)", ex); }}
+            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameBitmap(game, panel)", ex); }}
 
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
@@ -285,7 +280,7 @@ namespace OpenVapour {
                 } else if (game is ResultTorrent resulttorrent) {
                     if (!gamepanelopen) LoadTorrent(resulttorrent, pbs[0]); 
                     else if (panelgame != resulttorrent.Name) ClosePanel(true, true, pbl); }
-            } catch (Exception ex) { Utilities.HandleException($"GameTorrentClick(sender, e)", ex); }}
+            } catch (Exception ex) { Utilities.HandleException($"Main.GameTorrentClick(sender, e)", ex); }}
 
         private void ResizeGameArt() {
             if (gameart.Image == null) return;
@@ -423,7 +418,7 @@ namespace OpenVapour {
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
-                Utilities.HandleException("Magnet() [Clipboard]", ex); 
+                Utilities.HandleException("Main.Magnet() [Clipboard]", ex); 
                 magnetbutton.Text = "Copy Failed";
                 ForceUpdate(); }
             try {
@@ -434,7 +429,7 @@ namespace OpenVapour {
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
             } catch (Exception ex) { 
-                Utilities.HandleException("Magnet() [Process]", ex); 
+                Utilities.HandleException("Main.Magnet() [Process]", ex); 
                 magnetbutton.Text = "Open Failed";
                 ForceUpdate(); }}
 
@@ -450,7 +445,7 @@ namespace OpenVapour {
                             if (cached != null) AddGame(cached);
                             else AsyncAddGame(Utilities.ToIntSafe(id), false); }
                         else AsyncAddGame(Utilities.ToIntSafe(id), false); }
-                    catch (Exception ex) { Utilities.HandleException($"LoadLibrary()", ex); }}
+                    catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
             else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
 
         private void MainShown(object sender, EventArgs e) {
@@ -472,7 +467,7 @@ namespace OpenVapour {
                     LockWindowUpdate(IntPtr.Zero);
                     Update();
                     if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
-            } catch (Exception ex) { Utilities.HandleException("BackgroundTearingFix(sender, se)", ex); }}
+            } catch (Exception ex) { Utilities.HandleException("Main.BackgroundTearingFix(sender, se)", ex); }}
         private void BackgroundTearingFix(object sender, MouseEventArgs e) => ForceUpdate();
         private void BackgroundTearingFix(object sender, EventArgs e) {}
         private void ForceUpdate() => BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));

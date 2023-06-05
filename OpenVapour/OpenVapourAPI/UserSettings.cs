@@ -63,19 +63,23 @@ namespace OpenVapour.OpenVapourAPI {
                     string[] config = File.ReadAllLines($"{DedicatedSettings}\\window-configuration.ini");
                     try {
                         WindowSize = new Size(ToIntSafe(config[0]), ToIntSafe(config[1]));
-                    } catch (Exception ex) { HandleException($"LoadSettings(window-configuration.ini)", ex); File.Delete($"{DedicatedSettings}\\window-configuration.ini"); }
+                    } catch (Exception ex) { HandleException($"UserSettings.LoadSettings() [window-configuration.ini]", ex); File.Delete($"{DedicatedSettings}\\window-configuration.ini"); }
             }} catch (Exception ex) { 
-                HandleException($"LoadSettings()", ex);
-                File.Delete($"{DedicatedSettings}\\window-theme.ini");
-                File.Delete($"{DedicatedSettings}\\direct-sources.ini");
-                File.Delete($"{DedicatedSettings}\\torrent-sources.ini"); }}
+                HandleException($"UserSettings.LoadSettings()", ex);
+                try {
+                    File.Delete($"{DedicatedSettings}\\window-theme.ini");
+                    File.Delete($"{DedicatedSettings}\\direct-sources.ini");
+                    File.Delete($"{DedicatedSettings}\\torrent-sources.ini"); }
+                catch (Exception exc) { HandleException($"UserSettings.LoadSettings() [Deletion]", exc); }}}
         internal static void SaveSettings(Dictionary<TorrentSource, Implementation> TorrentSources, Dictionary<DirectSource, Implementation> DirectSources) {
-            CheckSettings();
-            List<string> ts = new List<string>();
-            List<string> ds = new List<string>();
-            foreach (TorrentSource _ts in TorrentSources.Keys) ts.Add($"{(int)_ts}|{(int)TorrentSources[_ts]}");
-            foreach (DirectSource _ds in DirectSources.Keys) ds.Add($"{(int)_ds}|{(int)DirectSources[_ds]}");
-            File.WriteAllLines($"{DedicatedSettings}\\torrent-sources.ini", ts);
-            File.WriteAllLines($"{DedicatedSettings}\\direct-sources.ini", ds);
-            File.WriteAllText($"{DedicatedSettings}\\window-theme.ini", $"{ExtractTheme("background1")}\n{ExtractTheme("background2")}");
-            File.WriteAllText($"{DedicatedSettings}\\window-configuration.ini", $"{WindowSize.Width}\n{WindowSize.Height}"); }}}
+            try {
+                CheckSettings();
+                List<string> ts = new List<string>();
+                List<string> ds = new List<string>();
+                foreach (TorrentSource _ts in TorrentSources.Keys) ts.Add($"{(int)_ts}|{(int)TorrentSources[_ts]}");
+                foreach (DirectSource _ds in DirectSources.Keys) ds.Add($"{(int)_ds}|{(int)DirectSources[_ds]}");
+                File.WriteAllLines($"{DedicatedSettings}\\torrent-sources.ini", ts);
+                File.WriteAllLines($"{DedicatedSettings}\\direct-sources.ini", ds);
+                File.WriteAllText($"{DedicatedSettings}\\window-theme.ini", $"{ExtractTheme("background1")}\n{ExtractTheme("background2")}");
+                File.WriteAllText($"{DedicatedSettings}\\window-configuration.ini", $"{WindowSize.Width}\n{WindowSize.Height}");
+            } catch (Exception ex) { HandleException("UserSettings.SaveSettings()", ex); }}}}

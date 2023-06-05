@@ -104,8 +104,8 @@ namespace OpenVapour.Web {
                         // string content = await response.Content.ReadAsStringAsync();
                         Utilities.HandleLogging($"[done] http get '{Url}'");
                         return content; }
-                    catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
-                    catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}}
+                    catch (TaskCanceledException ex) { Utilities.HandleException($"WebCore.GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
+                    catch (Exception ex) { Utilities.HandleException($"WebCore.GetWebString({Url})", ex); }}}
             return ""; }
 
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
@@ -131,7 +131,7 @@ namespace OpenVapour.Web {
                         if (bmp.Width > 1 && bmp.Height > 1) Cache.CacheBitmap(CacheIdentifier, bmp);
                         return bmp; }
             } catch (Exception ex) {
-                Utilities.HandleException($"GetWebBitmap({Url}, {CacheIdentifier})", ex);
+                Utilities.HandleException($"WebCore.GetWebBitmap({Url}, {CacheIdentifier})", ex);
                 img = new Bitmap(150, 225); }
             return img; }
     
