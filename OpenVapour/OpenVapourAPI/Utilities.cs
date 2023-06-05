@@ -124,4 +124,12 @@ namespace OpenVapour.OpenVapourAPI {
             return new string(array, 0, i).Replace("  ", " "); }
 
         internal static Regex alphanumeric = new Regex("[^a-zA-Z0-9]");
-        internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, ""); }}
+
+        internal static Regex numeric = new Regex("[^0-9]");
+        internal static string FilterAlphanumeric(string unfilteredString) => alphanumeric.Replace(unfilteredString, "");
+        internal static string FilterNumeric(string unfilteredString) => numeric.Replace(unfilteredString, "");
+        internal static int ToIntSafe(string unfilteredString) {
+            if (string.IsNullOrWhiteSpace(unfilteredString)) return -1;
+            string numeric = FilterNumeric(unfilteredString);
+            if (string.IsNullOrWhiteSpace(numeric)) return -1;
+            else return Convert.ToInt32(numeric); }}}
