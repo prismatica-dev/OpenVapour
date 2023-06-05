@@ -78,4 +78,4 @@ namespace OpenVapour.OpenVapourAPI {
         internal static string SerializeTorrent(ResultTorrent Torrent) => 
             $"{SerializeProperty("name", Torrent.Name)},{SerializeProperty("description", Torrent.Description)},{SerializeProperty("url", Torrent.Url)},{SerializeProperty("torrent-url", Torrent.TorrentUrl)},{SerializeProperty("image", Torrent.Image)},{SerializeProperty("source", ((int)Torrent.Source).ToString())};";
         internal static ResultTorrent DeserializeTorrent(string Torrent) => 
-            new ResultTorrent(DeserializeProperty(Torrent, "name"), DeserializeProperty(Torrent, "description"), DeserializeProperty(Torrent, "url"), DeserializeProperty(Torrent, "torrent-url"), DeserializeProperty(Torrent, "image"), (TorrentSource)Convert.ToInt32(DeserializeProperty(Torrent, "source"))); }}
+            new ResultTorrent(DeserializeProperty(Torrent, "name"), DeserializeProperty(Torrent, "description"), DeserializeProperty(Torrent, "url"), DeserializeProperty(Torrent, "torrent-url"), DeserializeProperty(Torrent, "image"), (TorrentSource)Utilities.ToIntSafe(DeserializeProperty(Torrent, "source"))); }}

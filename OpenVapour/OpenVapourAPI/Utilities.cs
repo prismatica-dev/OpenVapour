@@ -151,5 +151,5 @@ namespace OpenVapour.OpenVapourAPI {
         internal static int ToIntSafe(string unfilteredString) {
             if (string.IsNullOrWhiteSpace(unfilteredString)) return -1;
             string numeric = FilterNumeric(unfilteredString);
-            if (string.IsNullOrWhiteSpace(numeric)) return -1;
+            if (string.IsNullOrEmpty(numeric)) return -1;
             else return Convert.ToInt32(numeric); }}}

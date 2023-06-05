@@ -42,7 +42,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static async Task<SteamGame> LoadCachedSteamGame(string AppId) { 
             try {
                 SteamGame cached = DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
-                if (cached.AppId.Length == 0) return await GetGame(Convert.ToInt32(AppId));
+                if (cached.AppId.Length == 0) return await GetGame(ToIntSafe(AppId));
                 else return cached;
             } catch (Exception ex) { 
                 HandleException($"LoadCachedSteamGame({AppId})", ex);

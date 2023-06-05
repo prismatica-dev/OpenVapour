@@ -21,7 +21,7 @@ namespace OpenVapour.Steam {
                 string _ = "";
                 if (JSON.Contains("id\":")) _ = GetBetween(JSON, "id\":", ","); // try getting id from result
                 else if (JSON.Contains("logo\":\"")) _ = GetBetween(JSON, "\\/steam\\/apps\\/", "\\/"); // otherwise get it from the logo asset
-                if (!string.IsNullOrWhiteSpace(_)) AppId = Convert.ToInt32(_); }} // pray one of them worked
+                if (!string.IsNullOrWhiteSpace(_)) AppId = ToIntSafe(_); }} // pray one of them worked
         
         internal class SteamGame {
             internal string Name { get; set; }
@@ -32,7 +32,7 @@ namespace OpenVapour.Steam {
                 this.Name = Name; this.AppId = AppId; this.Description = Description.Replace("\\/", "/"); }
             internal SteamGame(string apiJSON) { 
                 HandleLogging("processing new steamgame from json"); 
-                AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
+                AppId = ToIntSafe(GetBetween(apiJSON, $"steam_appid\":", ",")).ToString(); 
                 Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
                 Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")).Replace("\\/", "/"); }}
 

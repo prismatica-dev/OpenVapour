@@ -218,7 +218,7 @@ namespace OpenVapour {
                 Color baseState = Color.FromArgb(125, 0, 0, 0);
 
                 if (game is SteamGame sg) {
-                    imgTask = GetShelf(Convert.ToInt32(sg.AppId));
+                    imgTask = GetShelf(Utilities.ToIntSafe(sg.AppId));
                     name = sg.Name;
                     desc = sg.Description; }
                 else if (game is ResultTorrent rt) {
@@ -448,8 +448,8 @@ namespace OpenVapour {
                         if (Cache.IsSteamGameCached(id)) { 
                             SteamGame cached = await Cache.LoadCachedSteamGame(id);
                             if (cached != null) AddGame(cached);
-                            else AsyncAddGame(Convert.ToInt32(id), false); }
-                        else AsyncAddGame(Convert.ToInt32(id), false); }
+                            else AsyncAddGame(Utilities.ToIntSafe(id), false); }
+                        else AsyncAddGame(Utilities.ToIntSafe(id), false); }
                     catch (Exception ex) { Utilities.HandleException($"LoadLibrary()", ex); }}
             else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
 

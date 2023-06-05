@@ -41,7 +41,7 @@ namespace OpenVapour.OpenVapourAPI {
                 if (File.Exists($"{DedicatedSettings}\\torrent-sources.ini")) {
                     Dictionary<TorrentSource, Implementation> sources = new Dictionary<TorrentSource, Implementation>();
                     foreach (string ts in File.ReadAllLines($"{DedicatedSettings}\\torrent-sources.ini"))
-                        sources.Add((TorrentSource)Convert.ToInt32(ts.Split('|')[0]), (Implementation)Convert.ToInt32(ts.Split('|')[1]));
+                        sources.Add((TorrentSource)ToIntSafe(ts.Split('|')[0]), (Implementation)ToIntSafe(ts.Split('|')[1]));
                     foreach (TorrentSource source in sources.Keys) { 
                         Tuple<byte, byte, Implementation> tmp = SourceScores[source];
                         SourceScores[source] = new Tuple<byte, byte, Implementation>(tmp.Item1, tmp.Item2, sources[source]); }}
@@ -49,7 +49,7 @@ namespace OpenVapour.OpenVapourAPI {
                 if (File.Exists($"{DedicatedSettings}\\direct-sources.ini")) {
                     Dictionary<DirectSource, Implementation> sources = new Dictionary<DirectSource, Implementation>();
                     foreach (string ds in File.ReadAllLines($"{DedicatedSettings}\\direct-sources.ini"))
-                        sources.Add((DirectSource)Convert.ToInt32(ds.Split('|')[0]), (Implementation)Convert.ToInt32(ds.Split('|')[1]));
+                        sources.Add((DirectSource)ToIntSafe(ds.Split('|')[0]), (Implementation)ToIntSafe(ds.Split('|')[1]));
                     foreach (DirectSource source in sources.Keys) { 
                         Tuple<byte, byte, Implementation> tmp = DirectSourceScores[source];
                         DirectSourceScores[source] = new Tuple<byte, byte, Implementation>(tmp.Item1, tmp.Item2, sources[source]); }}
@@ -57,12 +57,12 @@ namespace OpenVapour.OpenVapourAPI {
                 if (File.Exists($"{DedicatedSettings}\\window-theme.ini"))
                     foreach (string theme in File.ReadAllLines($"{DedicatedSettings}\\window-theme.ini")) {
                         string[] args = theme.Split(',');
-                        WindowTheme[args[0]] = Color.FromArgb(Convert.ToInt32(args[1]), Convert.ToInt32(args[2]), Convert.ToInt32(args[3]), Convert.ToInt32(args[4])); }
+                        WindowTheme[args[0]] = Color.FromArgb(ToIntSafe(args[1]), ToIntSafe(args[2]), ToIntSafe(args[3]), ToIntSafe(args[4])); }
                 
                 if (File.Exists($"{DedicatedSettings}\\window-configuration.ini")) {
                     string[] config = File.ReadAllLines($"{DedicatedSettings}\\window-configuration.ini");
                     try {
-                        WindowSize = new Size(Convert.ToInt32(config[0]), Convert.ToInt32(config[1]));
+                        WindowSize = new Size(ToIntSafe(config[0]), ToIntSafe(config[1]));
                     } catch (Exception ex) { HandleException($"LoadSettings(window-configuration.ini)", ex); File.Delete($"{DedicatedSettings}\\window-configuration.ini"); }
             }} catch (Exception ex) { 
                 HandleException($"LoadSettings()", ex);
