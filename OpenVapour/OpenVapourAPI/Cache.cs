@@ -5,9 +5,7 @@ using static OpenVapour.OpenVapourAPI.Compression;
 using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.Torrent;
-using OpenVapour.Torrent;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Cache {
@@ -22,18 +20,18 @@ namespace OpenVapour.OpenVapourAPI {
             if (!Directory.Exists($"{DedicatedCache}\\Torrents")) Directory.CreateDirectory($"{DedicatedCache}\\Torrents");
             if (!Directory.Exists($"{DedicatedCache}\\Images")) Directory.CreateDirectory($"{DedicatedCache}\\Images"); }
 
-        internal static void CacheSteamBitmap(int AppId, string Asset, Bitmap Image) => CacheBitmap($"{AppId}{Asset}", Image); // Image.Save($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
+        internal static void CacheSteamBitmap(int AppId, string Asset, Bitmap Image) => CacheBitmap($"{AppId}{Asset}", Image, false);
         internal static bool IsSteamBitmapCached(int AppId, string Asset) => File.Exists($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
-        internal static Bitmap GetCachedSteamBitmap(int AppId, string Asset) => GetCachedBitmap($"{AppId}{Asset}"); // { (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg"); }
+        internal static Bitmap GetCachedSteamBitmap(int AppId, string Asset) => GetCachedBitmap($"{AppId}{Asset}", false);
         
-        internal static void CacheBitmap(string Name, Bitmap Image) {
+        internal static void CacheBitmap(string Name, Bitmap Image, bool Filter = true) {
             try {
-                Image.Save($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
+                Image.Save($"{DedicatedCache}\\Images\\{(Filter?FilterAlphanumeric(Name):Name)}.jpg");
             } catch (Exception ex) { HandleException($"CacheBitmap({Name}, Image)", ex); }}
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
-        internal static Bitmap GetCachedBitmap(string Name) {
+        internal static Bitmap GetCachedBitmap(string Name, bool Filter = true) {
             try {
-                return (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg"); 
+                return (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{(Filter?FilterAlphanumeric(Name):Name)}.jpg"); 
             } catch (Exception ex) { HandleException($"GetCachedBitmap({Name})", ex); return new Bitmap(1, 1); }}
         
         internal static void CacheSteamGame(SteamGame game) { 

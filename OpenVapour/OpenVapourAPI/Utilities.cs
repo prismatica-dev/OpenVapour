@@ -27,6 +27,7 @@ namespace OpenVapour.OpenVapourAPI {
             "!", "! ", ".", ". ",
             ". 0", ".0", "?", "? ",
             "â€", "" };
+        private static bool ExceptionLogWritten = false;
         private static bool LogWritten = false;
 
         internal static int GetLevenshteinDistance(string String, string Destination) {
@@ -86,10 +87,29 @@ namespace OpenVapour.OpenVapourAPI {
                     } catch (ArgumentOutOfRangeException) { return ""; }
                 else return String.Substring(String.IndexOf(BetweenStart) + BetweenStart.Length);
             else return ""; }
-        internal static void HandleException(string Cause, Exception Result) { 
-            Console.WriteLine($"{Cause} threw exception '{Result.Message}'\nat {Result.StackTrace}");
-            if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}'\nStack Trace: '{Result.StackTrace}'");
-            else { File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n[{DateTime.Now}] {Cause} threw exception '{Result.Message}'\nStack Trace: '{Result.StackTrace}'"); LogWritten = true; }}
+
+        internal static void HandleLogging(string Log, bool IgnoreLog = false) {
+            try {
+                string logformat = $"[{DateTime.Now}] {Log}";
+                Console.WriteLine(logformat);
+
+                if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"\n{logformat}");
+                else { 
+                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
+                    LogWritten = true; }
+            } catch (Exception ex) { HandleException($"HandleLogging({Log})", ex, IgnoreLog); }}
+
+        internal static void HandleException(string Cause, Exception Result, bool IgnoreLog = false) { 
+            try {
+                if (!IgnoreLog)
+                    HandleLogging($"{Cause} threw exception '{Result?.Message}'\nat {Result?.StackTrace}", true);
+                string logformat = $"[{DateTime.Now}] {Cause} threw exception '{Result?.Message}'\nStack Trace: '{Result.StackTrace}'";
+
+                if (ExceptionLogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n{logformat}");
+                else { 
+                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
+                    ExceptionLogWritten = true; }
+            } catch (Exception) { MessageBox.Show($"Uh oh. The crash-handler threw an error.\nPlease ensure OpenVapour is able to read and write to\n{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", "Exception when Handling Exception"); }}
         internal static float FitText(Font font, string text, Size size, float max) {
             bool fit = false;
             font = new Font(font.FontFamily, max, font.Style);

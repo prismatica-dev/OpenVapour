@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.OpenVapourAPI.Cache;
 using static OpenVapour.Steam.SteamInternals;
-using System.ComponentModel.Design;
 
 namespace OpenVapour.Steam {
     internal class SteamCore {
@@ -29,10 +28,10 @@ namespace OpenVapour.Steam {
             internal string AppId { get; set; }
             internal string Description { get; set; }
             internal SteamGame(string Name, string AppId, string Description) {
-                Console.WriteLine($"processing new steamgame from arguments, SteamGame({Name}, {AppId}, {Description})");
+                HandleLogging($"processing new steamgame from arguments, SteamGame({Name}, {AppId}, {Description})");
                 this.Name = Name; this.AppId = AppId; this.Description = Description.Replace("\\/", "/"); }
             internal SteamGame(string apiJSON) { 
-                Console.WriteLine("processing new steamgame from json"); 
+                HandleLogging("processing new steamgame from json"); 
                 AppId = GetBetween(apiJSON, $"steam_appid\":", ","); 
                 Name = GetBetween(apiJSON, $"\"name\":\"", "\",");
                 Description = StripTags(GetBetween(apiJSON, $"\"detailed_description\":\"", "\",")).Replace("\\/", "/"); }}
@@ -77,14 +76,14 @@ namespace OpenVapour.Steam {
                 if (Tags != null) tags = ProcessArray(Tags);
 
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000);
-                Console.WriteLine("processing results");
+                HandleLogging("processing results");
                 JSON = JSON.Substring(JSON.IndexOf("[") + 1);
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
                     _r++;
-                    Console.WriteLine("adding result,,,");
+                    HandleLogging("adding result,,,");
                     ResultGame last = new ResultGame(JSON.Substring(0, JSON.IndexOf('}')));
                     results.Add(last);
-                    Console.WriteLine($"removing result '{last.AppId}' from json,,,");
+                    HandleLogging($"removing result '{last.AppId}' from json,,,");
                     JSON = JSON.Substring(JSON.IndexOf("}") + 1);
                     
                     Main main = null;
@@ -111,11 +110,11 @@ namespace OpenVapour.Steam {
                 if (IsSteamGameCached(AppId.ToString())) {
                     SteamGame cached = await LoadCachedSteamGame(AppId.ToString());
                     if (cached.AppId.Length != 0) return cached;
-                    Console.WriteLine($"{AppId} fetching from cache failed!"); }
+                    HandleLogging($"{AppId} fetching from cache failed!"); }
 
-                Console.WriteLine($"getting game '{AppId}' from steamapi");
+                HandleLogging($"getting game '{AppId}' from steamapi");
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
-                Console.WriteLine("returning relevant json,,,");
+                HandleLogging("returning relevant json,,,");
                 SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
                 CacheSteamGame(game);
                 return game;

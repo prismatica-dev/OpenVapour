@@ -138,7 +138,7 @@ namespace OpenVapour {
             return popup; }
 
         internal void ClearStore() {
-            Console.WriteLine("clearing store!");
+            Utilities.HandleLogging("clearing store!");
             try {
                 foreach (Control ctrl in store.Controls) {
                     if (ctrl.GetType() == typeof(PictureBox)) {
@@ -152,9 +152,9 @@ namespace OpenVapour {
                     ctrl.Dispose();
                     ctrl.Parent = null; }
             } catch (Exception ex) { Utilities.HandleException("ClearStore()", ex); }
-            Console.WriteLine("store assets disposed");
+            Utilities.HandleLogging("store assets disposed");
             store.Controls.Clear();
-            Console.WriteLine("store cleared"); }
+            Utilities.HandleLogging("store cleared"); }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -389,7 +389,7 @@ namespace OpenVapour {
             gamepanel.Visible = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
-            Console.WriteLine(_);
+            Utilities.HandleLogging(_);
 
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                 if (SourceScores[source].Item3 != Implementation.Enabled) continue;
@@ -419,7 +419,7 @@ namespace OpenVapour {
 
                 magnet = await currenttorrent.GetMagnet();
 
-                Console.WriteLine("copying magnet url " + magnet);
+                Utilities.HandleLogging("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
@@ -428,7 +428,7 @@ namespace OpenVapour {
                 ForceUpdate(); }
             try {
                 if (magnet.Length > 0) {
-                    Console.WriteLine("opening magnet url " + magnet);
+                    Utilities.HandleLogging("opening magnet url " + magnet);
                     Process.Start(magnet); // Process.Start will sometimes throw an exception if no magnet-capable applications are installed
                     magnetbutton.Text = "Success"; 
                     ForceUpdate();

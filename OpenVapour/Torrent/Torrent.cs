@@ -4,9 +4,7 @@ using OpenVapour.Web;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.TorrentUtilities;
-using System.Threading;
 using OpenVapour.OpenVapourAPI;
-using System.Web.UI.WebControls;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {
@@ -114,7 +112,7 @@ namespace OpenVapour.Torrent {
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             string _ = GetBetween(JSON, "\t<link>", "</link>");
                             if (_.EndsWith("/")) _ = _.Remove(_.Length - 1, 1);
-                            Console.WriteLine(_.Substring(_.LastIndexOf("/") + 1));
+                            HandleLogging(_.Substring(_.LastIndexOf("/") + 1));
                             string img = "";
                             string imagepreprocessed = _.Substring(_.LastIndexOf("/") + 1).Replace("1-", "");
                             string[] split = imagepreprocessed.Split('-');
@@ -125,7 +123,7 @@ namespace OpenVapour.Torrent {
                                         rebuild[i] = split[i].Substring(0, 1).ToUpper() + split[i].Substring(1); }
                                 img = string.Join("-", rebuild);
                             } else img = imagepreprocessed.Substring(0, 1).ToUpper() + imagepreprocessed.Substring(1);
-                            Console.WriteLine($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg");
+                            HandleLogging($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg");
                             Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg";
                             TorrentUrl = Url;
                             break;

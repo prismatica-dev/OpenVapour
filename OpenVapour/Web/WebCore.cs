@@ -49,7 +49,7 @@ namespace OpenVapour.Web {
         internal const int Timeout = 50;
         internal static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
         internal static async Task<string> GetWebString(string Url, int MaxTimeout = 3500, bool FullSpoof = false) {
-            Console.WriteLine($"[0] http get '{Url}'");
+            Utilities.HandleLogging($"[0] http get '{Url}'");
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
                 while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
@@ -57,7 +57,7 @@ namespace OpenVapour.Web {
                 LastTimeout[baseUrl] = DateTime.Now;
             } else LastTimeout.Add(baseUrl, DateTime.Now);
             
-            Console.WriteLine($"[1] http prepare '{Url}'");
+            Utilities.HandleLogging($"[1] http prepare '{Url}'");
             using (HttpClientHandler handler = new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false,  }) {
                 using (HttpClient client = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
                     client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
@@ -85,11 +85,11 @@ namespace OpenVapour.Web {
                         client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1"); }
 
                     try {
-                        Console.WriteLine($"[2] http get '{Url}'");
+                        Utilities.HandleLogging($"[2] http get '{Url}'");
                         HttpResponseMessage response = await client.GetAsync(Url);
-                        Console.WriteLine($"[2.1] http get '{Url}'");
+                        Utilities.HandleLogging($"[2.1] http get '{Url}'");
                         response.EnsureSuccessStatusCode();
-                        Console.WriteLine($"[2.2] http get '{Url}'");
+                        Utilities.HandleLogging($"[2.2] http get '{Url}'");
 
                         string content = "";
                         using (Stream decompressedStream = await response.Content.ReadAsStreamAsync()) {
@@ -102,7 +102,7 @@ namespace OpenVapour.Web {
                             // Read the decompressed content as a string
                             content = await new StreamReader(decompressionStream ?? decompressedStream).ReadToEndAsync(); }
                         // string content = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine($"[done] http get '{Url}'");
+                        Utilities.HandleLogging($"[done] http get '{Url}'");
                         return content; }
                     catch (TaskCanceledException ex) { Utilities.HandleException($"GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
                     catch (Exception ex) { Utilities.HandleException($"GetWebString({Url})", ex); }}}
@@ -129,7 +129,7 @@ namespace OpenVapour.Web {
         internal static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
 
         internal static string DecodeBlueMediaFiles(string EncodedUrl) {
-            Console.WriteLine("decoding " + EncodedUrl);
+            Utilities.HandleLogging("decoding " + EncodedUrl);
             EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
                 .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
                 .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
@@ -138,5 +138,5 @@ namespace OpenVapour.Web {
             string URL = "";
             for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
             for (int i = (EncodedUrl.Length / 2) + 4; i < EncodedUrl.Length; i += 2) URL += EncodedUrl[i];
-            Console.WriteLine("decoded " + EncodedUrl + "!");
+            Utilities.HandleLogging("decoded " + EncodedUrl + "!");
             return URL; }}}

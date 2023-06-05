@@ -56,7 +56,7 @@ namespace OpenVapour.Torrent {
                                 // really bad backup search algorithm
                                 if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
                                     string url = $"https://pcgamestorrents.com/{DecompressFromBytes(game.Item2)}.html";
-                                    Console.WriteLine("search result found! " + url);
+                                    HandleLogging("search result found! " + url);
                                     if (!resulturls.Contains(url))
                                         results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.PCGamesTorrents, url, name)); }}}
                     break;
@@ -68,12 +68,12 @@ namespace OpenVapour.Torrent {
                             if (rawgamelist.Length < 100) break;
                             rawgamelist = rawgamelist.Substring(Math.Max(0, rawgamelist.IndexOf("#</span>")));
                             
-                            Console.WriteLine("building index");
+                            HandleLogging("building index");
                             List<string> internalIndex = new List<string>();
                             while (rawgamelist.Contains("<a href=\"https://kaoskrew.org/viewtopic.php?")) {
                                 internalIndex.Add($"<a href=\"https://kaoskrew.org/viewtopic.php?{GetBetween(rawgamelist, "\"https://kaoskrew.org/viewtopic.php?", "</a>")}</a>".Replace("&amp;", "&"));
                                 rawgamelist = rawgamelist.Substring(Math.Max(10, rawgamelist.IndexOf("<a href=\"https://kaoskrew.org/viewtopic.php?") + 10)); }
-                            Console.WriteLine("built index");
+                            HandleLogging("built index");
                             KaOSGameList = internalIndex.ToArray();
                             internalIndex.Clear(); }
                                 
@@ -89,14 +89,14 @@ namespace OpenVapour.Torrent {
                             name = name.Replace(".", " ").Trim();
                             if (name.Length == 0) continue;
 
-                            // Console.WriteLine($"found {name}");
+                            // HandleLogging($"found {name}");
                             string filtname = FilterAlphanumeric(name.ToLower());
                             int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
 
                             // KaOs labels things annoyingly, meaning more unrelated results
                             if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 3 && filtname.Length >= 4 && filtName.Length >= 4)) {
                                 string url = GetBetween(game, "<a href=\"", "\"");
-                                Console.WriteLine($"[KaOs] search result found! {url}");
+                                HandleLogging($"[KaOs] search result found! {url}");
                                 if (!resulturls.Contains(url))
                                 results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.KaOs, url, name)); }}
                         break;
@@ -118,45 +118,45 @@ namespace OpenVapour.Torrent {
                         // scrape the rss2 feed to avoid cloudflare
                         string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        Console.WriteLine($"[PCGT] found {items.Count():N0} torrents!");
+                        HandleLogging($"[PCGT] found {items.Count():N0} torrents!");
 
                         // skip first non-item result
                         if (items.Count() > 1)
                             for (int i = 1; i < items.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, items[i]);
                                 results.Add(torrent);
-                                Console.WriteLine("found torrent " + torrent.Url);
+                                HandleLogging("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
                     break; 
                         
                     case TorrentSource.FitgirlRepacks:
                         string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] fitgirlitems = fitgirlrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        Console.WriteLine($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
+                        HandleLogging($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
                         
                         // skip first non-item result
                         if (fitgirlitems.Count() > 1)
                             for (int i = 1; i < fitgirlitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
                                 results.Add(torrent);
-                                Console.WriteLine("found torrent " + torrent.Url);
+                                HandleLogging("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
                         break;
 
                     case TorrentSource.GOG:
                         string gogrss = await WebCore.GetWebString($"https://freegogpcgames.com/search/{Uri.EscapeDataString(Name)}/feed/rss2", 10000);
                         string[] gogitems = gogrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        Console.WriteLine($"[GOG] found {gogitems.Count():N0} torrents!");
+                        HandleLogging($"[GOG] found {gogitems.Count():N0} torrents!");
                         
                         // skip first non-item result
                         if (gogitems.Count() > 1)
                             for (int i = 1; i < gogitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, gogitems[i]);
-                                Console.WriteLine(torrent.Name);
+                                HandleLogging(torrent.Name);
                                 // GOG sometimes returns results that aren't even close to what you asked for
                                 if (GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
                                 results.Add(torrent);
-                                Console.WriteLine("found torrent " + torrent.Url);
+                                HandleLogging("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(gogitems[i], "\t<link>", "</link>")); }
                         break;
 
@@ -171,7 +171,7 @@ namespace OpenVapour.Torrent {
                                 if (steamripitems[i].Contains("TORRENT")) {
                                     ResultTorrent torrent = new ResultTorrent(Source, steamripitems[i]);
                                     results.Add(torrent);
-                                    Console.WriteLine("found torrent " + torrent.Url);
+                                    HandleLogging("found torrent " + torrent.Url);
                                     resulturls.Add(GetBetween(steamripitems[i], "\t<link>", "</link>")); }}
                         break;
 
@@ -185,7 +185,7 @@ namespace OpenVapour.Torrent {
                             for (int i = 1; i < sevengamersitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, sevengamersitems[i]);
                                 results.Add(torrent);
-                                Console.WriteLine("found torrent " + torrent.Url);
+                                HandleLogging("found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(sevengamersitems[i], "<a itemprop=\"url\" href=\"", "\"")); }
                         break;
 
