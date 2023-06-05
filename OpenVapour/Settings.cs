@@ -79,6 +79,6 @@ namespace OpenVapour {
             DrawGradient(); }
 
         private void ChangeColour(object sender, EventArgs e) {
-            ColorDialog cd = new ColorDialog { FullOpen = true, AnyColor = true, AllowFullOpen = true };
+            ColorDialog cd = new ColorDialog { Color = (sender as Control).BackColor, FullOpen = true, AnyColor = true, AllowFullOpen = true };
             if (cd.ShowDialog() == DialogResult.OK) (sender as Control).BackColor = cd.Color;
             UpdateTheme(); }}}
