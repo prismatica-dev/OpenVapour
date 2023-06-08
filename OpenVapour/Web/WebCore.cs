@@ -101,7 +101,9 @@ namespace OpenVapour.Web {
                 img = new Bitmap(150, 225); }
             return img; }
     
-        internal static string GetBaseUrl(string Url) => new Uri(Url).GetLeftPart(UriPartial.Authority);
+        internal static string GetBaseUrl(string Url) { 
+            try { return new Uri(Url).GetLeftPart(UriPartial.Authority); } 
+            catch (Exception ex) { Utilities.HandleException($"WebCore.GetBaseUrl({Url})", ex); return null; }}
 
         internal static string DecodeBlueMediaFiles(string EncodedUrl) {
             Utilities.HandleLogging("decoding " + EncodedUrl);

@@ -38,8 +38,11 @@ namespace OpenVapour {
             UpdateStyles();
             Cache.CheckCache();
 
-            string LatestTag = Utilities.GetLatestTag();
-            if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
+            try {
+                string LatestTag = Utilities.GetLatestTag();
+                if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
+            } catch (Exception ex) { Utilities.HandleException($"Main.Main_Load(sender, e) [Auto-Update]", ex); }
+
             Utilities.CheckAutoUpdateIntegrity();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
@@ -187,6 +190,8 @@ namespace OpenVapour {
                 if (InvokeRequired) {
                     Invoke((MethodInvoker)delegate { AddGame(game); });
                     return; }
+
+                Console.WriteLine($"{game.Name} loading!");
 
                 try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
                 } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Caching]", ex); }
@@ -379,13 +384,14 @@ namespace OpenVapour {
                 UseWaitCursor = false; }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
-            Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{currentgame.AppId}") { UseShellExecute = true, Verb = "open" });
+            Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
             ForceUpdate(); }
 
         private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
             AddGame(currentgame);
             gamepanel.Visible = false;
+            gamepanelopen = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
@@ -440,17 +446,19 @@ namespace OpenVapour {
         private void Exit_Click(object sender, EventArgs e) => Close();
 
         private async void LoadLibrary() {
-            if (Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
-                foreach (string file in Directory.GetFiles($"{Utilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
-                    try { 
-                        string id = file.Substring(file.LastIndexOf("\\") + 1);
-                        if (Cache.IsSteamGameCached(id)) { 
-                            SteamGame cached = await Cache.LoadCachedSteamGame(id);
-                            if (cached != null) AddGame(cached);
+            try {
+                if (Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
+                    foreach (string file in Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
+                        try { 
+                            string id = file.Substring(file.LastIndexOf("\\") + 1);
+                            if (Cache.IsSteamGameCached(id)) { 
+                                SteamGame cached = await Cache.LoadCachedSteamGame(id);
+                                if (cached != null) AddGame(cached);
+                                else AsyncAddGame(Utilities.ToIntSafe(id), false); }
                             else AsyncAddGame(Utilities.ToIntSafe(id), false); }
-                        else AsyncAddGame(Utilities.ToIntSafe(id), false); }
-                    catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
-            else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }}
+                        catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
+                else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }
+            } catch (Exception ex) { Utilities.HandleException("Main.LoadLibrary()", ex); }}
 
         private void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; 

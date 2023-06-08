@@ -5,25 +5,22 @@ using static OpenVapour.OpenVapourAPI.Compression;
 using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.Torrent;
+using static OpenVapour.OpenVapourAPI.DirectoryUtilities;
 using System.Threading.Tasks;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Cache {
-        internal static readonly string DedicatedAppdata = $"{RoamingAppData}\\lily.software\\OpenVapour";
-        internal static readonly string DedicatedStorage = $"{RoamingAppData}\\lily.software\\OpenVapour\\Storage";
-        internal static readonly string DedicatedCache = $"{RoamingAppData}\\lily.software\\OpenVapour\\Cache";
         internal static readonly TimeSpan CacheTimeout = TimeSpan.FromDays(.8f);
-        internal static void CheckCache() {
-            if (!Directory.Exists($"{DedicatedStorage}\\Blacklist")) Directory.CreateDirectory($"{DedicatedStorage}\\Blacklist");
-            if (!Directory.Exists($"{DedicatedStorage}\\Games")) Directory.CreateDirectory($"{DedicatedStorage}\\Games");
-            if (!Directory.Exists($"{DedicatedCache}\\Games")) Directory.CreateDirectory($"{DedicatedCache}\\Games");
-            if (!Directory.Exists($"{DedicatedCache}\\Torrents")) Directory.CreateDirectory($"{DedicatedCache}\\Torrents");
-            if (!Directory.Exists($"{DedicatedCache}\\Images")) Directory.CreateDirectory($"{DedicatedCache}\\Images"); }
 
         internal static void CacheSteamBitmap(int AppId, string Asset, Bitmap Image) => CacheBitmap($"{AppId}{Asset}", Image, false);
         internal static bool IsSteamBitmapCached(int AppId, string Asset) => File.Exists($"{DedicatedCache}\\Images\\{AppId}{Asset}.jpg");
         internal static Bitmap GetCachedSteamBitmap(int AppId, string Asset) => GetCachedBitmap($"{AppId}{Asset}", false);
-        
+        internal static void CheckCache() {
+            CreateDirectory($"{DedicatedStorage}\\Blacklist");
+            CreateDirectory($"{DedicatedStorage}\\Games");
+            CreateDirectory($"{DedicatedCache}\\Games");
+            CreateDirectory($"{DedicatedCache}\\Torrents");
+            CreateDirectory($"{DedicatedCache}\\Images"); }
         internal static void CacheBitmap(string Name, Bitmap Image, bool Filter = true) {
             try {
                 Image.Save($"{DedicatedCache}\\Images\\{(Filter?FilterAlphanumeric(Name):Name)}.jpg");
@@ -31,7 +28,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static bool IsBitmapCached(string Name) => File.Exists($"{DedicatedCache}\\Images\\{FilterAlphanumeric(Name)}.jpg");
         internal static Bitmap GetCachedBitmap(string Name, bool Filter = true) {
             try {
-                return (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{(Filter?FilterAlphanumeric(Name):Name)}.jpg"); 
+                return (Bitmap)Image.FromFile($"{DedicatedCache}\\Images\\{(Filter?FilterAlphanumeric(Name):Name)}.jpg");
             } catch (Exception ex) { HandleException($"Cache.GetCachedBitmap({Name})", ex); return new Bitmap(1, 1); }}
         
         internal static void CacheSteamGame(SteamGame game) { 

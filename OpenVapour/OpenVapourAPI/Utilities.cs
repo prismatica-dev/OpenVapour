@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static OpenVapour.OpenVapourAPI.DirectoryUtilities;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Utilities {
@@ -13,7 +14,6 @@ namespace OpenVapour.OpenVapourAPI {
         private const string repo = "lily-software/OpenVapour";
 
         // Variables
-        internal static readonly string RoamingAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         internal static readonly string[] FilterCore = {
             "  ", " ", " />", "/>",
             "<br>", Environment.NewLine, "quot;", "\"",
@@ -73,6 +73,10 @@ namespace OpenVapour.OpenVapourAPI {
                 Process.Start(new ProcessStartInfo($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat") { UseShellExecute = true, Verb = "open" });
                 Process.GetCurrentProcess().Kill(); }
             catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName})", ex); }}
+
+        internal static void OpenUrl(string Url) {
+            try { Process.Start(new ProcessStartInfo(Url) { UseShellExecute = true, Verb = "open" });
+            } catch (Exception ex) { HandleException($"Utilities.OpenUrl({Url})", ex); }}
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
             try {

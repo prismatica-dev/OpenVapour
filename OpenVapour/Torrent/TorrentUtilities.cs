@@ -14,6 +14,7 @@ namespace OpenVapour.Torrent {
         internal static string FixRSSUnicode(string Content) {
             bool Fixed = false;
             int iterations = 0;
+            try {
             while (!Fixed) {
                 iterations++; if (iterations > 50) break; // prevent excessive iterations
                 bool strangeFormatting = false;
@@ -24,7 +25,8 @@ namespace OpenVapour.Torrent {
                     if (int.TryParse(unicode, out int n)) {
                         Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
                     } else Fixed = true; } else Fixed = true; }
-            return Content.Replace("\\/", "/"); }
+            return Content.Replace("\\/", "/");
+            } catch (Exception ex) { HandleException($"TorrentUtilities.FixRSSUnicode({Content})", ex); return Content; }}
 
         internal static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
             List<Task<ResultTorrent>> results = new List<Task<ResultTorrent>>();
