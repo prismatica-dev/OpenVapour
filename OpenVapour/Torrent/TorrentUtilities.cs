@@ -7,10 +7,14 @@ using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.OpenVapourAPI.Compression;
+using System.IO;
+using OpenVapour.OpenVapourAPI;
 
 namespace OpenVapour.Torrent {
     internal class TorrentUtilities {
-        internal static string MagnetFromTorrent(byte[] TorrentFile) => $"magnet:?xt=urn:btih:{Convert.ToBase64String(TorrentFile)}";
+        internal static string MagnetFromTorrent(byte[] TorrentFile) { 
+            File.WriteAllBytes($"{DirectoryUtilities.DedicatedCache}\\temp.torrent", TorrentFile);
+            return $"{DirectoryUtilities.DedicatedCache}\\temp.torrent"; }
         internal static string FixRSSUnicode(string Content) {
             bool Fixed = false;
             int iterations = 0;
@@ -103,7 +107,6 @@ namespace OpenVapour.Torrent {
                                 results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.KaOs, url, name)); }}
                         break;
 
-                    case TorrentSource.FitgirlRepacks:
                     case TorrentSource.Unknown:
                     default:
                         // extended search capability not implemented / not needed
@@ -127,7 +130,7 @@ namespace OpenVapour.Torrent {
                             for (int i = 1; i < items.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, items[i]);
                                 results.Add(torrent);
-                                HandleLogging("found torrent " + torrent.Url);
+                                HandleLogging("[PCGT] found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
                     break; 
                         
@@ -141,7 +144,7 @@ namespace OpenVapour.Torrent {
                             for (int i = 1; i < fitgirlitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
                                 results.Add(torrent);
-                                HandleLogging("found torrent " + torrent.Url);
+                                HandleLogging("[FITGIRL] found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
                         break;
 
@@ -158,8 +161,22 @@ namespace OpenVapour.Torrent {
                                 // GOG sometimes returns results that aren't even close to what you asked for
                                 if (GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
                                 results.Add(torrent);
-                                HandleLogging("found torrent " + torrent.Url);
+                                HandleLogging("[GOG] found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(gogitems[i], "\t<link>", "</link>")); }
+                        break;
+
+                    case TorrentSource.Xatab:
+                        string xatabhtml = await WebCore.GetWebString($"https://byxatab.com/index.php?do=search&subaction=search&from_page=0&story={Uri.EscapeDataString(Name)}");
+                        xatabhtml = GetBetween(xatabhtml, "<div class=\"search-additional clearfix\">", "</section>");
+                        string[] xatabitems = xatabhtml.Split(new string[] { "<div class=\"entry\">" }, StringSplitOptions.RemoveEmptyEntries);
+                        HandleLogging($"[XATAB] found {xatabitems.Count():N0} torrents!");
+
+                        if (xatabitems.Count() > 1)
+                            for (int i = 1; i < xatabitems.Count(); i++) {
+                                ResultTorrent torrent = new ResultTorrent(Source, xatabitems[i]);
+                                HandleLogging("[XATAB] found torrent " + torrent.Url);
+                                results.Add(torrent);
+                                resulturls.Add(torrent.Url); }
                         break;
 
                     case TorrentSource.SteamRIP:
@@ -173,7 +190,7 @@ namespace OpenVapour.Torrent {
                                 if (steamripitems[i].Contains("TORRENT")) {
                                     ResultTorrent torrent = new ResultTorrent(Source, steamripitems[i]);
                                     results.Add(torrent);
-                                    HandleLogging("found torrent " + torrent.Url);
+                                    HandleLogging("[SteamRIP] found torrent " + torrent.Url);
                                     resulturls.Add(GetBetween(steamripitems[i], "\t<link>", "</link>")); }}
                         break;
 
@@ -187,7 +204,7 @@ namespace OpenVapour.Torrent {
                             for (int i = 1; i < sevengamersitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, sevengamersitems[i]);
                                 results.Add(torrent);
-                                HandleLogging("found torrent " + torrent.Url);
+                                HandleLogging("[SevenGamers] found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(sevengamersitems[i], "<a itemprop=\"url\" href=\"", "\"")); }
                         break;
 

@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace OpenVapour.Torrent {
     internal class TorrentSources {
-        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs }
+        internal enum TorrentSource { Unknown, PCGamesTorrents, FitgirlRepacks, SteamRIP, SevenGamers, GOG, Dodi, KaOs, Xatab }
         internal enum DirectSource { Unknown, IGGGames, KaOs, SteamRIP, Crackhub }
         internal enum Implementation { Unimplemented = -1, Enabled, Disabled }
         internal enum Integration { None = -1, Extended, Full, Partial, NoBypass, Dangerous, Error }
@@ -21,6 +21,7 @@ namespace OpenVapour.Torrent {
             { TorrentSource.GOG, new Tuple<byte, byte, Implementation>(7, 6, Implementation.Enabled) }, // trustworthy torrent mirror, but absolutely garbage installers
             { TorrentSource.Dodi, new Tuple<byte, byte, Implementation>(9, 8, Implementation.Unimplemented) }, // trustworthy repacks
             { TorrentSource.KaOs, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Enabled) }, // trustworthy repacks
+            { TorrentSource.Xatab, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Enabled) }, // trustworthy repacks
             { TorrentSource.Unknown, new Tuple<byte, byte, Implementation>(0, 0, Implementation.Unimplemented) } // never trust sources fabricated from the void
         }; 
         internal static Dictionary<DirectSource, Tuple<byte, byte, Implementation>> DirectSourceScores = new Dictionary<DirectSource, Tuple<byte, byte, Implementation>> {
@@ -37,6 +38,7 @@ namespace OpenVapour.Torrent {
                     return Integration.Extended;
 
                 case TorrentSource.GOG:
+                case TorrentSource.Xatab:
                     return Integration.Full;
 
                 case TorrentSource.KaOs:
@@ -107,6 +109,9 @@ namespace OpenVapour.Torrent {
                 case TorrentSource.FitgirlRepacks:
                     // fully integrated
                     return "fitgirl-repacks.site";
+                case TorrentSource.Xatab:
+                    // fully integrated
+                    return "byxatab.com";
                 case TorrentSource.SteamRIP:
                     // pending url shortener bypass
                     return "steamrip.com";
@@ -114,7 +119,7 @@ namespace OpenVapour.Torrent {
                     // pending TLS fix for integration
                     return "seven-gamers.com";
                 case TorrentSource.KaOs:
-                    // pending url shortener bypass
+                    // partial integration (some titles use url shorteners)
                     return "kaoskrew.org";
                 case TorrentSource.Dodi:
                     // pending integration

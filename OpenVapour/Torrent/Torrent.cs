@@ -5,6 +5,7 @@ using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.TorrentUtilities;
 using OpenVapour.OpenVapourAPI;
+using System.Text;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {
@@ -140,6 +141,15 @@ namespace OpenVapour.Torrent {
                             TorrentUrl = Url;
                             break;
 
+                        case TorrentSource.Xatab:
+                            Url = "https://byxatab.com" + GetBetween(JSON, "><a href=\"https://byxatab.com", "\"");
+                            if (Url == "https://byxatab.com/games/torrent_igry/licenzii/kniga-zakazov-rg-gogfan/30-1-0-1734") break; // prevent possible incorrect download
+                            Name = GetBetween(JSON, $"{Url}\">", "</a>");
+                            Description = GetBetween(JSON, "<div class=\"entry__content-description\">", "</div>").Trim();
+                            Image = "https://byxatab.com/uploads" + GetBetween(JSON, "<img src=\"/uploads", "\"");
+                            TorrentUrl = Url;
+                            break;
+
                         case TorrentSource.Unknown:
                         default:
                             Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
@@ -171,6 +181,9 @@ namespace OpenVapour.Torrent {
 
                     case TorrentSource.GOG:
                         return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl, 3500), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
+
+                    case TorrentSource.Xatab:
+                        return MagnetFromTorrent(await WebCore.GetWebBytes($"https://byxatab.com/index.php?do=download{GetBetween(await WebCore.GetWebString(TorrentUrl, 4000), "<a href=\"https://byxatab.com/index.php?do=download", "\"")}"));
 
                     case TorrentSource.Unknown:
                     default:

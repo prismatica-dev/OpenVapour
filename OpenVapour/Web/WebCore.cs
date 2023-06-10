@@ -27,7 +27,7 @@ namespace OpenVapour.Web {
             } else LastTimeout.Add(baseUrl, DateTime.Now);
             
             Utilities.HandleLogging($"[1] http prepare '{Url}'");
-            using (HttpClientHandler handler = new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false,  }) {
+            using (HttpClientHandler handler = new HttpClientHandler { AllowAutoRedirect = true, UseProxy = false, PreAuthenticate = false }) {
                 using (HttpClient client = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(MaxTimeout) }) {
                     client.DefaultRequestHeaders.UserAgent.ParseAdd(GetRandomUserAgent());
                     client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
@@ -73,6 +73,27 @@ namespace OpenVapour.Web {
                     catch (TaskCanceledException ex) { Utilities.HandleException($"WebCore.GetWebString({Url}) [Cancellation Token {ex.CancellationToken.IsCancellationRequested}]", ex); }
                     catch (Exception ex) { Utilities.HandleException($"WebCore.GetWebString({Url})", ex); }}}
             return ""; }
+
+        internal static async Task<byte[]> GetWebBytes(string Url) {
+            string baseUrl = GetBaseUrl(Url);
+            if (LastTimeout.ContainsKey(baseUrl)) {
+                if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    Utilities.HandleLogging($"GetWebBytes({Url}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 10:N2}ms");
+                while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
+                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
+                LastTimeout[baseUrl] = DateTime.Now;
+            } else LastTimeout.Add(baseUrl, DateTime.Now);
+
+            try {
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
+                req.Method = "GET";
+                req.UserAgent = GetRandomUserAgent();
+                using (MemoryStream ms = new MemoryStream()) {
+                    (await req.GetResponseAsync()).GetResponseStream().CopyTo(ms);
+                    return ms.ToArray(); }
+            } catch (Exception ex) {
+                Utilities.HandleException($"WebCore.GetWebBytes({Url})", ex); }
+            return new byte[0]; }
 
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
             string baseUrl = GetBaseUrl(Url);
