@@ -20,7 +20,7 @@ namespace OpenVapour.Web {
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
                 if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
-                    Utilities.HandleLogging($"GetWebString({Url}, {MaxTimeout}, {FullSpoof}) pending for {(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds:N2}ms");
+                    Utilities.HandleLogging($"GetWebString({Url}, {MaxTimeout}, {FullSpoof}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 10:N2}ms");
                 while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
                     await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
                 LastTimeout[baseUrl] = DateTime.Now;
@@ -78,7 +78,7 @@ namespace OpenVapour.Web {
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
                 if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
-                    Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) pending for {(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds:N2}ms");
+                    Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 10:N2}ms");
                 while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
                     await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
                 LastTimeout[baseUrl] = DateTime.Now;
@@ -103,17 +103,4 @@ namespace OpenVapour.Web {
     
         internal static string GetBaseUrl(string Url) { 
             try { return new Uri(Url).GetLeftPart(UriPartial.Authority); } 
-            catch (Exception ex) { Utilities.HandleException($"WebCore.GetBaseUrl({Url})", ex); return null; }}
-
-        internal static string DecodeBlueMediaFiles(string EncodedUrl) {
-            Utilities.HandleLogging("decoding " + EncodedUrl);
-            EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
-                .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
-                .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
-                .Replace("https://bluemediafiles.site/get-url.php?url=", "");
-            if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl.Substring(EncodedUrl.IndexOf('=') + 1);
-            string URL = "";
-            for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
-            for (int i = (EncodedUrl.Length / 2) + 4; i < EncodedUrl.Length; i += 2) URL += EncodedUrl[i];
-            Utilities.HandleLogging("decoded " + EncodedUrl + "!");
-            return URL; }}}
+            catch (Exception ex) { Utilities.HandleException($"WebCore.GetBaseUrl({Url})", ex); return null; }}}}

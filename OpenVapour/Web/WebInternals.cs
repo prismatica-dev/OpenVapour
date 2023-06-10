@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OpenVapour.OpenVapourAPI;
+using System;
+using System.Windows.Media;
 
 namespace OpenVapour.Web {
     internal class WebInternals {
@@ -102,4 +104,18 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.68",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.71" };
         private static readonly Random rng = new Random();
-        internal static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)]; }}
+        internal static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)]; 
+        internal static string DecodeBlueMediaFiles(string EncodedUrl) {
+            try {
+                Utilities.HandleLogging($"[BlueMediaFiles Bypass] Decoding {EncodedUrl}!");
+                EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
+                    .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
+                    .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
+                    .Replace("https://bluemediafiles.site/get-url.php?url=", "");
+                if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl.Substring(EncodedUrl.IndexOf('=') + 1);
+                string URL = "";
+                for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
+                for (int i = (EncodedUrl.Length / 2) + 4; i < EncodedUrl.Length; i += 2) URL += EncodedUrl[i];
+                Utilities.HandleLogging("decoded " + EncodedUrl + "!");
+                return URL; } 
+            catch (Exception ex) { Utilities.HandleException($"WebInternals.DecodeBlueMediaFiles({EncodedUrl})", ex); return ""; }}}}
