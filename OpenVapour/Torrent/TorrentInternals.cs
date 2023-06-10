@@ -20,7 +20,7 @@ namespace OpenVapour.Torrent {
             { TorrentSource.SevenGamers, new Tuple<byte, byte, Implementation>(8, 7, Implementation.Disabled) }, // trustworthy, but usually uses ISOs detracting from easiness
             { TorrentSource.GOG, new Tuple<byte, byte, Implementation>(7, 6, Implementation.Enabled) }, // trustworthy torrent mirror, but absolutely garbage installers
             { TorrentSource.Dodi, new Tuple<byte, byte, Implementation>(9, 8, Implementation.Unimplemented) }, // trustworthy repacks
-            { TorrentSource.KaOs, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Disabled) }, // trustworthy repacks
+            { TorrentSource.KaOs, new Tuple<byte, byte, Implementation>(10, 9, Implementation.Enabled) }, // trustworthy repacks
             { TorrentSource.Unknown, new Tuple<byte, byte, Implementation>(0, 0, Implementation.Unimplemented) } // never trust sources fabricated from the void
         }; 
         internal static Dictionary<DirectSource, Tuple<byte, byte, Implementation>> DirectSourceScores = new Dictionary<DirectSource, Tuple<byte, byte, Implementation>> {
@@ -39,8 +39,10 @@ namespace OpenVapour.Torrent {
                 case TorrentSource.GOG:
                     return Integration.Full;
 
-                case TorrentSource.SteamRIP:
                 case TorrentSource.KaOs:
+                    return Integration.Partial;
+                
+                case TorrentSource.SteamRIP:
                     return Integration.NoBypass;
 
                 case TorrentSource.SevenGamers:
@@ -68,7 +70,7 @@ namespace OpenVapour.Torrent {
                 case Integration.Full:
                     return Color.FromArgb(50, 155, 40);
                 case Integration.Partial:
-                    return Color.Yellow;
+                    return Color.FromArgb(170, 186, 65);
                 case Integration.NoBypass:
                     return Color.OrangeRed;
                 case Integration.Error:
@@ -86,7 +88,7 @@ namespace OpenVapour.Torrent {
                 case Integration.Full:
                     return "This source is fully integrated.";
                 case Integration.Partial:
-                    return "⚠️ This source is partially integrated. Expect issues.";
+                    return "⚠️ This source is partially integrated. Expect potential issues.";
                 case Integration.NoBypass:
                     return "⚠️ This source has no URL shortener bypass. Be careful.";
                 case Integration.Error:
@@ -95,7 +97,7 @@ namespace OpenVapour.Torrent {
                     return "🚨 This source likely contains malicious content.";
                 case Integration.None:
                 default:
-                    return "This source is not integrated.\nYou should not be seeing this text."; }}
+                    return "This source is not integrated. You should not be seeing this text."; }}
 
         internal static string GetSourceName(TorrentSource Source) {
             switch (Source) {

@@ -17,10 +17,12 @@ namespace OpenVapour.Torrent {
             internal string Url { get; set; }
             internal string Image { get; set; }
             internal string TorrentUrl { get; set; }
+            internal bool SafeAnyway { get; set; }
             internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 ResultTorrent t = new ResultTorrent(TorrentSource.Unknown, "");
                 try {
                     if (Cache.IsTorrentCached(Url)) {
+                        HandleLogging($"Returning torrent {Url} from cache");
                         ResultTorrent cached = Cache.LoadCachedTorrent(Url);
                         if (cached != null) return cached; }
 
@@ -32,33 +34,41 @@ namespace OpenVapour.Torrent {
                             return t;
 
                         case TorrentSource.KaOs:
+                            HandleLogging($"[KaOs] Processing forum post {Url}");
                             // KaOs is a forum where uploaders use various formats. trying to introduce compatibility with these formats is hell.
                             string desc = "";
                             string img = "";
                             string trurl = "";
 
                             // description
+                            HandleLogging($"[KaOs] Processing post description {Url}");
                             if (html.Contains("<blockquote class=\"uncited\"><div>"))
                                 desc = GetBetween(html, "<blockquote class=\"uncited\"><div>", "</div>").Replace("\\/", "/");
 
                             // image
+                            HandleLogging($"[KaOs] Processing post image {Url}");
                             if (html.Contains("class=\"postimage\""))
                                 img = GetBetween(html, "<img src=\"", "\" class=\"postimage\"");
-                            if (html.Contains("<img src=\"https://i.ibb.co\"") && img.Length == 0)
+                            if (img.Length == 0 && html.Contains("<img src=\"https://i.ibb.co\""))
                                 img = $"https://i.ibb.co{GetBetween(html, "<img src=\"https://i.ibb.co", "\"")}";
-                            if (html.Contains(".png") && img.Length == 0)
+                            if (img.Length == 0 && html.Contains(".png"))
                                 img = $"{GetBetween(html, "src=\"", ".png\"")}";
-                            if (html.Contains(".jpg") && img.Length == 0)
+                            if (img.Length == 0 && html.Contains(".jpg"))
                                 img = $"{GetBetween(html, "src=\"", ".jpg\"")}";
 
                             // magnet url
-                            trurl = GetBetween(html.Substring(Math.Max(0, html.IndexOf("Filehost Mirrors"))), "<a href=\"", "\"");
+                            HandleLogging($"[KaOs] Processing post torrent {Url}");
+                            if (html.IndexOf("Filehost Mirrors") != -1)
+                                trurl = GetBetween(html.Substring(Math.Max(0, html.IndexOf("Filehost Mirrors"))), "<a href=\"", "\"");
                             if (trurl.Length == 0) {
                                 string[] lineHtml = html.Split('\n');
-                                foreach (string line in lineHtml)
-                                    if ((line.ToLower().Contains("magnet") || line.ToLower().Contains("torrent")) && line.ToLower().Contains("href"))
-                                        trurl = GetBetween(line, "href=\"", "\""); }
+                                foreach (string line in lineHtml) {
+                                    string lwr = line.ToLower();
+                                    if ((lwr.Contains("magnet") || lwr.Contains("torrent")) && lwr.Contains("href"))
+                                        trurl = GetBetween(line, "href=\"", "\""); }}
+                            HandleLogging($"[KaOs] found torrent");
                             t = new ResultTorrent(Name, desc, Url, trurl, img, source);
+                            if (string.IsNullOrWhiteSpace(trurl)) return null;
                             Cache.CacheTorrent(t);
                             return t;
 
@@ -68,7 +78,9 @@ namespace OpenVapour.Torrent {
                     } catch (Exception ex) { HandleException($"ResultTorrent.TorrentFromUrl({source}, {Url}, {Name})", ex); }
                 return t; }
 
-            internal ResultTorrent(string Name, string Description, string Url, string TorrentUrl, string Image, TorrentSource Source) { this.Name = Name; this.Description = Description; this.Url = Url; this.TorrentUrl = TorrentUrl; this.Image = Image; this.Source = Source; }
+            internal ResultTorrent(string Name, string Description, string Url, string TorrentUrl, string Image, TorrentSource Source) { 
+                this.Name = Name; this.Description = Description; this.Url = Url; this.TorrentUrl = TorrentUrl; this.Image = Image; this.Source = Source;
+                if (!string.IsNullOrWhiteSpace(TorrentUrl)) SafeAnyway = TorrentUrl.Contains("paste.kaoskrew.org"); }
 
             internal ResultTorrent(TorrentSource Source, string JSON) {
                 this.Source = Source;
@@ -137,7 +149,7 @@ namespace OpenVapour.Torrent {
             internal async Task<string> GetMagnet() {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
-                        return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebCore.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
+                        return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebInternals.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
 
                     case TorrentSource.FitgirlRepacks:
                         return TorrentUrl;
@@ -147,11 +159,14 @@ namespace OpenVapour.Torrent {
 
                     case TorrentSource.KaOs:
                         // despite all my rage, even if held at gunpoint i would refuse to try to find a stupid linkvertise bypass
-                        // it will just force you to the site instead
+                        if (SafeAnyway) {
+                            // omg! hooray! this url doesnt use linkvertise! how awesome is that??
+                            return TorrentUrl; }
                         return Url;
 
                     case TorrentSource.SteamRIP:
                         // pending megadb bypass
+                        // incredibly unlikely that it'll get one
                         return Url;
 
                     case TorrentSource.GOG:

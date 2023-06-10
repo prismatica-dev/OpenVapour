@@ -164,8 +164,10 @@ namespace OpenVapour {
                 Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); 
             await add; }
         internal void AddTorrent(ResultTorrent torrent) {
-            PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
             try {
+                if (torrent == null) return;
+                if (torrent.TorrentUrl.Contains("paste.masquerade.site")) return; // dead site
+                PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
                 List<object> metalist = new List<object> { states, torrent, false };
                 panel.Image = states[0];
                 panel.Tag = metalist;
@@ -175,7 +177,7 @@ namespace OpenVapour {
                 AddPanelEvents(panel);
                 ForceUpdate();
                 LoadGameTorrentBitmap(torrent, panel); }
-            catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); panel.Image = SystemIcons.Error.ToBitmap(); }}
+            catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); }}
         
         internal async void AsyncAddGame(int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
@@ -230,6 +232,8 @@ namespace OpenVapour {
                     imgTask = WebCore.GetWebBitmap(rt.Image);
                     overlay = GetSourceName(rt.Source);
                     baseState = Color.FromArgb(125, GetIntegrationColor(GetIntegration(rt.Source)));
+                    if (rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) 
+                        baseState = Color.FromArgb(125, GetIntegrationColor(Integration.NoBypass));
                     name = rt.Name;
                     desc = rt.Description; }
 
@@ -268,11 +272,12 @@ namespace OpenVapour {
 
         private void LoadTorrent(ResultTorrent game, Image art) {
             currenttorrent = game; 
-            if (game.Source != TorrentSource.KaOs && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
+            if (!(game.Source == TorrentSource.KaOs && !game.SafeAnyway) && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
             else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
+
             MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {GetIntegrationSummary(GetIntegration(game.Source))}"; 
+            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {((game.Source == TorrentSource.KaOs&&!game.SafeAnyway)?GetIntegrationSummary(Integration.NoBypass):GetIntegrationSummary(GetIntegration(game.Source)))}"; 
             gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description.Trim()}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
@@ -414,8 +419,10 @@ namespace OpenVapour {
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
             string magnet = "";
+            bool copied = false;
             try {
-                if (currenttorrent.Source == TorrentSource.KaOs || currenttorrent.Source == TorrentSource.SteamRIP) {
+                if ((currenttorrent.Source == TorrentSource.KaOs && !currenttorrent.SafeAnyway) || currenttorrent.Source == TorrentSource.SteamRIP) {
+                    Utilities.HandleLogging($"Current torrent {currenttorrent.Url} is not fully implemented. Opening page URL");
                     Process.Start(new ProcessStartInfo(currenttorrent.Url) { UseShellExecute = true, Verb = "open" });
                     return; }
 
@@ -426,6 +433,7 @@ namespace OpenVapour {
 
                 Utilities.HandleLogging("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
+                copied = true;
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Clipboard]", ex); 
@@ -440,7 +448,7 @@ namespace OpenVapour {
                     Cache.HomepageGame(currentgame); }
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Process]", ex); 
-                magnetbutton.Text = "Open Failed";
+                if (!copied) magnetbutton.Text = "Open Failed";
                 ForceUpdate(); }}
 
         private void Exit_Click(object sender, EventArgs e) => Close();

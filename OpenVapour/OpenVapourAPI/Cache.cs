@@ -39,7 +39,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static async Task<SteamGame> LoadCachedSteamGame(string AppId) { 
             try {
                 SteamGame cached = DeserializeSteamGame(LoadCompressedAsset($"{DedicatedCache}\\Games\\{AppId}"));
-                if (cached.AppId.Length == 0) return await GetGame(ToIntSafe(AppId));
+                if (cached == null || cached.AppId.Length == 0) return await GetGame(ToIntSafe(AppId));
                 else return cached;
             } catch (Exception ex) { 
                 HandleException($"Cache.LoadCachedSteamGame({AppId})", ex);
@@ -55,7 +55,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static ResultTorrent LoadCachedTorrent(string Url) {
             try {
                 ResultTorrent cached = DeserializeTorrent(LoadCompressedAsset($"{DedicatedCache}\\Torrents\\{FilterAlphanumeric(Url)}"));
-                if (cached.Url.Length == 0) return null;
+                if (cached == null || cached.Url.Length == 0) return null;
                 else return cached;
             } catch (Exception ex) { HandleException($"Cache.LoadCachedTorrent({Url})", ex); return null; }}
 
