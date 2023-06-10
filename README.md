@@ -44,7 +44,7 @@ Sources are listed and scored so you know who you're torrenting from, and if you
 + Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
 + PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass]
 + Non-DRM GOG (7 | 6) : Better Search Relevance
-+ KaOsKrew (10 | 9) : Extended Search Capability, Forum Interpreter <b>[NO CURRENT SHORTENER BYPASS]</b>
++ KaOsKrew (10 | 9) : Extended Search Capability, Forum Interpreter
 + SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
 + Seven-Gamers (8 | 7) : Automatic .torrent to Magnet <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
 
