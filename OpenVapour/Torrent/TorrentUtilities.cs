@@ -12,9 +12,9 @@ using OpenVapour.OpenVapourAPI;
 
 namespace OpenVapour.Torrent {
     internal class TorrentUtilities {
-        internal static string MagnetFromTorrent(byte[] TorrentFile) { 
-            File.WriteAllBytes($"{DirectoryUtilities.DedicatedCache}\\temp.torrent", TorrentFile);
-            return $"{DirectoryUtilities.DedicatedCache}\\temp.torrent"; }
+        internal static string MagnetFromTorrent(string Name, byte[] TorrentFile) { 
+            File.WriteAllBytes($"{DirectoryUtilities.DedicatedStorage}\\{FilterAlphanumeric(Name)}.torrent", TorrentFile);
+            return $"{DirectoryUtilities.DedicatedStorage}\\{FilterAlphanumeric(Name)}.torrent"; }
         internal static string FixRSSUnicode(string Content) {
             bool Fixed = false;
             int iterations = 0;

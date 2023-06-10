@@ -183,7 +183,7 @@ namespace OpenVapour.Torrent {
                         return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl, 3500), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
 
                     case TorrentSource.Xatab:
-                        return MagnetFromTorrent(await WebCore.GetWebBytes($"https://byxatab.com/index.php?do=download{GetBetween(await WebCore.GetWebString(TorrentUrl, 4000), "<a href=\"https://byxatab.com/index.php?do=download", "\"")}"));
+                        return MagnetFromTorrent(Url, await WebCore.GetWebBytes($"https://byxatab.com/index.php?do=download{GetBetween(await WebCore.GetWebString(TorrentUrl, 4000), "<a href=\"https://byxatab.com/index.php?do=download", "\"")}"));
 
                     case TorrentSource.Unknown:
                     default:
