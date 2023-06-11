@@ -143,6 +143,7 @@ namespace OpenVapour.Torrent {
                         if (fitgirlitems.Count() > 1)
                             for (int i = 1; i < fitgirlitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
+                                if (!torrent.TorrentUrl.StartsWith("magnet:?xt")) continue; // blog post, not torrent
                                 results.Add(torrent);
                                 HandleLogging("[FITGIRL] found torrent " + torrent.Url);
                                 resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
