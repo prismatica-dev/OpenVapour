@@ -116,14 +116,17 @@ namespace OpenVapour {
                     return; }
             base.WndProc(ref m); }
 
-        internal Panel CreatePopUp(PictureBox selector, string Name, string Description) {
+        internal Panel CreatePopUp(PictureBox selector, string Name, string Description, string Publish = "") {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
 
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false, Name = "Popup" };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 150)), BackColor = Color.Transparent };
+            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0))), BackColor = Color.Transparent };
+            Label gamedate = null;
+            if (!string.IsNullOrWhiteSpace(Publish))
+                gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish, BackColor = Color.Transparent, ForeColor = Color.FromArgb(170, 170, 170), Parent = popup };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
@@ -131,10 +134,13 @@ namespace OpenVapour {
                 if (image.Height > image.Width) gameart.Size = new Size(107, 160);
                 else gameart.Size = new Size(107, 107); }
 
+            Console.WriteLine(Publish);
             popup.Controls.Add(gameart);
             popup.Controls.Add(gamename);
             popup.Controls.Add(gameabout);
+            if (gamedate != null) popup.Controls.Add(gamedate);
             Controls.Add(popup);
+            gamedate?.BringToFront();
             gameabout.BringToFront();
             gamename.BringToFront();
             popup.BringToFront();
@@ -191,7 +197,7 @@ namespace OpenVapour {
                 List<object> metalist = new List<object> { states, torrent, false };
                 panel.Image = states[0];
                 panel.Tag = metalist;
-                Panel popup = CreatePopUp(panel, torrent.Name, torrent.Description);
+                Panel popup = CreatePopUp(panel, torrent.Name, torrent.Description, torrent.PublishDate);
                 metalist.Add(popup);
                 
                 AddPanelEvents(panel);
@@ -240,6 +246,7 @@ namespace OpenVapour {
                 string name = "";
                 string desc = "";
                 string overlay = "";
+                string publish = "";
                 bool torrent = false;
                 Color baseState = Color.FromArgb(125, 0, 0, 0);
 
@@ -255,7 +262,8 @@ namespace OpenVapour {
                     if (rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) 
                         baseState = Color.FromArgb(125, GetIntegrationColor(Integration.NoBypass));
                     name = rt.Name;
-                    desc = rt.Description; }
+                    desc = rt.Description;
+                    publish = rt.PublishDate; }
 
                 Task cont = imgTask.ContinueWith((img) => {
                     if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
@@ -274,7 +282,7 @@ namespace OpenVapour {
                         List<object> metalist = output.Tag as List<object>;
                         metalist.RemoveAt(0); metalist.Insert(0, states);
                         metalist[2] = true;
-                        metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output, name, desc));
+                        metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output, name, desc, publish));
 
                         if (game is ResultTorrent rt) {
                             // resize panel to appropriate proportions

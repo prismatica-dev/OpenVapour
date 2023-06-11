@@ -18,7 +18,7 @@ namespace OpenVapour.Torrent {
             internal string Url { get; set; }
             internal string Image { get; set; }
             internal string TorrentUrl { get; set; }
-            internal string PublishDate { get; set; }
+            internal string PublishDate = "";
             internal bool SafeAnyway { get; set; }
             internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 ResultTorrent t = new ResultTorrent(TorrentSource.Unknown, "");
@@ -32,6 +32,8 @@ namespace OpenVapour.Torrent {
                     switch (source) {
                         case TorrentSource.PCGamesTorrents:
                             t = new ResultTorrent(Name, FixRSSUnicode(GetBetween(html, "<p class=\"uk-dropcap\">", "</p>")), Url, GetBetween(html, "uk-card-hover\"><a href=\"", "\""), GetBetween(html, "Download\" src=\"", "\""), source);
+                            string _ = GetAfter(html, "<time");
+                            t.PublishDate = GetBetween(html, ">", "<");
                             Cache.CacheTorrent(t);
                             return t;
 
@@ -71,6 +73,10 @@ namespace OpenVapour.Torrent {
                             HandleLogging($"[KaOs] found torrent");
                             t = new ResultTorrent(Name, desc, Url, trurl, img, source);
                             if (string.IsNullOrWhiteSpace(trurl)) return null;
+
+                            string __ = GetAfter(html, "<time");
+                            t.PublishDate = GetBetween(__, ">", "<");
+
                             Cache.CacheTorrent(t);
                             return t;
 
@@ -80,8 +86,8 @@ namespace OpenVapour.Torrent {
                     } catch (Exception ex) { HandleException($"ResultTorrent.TorrentFromUrl({source}, {Url}, {Name})", ex); }
                 return t; }
 
-            internal ResultTorrent(string Name, string Description, string Url, string TorrentUrl, string Image, TorrentSource Source) { 
-                this.Name = Name; this.Description = Description; this.Url = Url; this.TorrentUrl = TorrentUrl; this.Image = Image; this.Source = Source;
+            internal ResultTorrent(string Name, string Description, string Url, string TorrentUrl, string Image, TorrentSource Source, string PublishDate = "") { 
+                this.Name = Name; this.Description = Description; this.Url = Url; this.TorrentUrl = TorrentUrl; this.Image = Image; this.Source = Source; this.PublishDate = PublishDate;
                 if (!string.IsNullOrWhiteSpace(TorrentUrl)) SafeAnyway = TorrentUrl.Contains("paste.kaoskrew.org"); }
 
             internal ResultTorrent(TorrentSource Source, string JSON) {
@@ -103,6 +109,7 @@ namespace OpenVapour.Torrent {
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             Image = GetBetween(JSON, "src=\"", "\"");
                             TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}"; // direct magnet
+                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.SteamRIP:
@@ -111,6 +118,7 @@ namespace OpenVapour.Torrent {
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             Image = GetBetween(JSON, "<p style=\"text-align: center;\"><a href=\"", "\"");
                             TorrentUrl = GetBetween(GetBetween(JSON, "clearfix", "</item"), "<p style=\"text-align: center;\"><a href=\"", "\"");
+                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.SevenGamers:
@@ -141,6 +149,7 @@ namespace OpenVapour.Torrent {
                             HandleLogging($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg");
                             Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg";
                             TorrentUrl = Url;
+                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.Xatab:
@@ -150,6 +159,7 @@ namespace OpenVapour.Torrent {
                             Description = GetBetween(JSON, "<div class=\"entry__content-description\">", "</div>").Trim();
                             Image = "https://byxatab.com/uploads" + GetBetween(JSON, "<img src=\"/uploads", "\"");
                             TorrentUrl = Url;
+                            PublishDate = GetBetween(JSON, "<div class=\"entry__info-categories\">", "</div>");
                             break;
 
                         case TorrentSource.Unknown:
