@@ -74,11 +74,10 @@ Sources are listed and scored so you know who you're torrenting from, and if you
 Tested With:
 + ✅ Windows 10 + ReviOS 10 (Native)
 + ✅ Windows 10 Virtual Machine (Native)
-  + ⚠️ Clipboard Errors
-+ ✅ Arch Linux (Wine 8.7)
++ ✅ Arch Linux (Wine 8.7 / Proton 8.0)
   + ⚠️ Requires windows fonts (Segoe UI Light+Semilight+Bold)
-  + ⚠️ Rare uncatchable GDI+ exception
-  + ⚠️ Background image tearing
+  + ⚠️ Background image tearing, resizing lag
+  + ⚠️ Significantly slower multithreaded tasks
 + 🚨 Arch Linux (Mono 6.12.0)
   + 🚨 Crashes due to EntryPointNotFoundException
 
