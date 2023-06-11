@@ -369,7 +369,6 @@ namespace OpenVapour {
             string t = realsearchtb.Text;
             if (DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) t = t.Insert(realsearchtb.SelectionStart, "|");
 
-
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
@@ -383,7 +382,7 @@ namespace OpenVapour {
                 foreach (Control ctrl in tagFilterContainer.Controls)
                     if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
                 ClearStore(); 
-                int results = Math.Max(10, (int)Math.Floor(store.Width / 156f) * (int)Math.Floor(store.Height / 231f));
+                int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
                 UseWaitCursor = true;
                 await GetResults(realsearchtb.Text, tags.ToArray(), results);
                 UseWaitCursor = false; }}
