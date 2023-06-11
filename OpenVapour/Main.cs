@@ -481,6 +481,9 @@ namespace OpenVapour {
                     magnetbutton.Text = "Success"; 
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
+                else {
+                    magnetbutton.Text = "Blank";
+                    ForceUpdate(); }
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Process]", ex); 
                 if (!copied) magnetbutton.Text = "Open Failed";

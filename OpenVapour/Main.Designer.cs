@@ -176,7 +176,7 @@
             this.storeselect.Name = "storeselect";
             this.storeselect.Size = new System.Drawing.Size(372, 25);
             this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour v1.3.3a — FLOSS Torrent Search";
+            this.storeselect.Text = "OpenVapour v1.3.3b — FLOSS Torrent Search";
             this.storeselect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
