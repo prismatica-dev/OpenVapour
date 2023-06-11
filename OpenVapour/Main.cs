@@ -573,13 +573,16 @@ namespace OpenVapour {
 
         private void FilterSearchChanged(object sender, KeyEventArgs e) {
             int visible = 0;
-            if (filterSearch.Text.Length > 1)
+            if (filterSearch.Text.Length > 1) {
+                string fslwr = filterSearch.Text.ToLower();
+                int leng = filterSearch.Text.Length / 2;
                 foreach (Control ctrl in tagFilterContainer.Controls) {
-                    CheckBox _cb = (ctrl as CheckBox);
+                    CheckBox _cb = ctrl as CheckBox;
                     string _ =  _cb.Text.ToLower();
-                    bool _v = Utilities.GetLevenshteinDistance(filterSearch.Text.ToLower(), _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= filterSearch.Text.Length / 2;
+                    bool _v = Utilities.GetLevenshteinDistance(fslwr, _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= leng;
+                    _ = "";
                     ctrl.Visible = _v;
-                    if (_v) visible++; }
+                    if (_v) visible++; }}
             else 
                 foreach (Control ctrl in tagFilterContainer.Controls) { 
                     if ((ctrl as CheckBox).Checked) visible++;
