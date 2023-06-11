@@ -19,7 +19,7 @@ namespace OpenVapour.OpenVapourAPI {
             if (shadow.Width > BorderRadius * 2 && shadow.Height > BorderRadius * 2)
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(shadow)) { 
                     g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, shadow.Width, shadow.Height)); 
-                    g.DrawImage(image, new Rectangle(BorderRadius - 1, BorderRadius - 1, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 2)); }
+                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 2)); }
             return shadow; }
         internal static Image ManipulateDisplayBitmap(Image image, Color color, int BorderRadius, Font OverlayFont, string Overlay, Color OverlayColor) {
             Size _ = GetRatioSize(image);
@@ -27,7 +27,7 @@ namespace OpenVapour.OpenVapourAPI {
             if (shadow.Width > BorderRadius * 2 && shadow.Height > BorderRadius * 2)
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(shadow)) { 
                     g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, shadow.Width, shadow.Height)); 
-                    g.DrawImage(image, new Rectangle(BorderRadius - 1, BorderRadius - 1, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 2));
+                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 2));
                     if (Overlay.Length > 0) {
                         Font overlayfont = Utilities.FitFont(OverlayFont, Overlay, new Size(shadow.Width, BorderRadius * 2));
                         g.FillRectangle(new SolidBrush(Color.FromArgb(255, OverlayColor)), new RectangleF(0, 0, shadow.Width, BorderRadius * 2));
