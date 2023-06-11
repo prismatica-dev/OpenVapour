@@ -260,9 +260,9 @@ namespace OpenVapour {
                 Task cont = imgTask.ContinueWith((img) => {
                     if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
                     List<Image> states = new List<Image> {
-                        Graphics.ManipulateDisplayBitmap(img.Result, baseState, 20, Font, torrent?overlay:"", baseState),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 20, Font, torrent?overlay:"", baseState),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 20, Font, torrent?overlay:"", baseState) };
+                        Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, torrent?overlay:"", baseState),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, torrent?overlay:"", baseState),
+                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, torrent?overlay:"", baseState) };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -279,7 +279,7 @@ namespace OpenVapour {
                         ForceUpdate();
                         }); });
                 await cont;
-            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameBitmap(game, panel)", ex); }}
+            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;

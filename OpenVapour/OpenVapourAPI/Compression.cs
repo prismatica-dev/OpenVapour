@@ -7,9 +7,13 @@ using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
+using System.Drawing;
+using System.Web;
+using System.Drawing.Imaging;
 
 namespace OpenVapour.OpenVapourAPI {
     internal class Compression {
+        internal const int CompressionQuality = 80;
         internal static string CompressString(string text) {
             try {
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
@@ -38,6 +42,19 @@ namespace OpenVapour.OpenVapourAPI {
                     cmprapp[cmprapp.Length - 1] = 0;
                     return cmprapp; }
             } catch (Exception ex) { HandleException($"Compression.CompressToBytes({text})", ex); return new byte[1] { 1 }; }}
+        internal static Bitmap CompressBitmap(Bitmap bmp, int Quality = CompressionQuality) {
+            try {
+                using (MemoryStream ms = new MemoryStream()) {
+                    EncoderParameters encoderParameters = new EncoderParameters(1);
+                    encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Quality);
+                    ImageCodecInfo jpegCodec = ImageCodecInfo.GetImageEncoders()[1]; // jpeg
+                    bmp.Save(ms, jpegCodec, encoderParameters); 
+                    bmp.Dispose();
+                    return (Bitmap)Image.FromStream(ms); }
+            } catch (Exception) { 
+                HandleLogging($"Failed to compress a bmp to quality {Quality}."); 
+                return bmp; }}
+
         internal static string DecompressString(string text) {
             try {
                 byte[] compressedBytes = Convert.FromBase64String(text);
