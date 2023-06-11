@@ -30,6 +30,7 @@ namespace OpenVapour {
         private bool hover = false;
         private bool gamepanelopen = false;
         private string panelgame = "";
+        private bool clearing = false;
 
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
@@ -119,7 +120,7 @@ namespace OpenVapour {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
 
-            Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false };
+            Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false, Name = "Popup" };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 43), MaximumSize = new Size(198, 117), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 150)), BackColor = Color.Transparent };
@@ -141,23 +142,42 @@ namespace OpenVapour {
             return popup; }
 
         internal void ClearStore() {
+            clearing = true;
             Utilities.HandleLogging("clearing store!");
             try {
+                // remove store entries
                 foreach (Control ctrl in store.Controls) {
-                    if (ctrl.GetType() == typeof(PictureBox)) {
-                        PictureBox pb = ctrl as PictureBox;
+                    if (ctrl is PictureBox pb) {
                         InterpretPictureBox(pb, out _, out List<object> meta, out List<Image> i);
                         if (meta[1] == currentgame || meta[1] == currenttorrent) continue;
+                        if (meta == null || i == null) continue;
                         if (i.Equals(states)) continue;
-                        foreach (Image im in i) im.Dispose();
+                        //pb.Image?.Dispose();
+                        pb.Image = null;
+                        foreach (Image im in i) im?.Dispose();
+                        for (int x = 0; x < meta.Count(); x++) meta[x] = null;
+                        meta.Clear();
                         i.Clear();
-                        pb.Image?.Dispose(); }
-                    ctrl.Dispose();
-                    ctrl.Parent = null; }
+
+                        ctrl.Parent = null;
+                        ctrl.Dispose(); }}
+
+                // remove popup entries
+                foreach (Control ctrl in Controls) {
+                    if (ctrl.GetType() == typeof(Panel) && ctrl.Name == "Popup") {
+                        Utilities.HandleLogging("clearing popup!");
+                        foreach (Control subctrl in ctrl.Controls) { 
+                            if (subctrl is PictureBox pb) {
+                                if (pb.Image != null && pb.Image != states[0]) pb.Image = null;
+                                pb.Parent = null; }
+                            else if (subctrl is Label lb) { 
+                                Utilities.HandleLogging($"clearing {lb.Text}!"); lb.Parent = null; lb.Dispose(); }
+                        } ctrl.Parent = null; }}
             } catch (Exception ex) { Utilities.HandleException("Main.ClearStore()", ex); }
             Utilities.HandleLogging("store assets disposed");
-            store.Controls.Clear();
-            Utilities.HandleLogging("store cleared"); }
+            try { store.Controls.Clear(); GC.Collect(); } catch (Exception ex) { Utilities.HandleException($"Main.ClearStore() [Post-Disposal]", ex); }
+            Utilities.HandleLogging("store cleared");
+            clearing = false; }
 
         internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
@@ -372,8 +392,9 @@ namespace OpenVapour {
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0));
-            } searchtextbox.BackgroundImage = bit;
+                g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0)); } 
+            searchtextbox.BackgroundImage?.Dispose();
+            searchtextbox.BackgroundImage = bit;
             ForceUpdate(); }
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
@@ -481,6 +502,7 @@ namespace OpenVapour {
         private static extern bool LockWindowUpdate(IntPtr hWnd);
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
             try {
+                if (clearing) return; // prevent rendering of elements that are being disposed
                 if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
                 else {
                     LockWindowUpdate(IntPtr.Zero);
