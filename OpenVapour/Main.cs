@@ -467,6 +467,7 @@ namespace OpenVapour {
 
                 Utilities.HandleLogging("copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
+                magnetbutton.Text = "Copied!";
                 copied = true;
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
@@ -476,7 +477,7 @@ namespace OpenVapour {
             try {
                 if (magnet.Length > 0) {
                     Utilities.HandleLogging("opening magnet url " + magnet);
-                    Process.Start(new ProcessStartInfo(magnet) { UseShellExecute = true, Verb = "open" });
+                    Utilities.OpenUrl(magnet);
                     magnetbutton.Text = "Success"; 
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
