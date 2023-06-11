@@ -43,12 +43,12 @@ Sources are listed and scored so you know who you're torrenting from, and if you
 #### Torrent Sources
 `Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
 + Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
-+ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass]
++ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass
 + Non-DRM GOG (7 | 6) : Better Search Relevance
 + KaOsKrew (10 | 9) : Extended Search Capability, Forum Interpreter
 + Xatab (10 | 9) : No bypasses needed
-+ SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
-+ Seven-Gamers (8 | 7) : No bypasses needed <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
++ ⚠️ SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
++ ⚠️ Seven-Gamers (8 | 7) : No bypasses needed <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
 
 ***Sources with only partial integration (eg. no url shortener bypass) are ⚠️ tagged like this! ⚠️***
 
