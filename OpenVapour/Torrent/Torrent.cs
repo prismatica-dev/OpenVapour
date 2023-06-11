@@ -5,7 +5,6 @@ using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.TorrentUtilities;
 using OpenVapour.OpenVapourAPI;
-using System.Text;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {

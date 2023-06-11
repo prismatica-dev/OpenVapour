@@ -1,6 +1,5 @@
 ﻿using OpenVapour.OpenVapourAPI;
 using System;
-using System.Windows.Media;
 
 namespace OpenVapour.Web {
     internal class WebInternals {

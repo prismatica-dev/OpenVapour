@@ -8,7 +8,6 @@ using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using System.Drawing;
-using System.Web;
 using System.Drawing.Imaging;
 
 namespace OpenVapour.OpenVapourAPI {
