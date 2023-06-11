@@ -506,7 +506,13 @@ namespace OpenVapour {
             store.Visible = true; toolbar.Visible = true; 
             LoadLibrary();
             foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
-                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = tag }.CheckedChanged += delegate { ForceUpdate(); };
+                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = (int)tag }.CheckedChanged += delegate { ForceUpdate(); };
+            
+            // release filter memory
+            filterSearch.Text = "";
+            FilterSearchChanged(sender, new KeyEventArgs(Keys.Enter));
+            GC.Collect();
+            filterSearch.Text = "Search";
 
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
@@ -579,7 +585,7 @@ namespace OpenVapour {
                 foreach (Control ctrl in tagFilterContainer.Controls) {
                     CheckBox _cb = ctrl as CheckBox;
                     string _ =  _cb.Text.ToLower();
-                    bool _v = Utilities.GetLevenshteinDistance(fslwr, _.Substring(0, Math.Min(filterSearch.Text.Length, _.Length))) <= leng;
+                    bool _v = Utilities.GetLevenshteinDistance(fslwr, _.Substring(0, Math.Min(fslwr.Length, _.Length))) <= leng;
                     _ = "";
                     ctrl.Visible = _v;
                     if (_v) visible++; }}
@@ -598,8 +604,10 @@ namespace OpenVapour {
 
         private void ResetFilters(object sender, EventArgs e) {
             filterSearch.Text = "";
+            clearing = true;
             foreach (Control ctrl in tagFilterContainer.Controls) {
                 (ctrl as CheckBox).Checked = false;
                 ctrl.Visible = false; }
+            clearing = false;
             filtersPanel.Height = 56;
             ForceUpdate(); }}}
