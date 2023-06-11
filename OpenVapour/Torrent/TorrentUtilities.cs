@@ -73,13 +73,14 @@ namespace OpenVapour.Torrent {
                         if (KaOSGameList.Length == 0) {
                             string rawgamelist = await WebCore.GetWebString("https://kaoskrew.org/viewtopic.php?t=5409", 5000);
                             if (rawgamelist.Length < 100) break;
-                            rawgamelist = rawgamelist.Substring(Math.Max(0, rawgamelist.IndexOf("#</span>")));
+                            rawgamelist = GetAfter(rawgamelist, "#</span>");
                             
                             HandleLogging("building index");
                             List<string> internalIndex = new List<string>();
                             while (rawgamelist.Contains("<a href=\"https://kaoskrew.org/viewtopic.php?")) {
                                 internalIndex.Add($"<a href=\"https://kaoskrew.org/viewtopic.php?{GetBetween(rawgamelist, "\"https://kaoskrew.org/viewtopic.php?", "</a>")}</a>".Replace("&amp;", "&"));
-                                rawgamelist = rawgamelist.Substring(Math.Max(10, rawgamelist.IndexOf("<a href=\"https://kaoskrew.org/viewtopic.php?") + 10)); }
+                                string _ = GetAfter(rawgamelist, "<a href=\"https://kaoskrew.org/viewtopic.php?");
+                                if (_ == rawgamelist) rawgamelist = rawgamelist.Substring(10); else rawgamelist = _; }
                             HandleLogging("built index");
                             KaOSGameList = internalIndex.ToArray();
                             internalIndex.Clear(); }
@@ -89,10 +90,10 @@ namespace OpenVapour.Torrent {
                             string rawname = GetBetween(game, "class=\"postlink\">", "</a>");
                             string name = rawname;
                             if (rawname.Contains(".v")) {
-                                string _ = rawname.Substring(rawname.IndexOf(".v") + 2, 1);
-                                if (_.ToLower() == _.ToUpper()) name = GetBetween($"a{name}", "a", ".v"); }
-                            else if (rawname.Contains("MULT")) name = GetBetween($"a{name}", "a", "MULT");
-                            else if (rawname.Contains("REPACK")) name = GetBetween($"a{name}", "a", "REPACK");
+                                string _ = GetAfter(rawname, ".v").Substring(0, 1);
+                                if (_.ToLower() == _.ToUpper()) name = GetUntil(name, ".v"); }
+                            else if (rawname.Contains("MULT")) name = GetUntil(name, "MULT");
+                            else if (rawname.Contains("REPACK")) name = GetUntil(name, "REPACK");
                             name = name.Replace(".", " ").Trim();
                             if (name.Length == 0) continue;
 

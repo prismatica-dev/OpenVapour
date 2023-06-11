@@ -63,7 +63,7 @@ namespace OpenVapour.Steam {
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/suggest?cc=US&l=english&realm=1&origin=https:%2F%2Fstore.steampowered.com&f=jsonfull&term={Search}&require_type=game,software");
                 while (JSON.Contains("{\"id")) {
                     suggestions.Add(new ResultGame(JSON));
-                    JSON = JSON.Substring(JSON.IndexOf("{\"id") + 4); }
+                    JSON = GetAfter(JSON, "{\"id"); }
             } catch (Exception ex) { HandleException($"SteamCore.GetSuggestions({Search})", ex); }
             return suggestions; }
 
@@ -77,14 +77,14 @@ namespace OpenVapour.Steam {
 
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000);
                 HandleLogging("processing results");
-                JSON = JSON.Substring(JSON.IndexOf("[") + 1);
+                JSON = GetAfter(JSON, "[");
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
                     _r++;
                     HandleLogging("adding result,,,");
-                    ResultGame last = new ResultGame(JSON.Substring(0, JSON.IndexOf('}')));
+                    ResultGame last = new ResultGame(GetUntil(JSON, "}"));
                     results.Add(last);
                     HandleLogging($"removing result '{last.AppId}' from json,,,");
-                    JSON = JSON.Substring(JSON.IndexOf("}") + 1);
+                    JSON = GetAfter(JSON, "}");
                     
                     Main main = null;
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
@@ -115,7 +115,7 @@ namespace OpenVapour.Steam {
                 HandleLogging($"getting game '{AppId}' from steamapi");
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
                 HandleLogging("returning relevant json,,,");
-                SteamGame game = new SteamGame(JSON.Substring(JSON.IndexOf("\"data\":{") + 8));
+                SteamGame game = new SteamGame(GetAfter(JSON, "\"data\":{"));
                 CacheSteamGame(game);
                 return game;
             } catch (Exception ex) { HandleException($"SteamCore.GetGame({AppId}, {Basic})", ex); return new SteamGame(""); }}}}

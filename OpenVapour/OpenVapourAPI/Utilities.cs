@@ -80,21 +80,39 @@ namespace OpenVapour.OpenVapourAPI {
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
             try {
-            if (String == null || BetweenStart == null || BetweenEnd == null) return "";
-            int Start, End;
-            if (String.Contains(BetweenStart) && String.Contains(BetweenEnd))
-                if (String.Substring(String.IndexOf(BetweenStart)).Contains(BetweenEnd))
-                    try {
-                        Start = String.IndexOf(BetweenStart, 0) + BetweenStart.Length;
-                        End = String.IndexOf(BetweenEnd, Start);
-                        string _ = String.Substring(Start, End - Start);
-                        return String.Substring(Start, End - Start);
-                    } catch (ArgumentOutOfRangeException) { return ""; }
-                else return String.Substring(String.IndexOf(BetweenStart) + BetweenStart.Length);
-            else return "";
+                if (String == null || BetweenStart == null || BetweenEnd == null) return "";
+                int Start, End;
+                if (String.Contains(BetweenStart) && String.Contains(BetweenEnd))
+                    if (String.Substring(String.IndexOf(BetweenStart)).Contains(BetweenEnd))
+                        try {
+                            Start = String.IndexOf(BetweenStart, 0) + BetweenStart.Length;
+                            End = String.IndexOf(BetweenEnd, Start);
+                            string _ = String.Substring(Start, End - Start);
+                            return String.Substring(Start, End - Start);
+                        } catch (ArgumentOutOfRangeException) { return ""; }
+                    else return String.Substring(String.IndexOf(BetweenStart) + BetweenStart.Length);
+                else return "";
             } catch (Exception ex) { 
                 HandleException($"Utilities.GetBetween({String}, {BetweenStart}, {BetweenEnd})", ex); 
                 return ""; }}
+        internal static string GetUntil(string String, string Until) {
+            try {
+                if (String == null || Until == null || !String.Contains(Until)) return String;
+                try { return String.Substring(0, String.IndexOf(Until));
+                } catch (ArgumentOutOfRangeException) { return ""; }
+            } catch (Exception ex) { 
+                HandleException($"Utilities.GetUntil({String}, {Until})", ex); 
+                return String; }}
+        internal static string GetAfter(string String, string After) {
+            try {
+                if (String == null || After == null || !String.Contains(After)) return String;
+                try { 
+                    int after = String.IndexOf(After) + After.Length;
+                    return String.Substring(after, String.Length - after);
+                } catch (ArgumentOutOfRangeException) { return ""; }
+            } catch (Exception ex) { 
+                HandleException($"Utilities.GetAfter({String}, {After})", ex); 
+                return String; }}
 
         internal static void HandleLogging(string Log, bool IgnoreLog = false) {
             try {

@@ -18,6 +18,7 @@ namespace OpenVapour.Torrent {
             internal string Url { get; set; }
             internal string Image { get; set; }
             internal string TorrentUrl { get; set; }
+            internal string PublishDate { get; set; }
             internal bool SafeAnyway { get; set; }
             internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 ResultTorrent t = new ResultTorrent(TorrentSource.Unknown, "");
@@ -60,7 +61,7 @@ namespace OpenVapour.Torrent {
                             // magnet url
                             HandleLogging($"[KaOs] Processing post torrent {Url}");
                             if (html.IndexOf("Filehost Mirrors") != -1)
-                                trurl = GetBetween(html.Substring(Math.Max(0, html.IndexOf("Filehost Mirrors"))), "<a href=\"", "\"");
+                                trurl = GetBetween(GetAfter(html, "Filehost Mirrors"), "<a href=\"", "\"");
                             if (trurl.Length == 0) {
                                 string[] lineHtml = html.Split('\n');
                                 foreach (string line in lineHtml) {
@@ -93,6 +94,7 @@ namespace OpenVapour.Torrent {
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             Image = GetBetween(JSON, "src=\"", "\"");
                             TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
+                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                         break;
                     
                         case TorrentSource.FitgirlRepacks:
