@@ -26,10 +26,16 @@ namespace OpenVapour.OpenVapourAPI {
             Bitmap shadow = new Bitmap(_.Width, _.Height);
             if (shadow.Width > BorderRadius * 2 && shadow.Height > BorderRadius * 2)
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(shadow)) { 
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    g.CompositingMode = CompositingMode.SourceOver;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+
                     g.FillRectangle(new SolidBrush(color), new Rectangle(0, 0, shadow.Width, shadow.Height)); 
-                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 2));
+                    g.DrawImage(image, new Rectangle(BorderRadius, BorderRadius * 4, shadow.Width - BorderRadius * 2, shadow.Height - BorderRadius * 5));
                     if (Overlay.Length > 0) {
-                        Font overlayfont = Utilities.FitFont(OverlayFont, Overlay, new Size(shadow.Width, BorderRadius * 2));
-                        g.FillRectangle(new SolidBrush(Color.FromArgb(255, OverlayColor)), new RectangleF(0, 0, shadow.Width, BorderRadius * 2));
-                        g.DrawString(Overlay, new Font(overlayfont.FontFamily, overlayfont.Size, FontStyle.Bold), Brushes.White, new PointF(0, 0)); }}
+                        Font overlayfont = Utilities.FitFont(OverlayFont, Overlay, new Size(shadow.Width, BorderRadius * 4));
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(255, OverlayColor)), new RectangleF(0, 0, shadow.Width, BorderRadius * 4));
+                        g.DrawString(Overlay, new Font(overlayfont.FontFamily, overlayfont.Size, FontStyle.Regular), Brushes.White, new PointF(0, 0)); }}
             return shadow; }}}

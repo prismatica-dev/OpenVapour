@@ -259,10 +259,16 @@ namespace OpenVapour {
 
                 Task cont = imgTask.ContinueWith((img) => {
                     if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
-                    List<Image> states = new List<Image> {
-                        Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, torrent?overlay:"", baseState),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, torrent?overlay:"", baseState),
-                        Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, torrent?overlay:"", baseState) };
+                    List<Image> states = null;
+                    if (torrent)
+                        states = new List<Image> {
+                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, overlay, baseState),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, overlay, baseState) };
+                    else states = new List<Image> {
+                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5) };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
