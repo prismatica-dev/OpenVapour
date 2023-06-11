@@ -2,6 +2,7 @@
   <img style="width:128px;height:128px;" src="https://github.com/lily-software/OpenVapour/assets/59503910/fde232a9-1191-4d43-b2ee-f3c7281473a2">
   <h1>/lily.software/ OpenVapour — Torrent Search Engine</h1>
   <i>A C# torrent search front-end for <a href="https://store.steampowered.com">Steam</a> focused on fast searches. As a <a href="https://www.gnu.org/philosophy/floss-and-foss.en.html">FLOSS</a> project, it is completely open source and uses no 3rd party libraries such as NUGET packages.</i><br>
+  > <a href="https://openvapour.lily.software">Official Site</a> <   > <a href="https://blog.lily.software">Blog</a> <<br>
   <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
 </div><br>
 
@@ -42,11 +43,12 @@ Sources are listed and scored so you know who you're torrenting from, and if you
 #### Torrent Sources
 `Source (Trustworthiness | Quality/Easiness) : Site-Specific Enhancement/Bypasses`
 + Fitgirl-Repacks (10 | 10) : Instant Magnet from Search
-+ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass]
++ PCGamesTorrents (6 | 8) : Extended Search Capability, URL Shortener Bypass, Cloudflare Bypass
 + Non-DRM GOG (7 | 6) : Better Search Relevance
 + KaOsKrew (10 | 9) : Extended Search Capability, Forum Interpreter
-+ SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
-+ Seven-Gamers (8 | 7) : Automatic .torrent to Magnet <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
++ Xatab (10 | 9) : No bypasses needed
++ ⚠️ SteamRIP (8 | 8) : Cloudflare Bypass <b>[NO CURRENT SHORTENER BYPASS]</b>
++ ⚠️ Seven-Gamers (8 | 7) : No bypasses needed <b>[UNTESTED, WINDOWS 11 ONLY :(]</b>
 
 ***Sources with only partial integration (eg. no url shortener bypass) are ⚠️ tagged like this! ⚠️***
 
