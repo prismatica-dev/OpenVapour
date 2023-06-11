@@ -19,17 +19,18 @@ namespace OpenVapour.Torrent {
             bool Fixed = false;
             int iterations = 0;
             try {
-            while (!Fixed) {
-                iterations++; if (iterations > 50) break; // prevent excessive iterations
-                bool strangeFormatting = false;
-                string unicode = GetBetween(Content, "#", ";");
-                if (unicode.Length > 6) { strangeFormatting = true; unicode = GetBetween(Content, "#", " "); }
+                while (!Fixed) {
+                    iterations++; if (iterations > 50) break; // prevent excessive iterations
+                    bool strangeFormatting = false;
+                    Content = Content.Replace("\\u", "#");
+                    string unicode = GetBetween(Content, "#", ";");
+                    if (unicode.Length > 6) { strangeFormatting = true; unicode = GetBetween(Content, "#", " "); }
 
-                if (unicode.Length > 0 && unicode.Length < 6) {
-                    if (int.TryParse(unicode, out int n)) {
-                        Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
-                    } else Fixed = true; } else Fixed = true; }
-            return Content.Replace("\\/", "/");
+                    if (unicode.Length > 0 && unicode.Length < 6) {
+                        if (int.TryParse(unicode, out int n)) {
+                            Content = Content.Replace($"#{unicode}{(strangeFormatting?"":";")}", $"{(char)n}");
+                        } else Fixed = true; } else Fixed = true; }
+                return Content.Replace("\\/", "/");
             } catch (Exception ex) { HandleException($"TorrentUtilities.FixRSSUnicode({Content})", ex); return Content; }}
 
         internal static async Task<List<Task<ResultTorrent>>> GetExtendedResults(TorrentSource Source, string Name) {
@@ -159,7 +160,7 @@ namespace OpenVapour.Torrent {
                             for (int i = 1; i < gogitems.Count(); i++) {
                                 ResultTorrent torrent = new ResultTorrent(Source, gogitems[i]);
                                 HandleLogging(torrent.Name);
-                                // GOG sometimes returns results that aren't even close to what you asked for
+                                // GOG often returns results that aren't even close to what you asked for
                                 if (GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
                                 results.Add(torrent);
                                 HandleLogging("[GOG] found torrent " + torrent.Url);
