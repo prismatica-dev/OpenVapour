@@ -126,7 +126,7 @@ namespace OpenVapour {
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0))), BackColor = Color.Transparent };
             Label gamedate = null;
             if (!string.IsNullOrWhiteSpace(Publish))
-                gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish, BackColor = Color.Transparent, ForeColor = Color.FromArgb(170, 170, 170), Parent = popup };
+                gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish.Replace("+0000", ""), BackColor = Color.Transparent, ForeColor = Color.FromArgb(170, 170, 170), Parent = popup };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {
@@ -263,7 +263,7 @@ namespace OpenVapour {
                         baseState = Color.FromArgb(125, GetIntegrationColor(Integration.NoBypass));
                     name = rt.Name;
                     desc = rt.Description;
-                    publish = rt.PublishDate; }
+                    publish = rt.PublishDate.Replace("+0000", ""); }
 
                 Task cont = imgTask.ContinueWith((img) => {
                     if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
@@ -312,7 +312,7 @@ namespace OpenVapour {
             MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
             sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {((game.Source == TorrentSource.KaOs&&!game.SafeAnyway)?GetIntegrationSummary(Integration.NoBypass):GetIntegrationSummary(GetIntegration(game.Source)))}"; 
-            gameart.Image = art; gamedesc.Text = $"{game.Name}\n\n{game.Description.Trim()}"; 
+            gameart.Image = art; gamedesc.Text = $"{game.Name}{(!string.IsNullOrWhiteSpace(game.PublishDate)?" — ":"")}{game.PublishDate}\n\n{game.Description.Trim()}"; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
             gamepanel.BringToFront(); gamepanelopen = true;
