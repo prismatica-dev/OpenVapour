@@ -47,12 +47,13 @@ namespace OpenVapour.OpenVapourAPI {
         internal static void CheckAutoUpdateIntegrity() {
             try {
                 // delete autoupdate remnants if present
-                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat"); }
+                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat");
+                if (Directory.Exists($"{Environment.CurrentDirectory}\\OpenVapour-Update")) Directory.Delete($"{Environment.CurrentDirectory}\\OpenVapour-Update"); }
             catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
         internal static string GetLatestTag() {
             try {
                 // delete autoupdate remnants if present
-                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat");
+                CheckAutoUpdateIntegrity();
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
                 request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
