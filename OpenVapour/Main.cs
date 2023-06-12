@@ -512,12 +512,10 @@ namespace OpenVapour {
             LoadLibrary();
             foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
                 new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = (int)tag }.CheckedChanged += delegate { ForceUpdate(); };
-            
-            // release filter memory
-            filterSearch.Text = "";
-            FilterSearchChanged(sender, new KeyEventArgs(Keys.Enter));
-            GC.Collect();
-            filterSearch.Text = "Search";
+
+            Timer gc = new Timer { Interval = 500 };
+            gc.Tick += delegate { GC.Collect(); gc.Stop(); };
+            gc.Start();
 
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
