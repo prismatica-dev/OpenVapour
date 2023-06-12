@@ -46,7 +46,7 @@ namespace OpenVapour {
             try { if (Process.GetProcessesByName("winlogon").Count() == 0) Utilities.CompatibilityMode = true;
             } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #3]", ex); }
 
-            Utilities.HandleLogging($"{(Utilities.CompatibilityMode?"Detected":"Did not detect")} wine is use");
+            Utilities.HandleLogging($"{(Utilities.CompatibilityMode?"Detected":"Did not detect")} wine is in use");
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search"; }
 
         private void Main_Load(object sender, EventArgs e) {
@@ -389,10 +389,7 @@ namespace OpenVapour {
             popup.Visible = false;
             hover = false;
             ForceUpdate(); }
-        private static void InterpretPictureBox(object sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs) {
-            pb = (PictureBox)sender;
-            pbl = (List<object>)pb.Tag;
-            pbs = (List<Image>)pbl[0]; }
+        private static void InterpretPictureBox(object sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs) { pb = (PictureBox)sender; pbl = (List<object>)pb.Tag; pbs = (List<Image>)pbl[0]; }
 
         private void ClosePanel(bool IsTorrent, bool OpenNext, List<object> List) {
             Timer time = new Timer { Interval = 30 };
