@@ -184,10 +184,9 @@ namespace OpenVapour {
             Utilities.HandleLogging("store cleared");
             clearing = false; }
 
-        internal async Task AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
+        internal void AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
-                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); 
-            await add; }
+                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); }
         internal void AddTorrent(ResultTorrent torrent) {
             try {
                 if (torrent == null) return;
@@ -204,11 +203,10 @@ namespace OpenVapour {
                 LoadGameTorrentBitmap(torrent, panel); }
             catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); }}
         
-        internal async void AsyncAddGame(int AppId, bool Basic = false) {
+        internal void AsyncAddGame(int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
             Task addgame = game.ContinueWith((result) => {
-                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); 
-            await addgame; }
+                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); }
         internal void AddGame(SteamGame game) {
             try {
                 if (game == null) return;
@@ -445,9 +443,9 @@ namespace OpenVapour {
             foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                 if (SourceScores[source].Item3 != Implementation.Enabled) continue;
                 Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
-                Task gettask = getresults.ContinueWith(async (results) => {
+                Task gettask = getresults.ContinueWith((results) => {
                     foreach (Task<ResultTorrent> torrenttask in results.Result)
-                        await AsyncAddTorrent(torrenttask); }); }}
+                        AsyncAddTorrent(torrenttask); }); }}
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
@@ -490,7 +488,7 @@ namespace OpenVapour {
 
         private void Exit_Click(object sender, EventArgs e) => Close();
 
-        private async void LoadLibrary() {
+        private void LoadLibrary() {
             try {
                 if (Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
                     foreach (string file in Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
@@ -500,8 +498,7 @@ namespace OpenVapour {
                                 Task<SteamGame> cachetask  = Cache.LoadCachedSteamGame(id);
                                 Task c = cachetask.ContinueWith((result) => {
                                     if (result.Result != null) AddGame(result.Result);
-                                    else AsyncAddGame(Utilities.ToIntSafe(id), false); });
-                                await c; }
+                                    else AsyncAddGame(Utilities.ToIntSafe(id), false); }); }
                             else AsyncAddGame(Utilities.ToIntSafe(id), false); }
                         catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
                 else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }

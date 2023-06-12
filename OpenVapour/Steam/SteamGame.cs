@@ -88,15 +88,13 @@ namespace OpenVapour.Steam {
                     
                     Main main = null;
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
-                    main?.Invoke((MethodInvoker)async delegate { 
+                    main?.Invoke((MethodInvoker)delegate { 
                         if (!IsSteamGameCached(last.AppId.ToString())) main.AsyncAddGame(last.AppId);
                         else {
                             Task<SteamGame> cachetask = LoadCachedSteamGame(last.AppId.ToString());
                             Task c = cachetask.ContinueWith((result) => { 
                                 if (result != null) main.AddGame(result.Result);
-                                else main.AsyncAddGame(last.AppId); });
-                            await c; }
-                    }); }
+                                else main.AsyncAddGame(last.AppId); }); }}); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
 
