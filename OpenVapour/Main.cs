@@ -56,6 +56,8 @@ namespace OpenVapour {
             UpdateStyles();
             CheckCompatibility();
             Cache.CheckCache();
+            //Utilities.HandleLogging(Compression.DecompressString(WebInternals.UserAgentsCompressed));
+            Utilities.HandleLogging(Compression.CompressString(string.Join("|", WebInternals.UserAgents)));
 
             try {
                 string LatestTag = Utilities.GetLatestTag();
