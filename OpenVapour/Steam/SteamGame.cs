@@ -28,7 +28,7 @@ namespace OpenVapour.Steam {
             internal string AppId { get; set; }
             internal string Description { get; set; }
             internal SteamGame(string Name, string AppId, string Description) {
-                HandleLogging($"processing new steamgame from arguments, SteamGame({Name}, {AppId}, {Description})");
+                HandleLogging($"processing new steamgame from arguments, SteamGame({Name}, {AppId}, {Description.Substring(0, Math.Min(Description.Length, 30))})");
                 this.Name = Name; this.AppId = AppId; this.Description = Description.Replace("\\/", "/"); }
             internal SteamGame(string apiJSON) { 
                 HandleLogging("processing new steamgame from json"); 
