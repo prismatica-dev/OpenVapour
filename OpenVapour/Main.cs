@@ -313,7 +313,9 @@ namespace OpenVapour {
 
         private void LoadGame(SteamGame game, Image art) {
             if (game.Name == "") return;
-            currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus(); 
+            currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus();
+            SteamPageContainer.Visible = true; steampage.Text = "Steam Page"; 
+
             panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description.Trim(); 
             toggleHomepageContainer.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
             gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
@@ -324,6 +326,7 @@ namespace OpenVapour {
             currenttorrent = game; 
             if (!(game.Source == TorrentSource.KaOs && !game.SafeAnyway) && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
             else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
+            SteamPageContainer.Visible = true; steampage.Text = "Torrent Page";
 
             MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
             TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
@@ -436,7 +439,8 @@ namespace OpenVapour {
                 UseWaitCursor = false; }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
-            Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
+            if (steampage.Text == "Steam Page") Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
+            else Utilities.OpenUrl(currenttorrent.Url);
             ForceUpdate(); }
 
         private void TorrentSearch(object sender, EventArgs e) {
