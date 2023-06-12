@@ -459,20 +459,22 @@ namespace OpenVapour {
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
 
-            foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
-                if (SourceScores[source].Item3 != Implementation.Enabled) continue;
-                Task<List<ResultTorrent>> getresults = GetResults(source, _);
-                Task gettask = getresults.ContinueWith((results) => {
-                    foreach (ResultTorrent torrent in results.Result)
-                        Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(torrent); });
-                }); }
+            if (_.Length != 0)
+                foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                    if (SourceScores[source].Item3 != Implementation.Enabled) continue;
+                    Task<List<ResultTorrent>> getresults = GetResults(source, _);
+                    Task gettask = getresults.ContinueWith((results) => {
+                        foreach (ResultTorrent torrent in results.Result)
+                            Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(torrent); });
+                    }); }
 
-            foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
-                if (SourceScores[source].Item3 != Implementation.Enabled) continue;
-                Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
-                Task gettask = getresults.ContinueWith((results) => {
-                    foreach (Task<ResultTorrent> torrenttask in results.Result)
-                        AsyncAddTorrent(torrenttask); }); }}
+            if (_.Length > 7)
+                foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
+                    if (SourceScores[source].Item3 != Implementation.Enabled) continue;
+                    Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
+                    Task gettask = getresults.ContinueWith((results) => {
+                        foreach (Task<ResultTorrent> torrenttask in results.Result)
+                            AsyncAddTorrent(torrenttask); }); }}
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
