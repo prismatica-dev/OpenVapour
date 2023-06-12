@@ -48,6 +48,7 @@ namespace OpenVapour.OpenVapourAPI {
             try {
                 // delete autoupdate remnants if present
                 if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat");
+                if (File.Exists($"{Environment.CurrentDirectory}\\OpenVapour.new.zip")) File.Delete($"{Environment.CurrentDirectory}\\OpenVapour.new.zip");
                 if (Directory.Exists($"{Environment.CurrentDirectory}\\OpenVapour-Update")) Directory.Delete($"{Environment.CurrentDirectory}\\OpenVapour-Update"); }
             catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
         internal static string GetLatestTag() {
