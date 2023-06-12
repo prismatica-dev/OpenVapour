@@ -22,6 +22,7 @@ namespace OpenVapour.Torrent {
                 while (!Fixed) {
                     iterations++; if (iterations > 50) break; // prevent excessive iterations
                     bool strangeFormatting = false;
+                    Content = Content.Replace("\\\\u", "#");
                     Content = Content.Replace("\\u", "#");
                     string unicode = GetBetween(Content, "#", ";");
                     if (unicode.Length > 6) { strangeFormatting = true; unicode = GetBetween(Content, "#", " "); }

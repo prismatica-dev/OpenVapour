@@ -21,12 +21,9 @@ namespace OpenVapour.OpenVapourAPI {
             "â€™", "'", "â„¢", "™",
             "Â", "", "&amp;", "&",
             "</h1>", Environment.NewLine + Environment.NewLine, "</h2>", Environment.NewLine + Environment.NewLine,
-            "\\u2019", "'", "\u0009", "",
-            "\\u2013", "", "\\u201c", "\"",
-            "\\u201d", "", "\\t", "\t",
-            "!", "! ", ".", ". ",
-            ". 0", ".0", "?", "? ",
-            "â€", "" };
+            "\\t", "\t", "!", "! ", 
+            ".", ". ", ". 0", ".0", 
+            "?", "? ", "â€", "" };
         private static bool ExceptionLogWritten = false;
         private static bool LogWritten = false;
         public static bool CompatibilityMode = false;
