@@ -379,7 +379,7 @@ namespace OpenVapour {
             popup.Visible = true;
             hover = true;
             ForceUpdate();
-            if ((bool)pbl[2]) await Task.Delay(20000); else await Task.Delay(1000);
+            if (pbs[0] != states[0]) await Task.Delay(20000); else await Task.Delay(1000);
             popup.Visible = false;
             ForceUpdate(); }
         private void GameHoverEnd(object sender, EventArgs e) {
