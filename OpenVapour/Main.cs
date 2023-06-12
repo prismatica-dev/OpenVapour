@@ -549,7 +549,7 @@ namespace OpenVapour {
                 if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
                 else {
                     LockWindowUpdate(IntPtr.Zero);
-                    if (Utilities.CompatibilityMode) Invalidate(); // lockwindowupdate is not implemented in wine
+                    if (Utilities.CompatibilityMode) { store.Invalidate(); Application.DoEvents(); } // lockwindowupdate is not implemented in wine
                     Update();
                     if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
             } catch (Exception ex) { Utilities.HandleException("Main.BackgroundTearingFix(sender, se)", ex); }}
