@@ -134,7 +134,6 @@ namespace OpenVapour {
                 if (image.Height > image.Width) gameart.Size = new Size(107, 160);
                 else gameart.Size = new Size(107, 107); }
 
-            Console.WriteLine(Publish);
             popup.Controls.Add(gameart);
             popup.Controls.Add(gamename);
             popup.Controls.Add(gameabout);
@@ -219,7 +218,7 @@ namespace OpenVapour {
                     Invoke((MethodInvoker)delegate { AddGame(game); });
                     return; }
 
-                Console.WriteLine($"{game.Name} loading!");
+                Utilities.HandleLogging($"{game.Name} loading!");
 
                 try { if (!Cache.IsSteamGameCached(game.AppId)) Cache.CacheSteamGame(game);
                 } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Caching]", ex); }
