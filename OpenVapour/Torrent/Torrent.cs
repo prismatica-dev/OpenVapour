@@ -32,7 +32,7 @@ namespace OpenVapour.Torrent {
                         case TorrentSource.PCGamesTorrents:
                             t = new ResultTorrent(Name, FixRSSUnicode(GetBetween(html, "<p class=\"uk-dropcap\">", "</p>")), Url, GetBetween(html, "uk-card-hover\"><a href=\"", "\""), GetBetween(html, "Download\" src=\"", "\""), source);
                             string _ = GetAfter(html, "<time");
-                            t.PublishDate = GetBetween(html, ">", "<");
+                            t.PublishDate = GetBetween(_, ">", "<");
                             Cache.CacheTorrent(t);
                             return t;
 

@@ -452,12 +452,13 @@ namespace OpenVapour {
 
         private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
-            if (currentgame != null && !string.IsNullOrWhiteSpace(currentgame.AppId)) AddGame(currentgame);
+            if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
             gamepanel.Visible = false;
             gamepanelopen = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
+            Console.WriteLine(currentgame.AppId);
 
             if (_.Length != 0)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
