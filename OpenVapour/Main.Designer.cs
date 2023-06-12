@@ -97,7 +97,7 @@
             this.toolbar.ForeColor = System.Drawing.Color.White;
             this.toolbar.Location = new System.Drawing.Point(0, 0);
             this.toolbar.Name = "toolbar";
-            this.toolbar.Size = new System.Drawing.Size(805, 25);
+            this.toolbar.Size = new System.Drawing.Size(806, 25);
             this.toolbar.TabIndex = 1;
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
@@ -111,7 +111,7 @@
             this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.manageFilters.ForeColor = System.Drawing.Color.White;
-            this.manageFilters.Location = new System.Drawing.Point(555, 0);
+            this.manageFilters.Location = new System.Drawing.Point(556, 0);
             this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
             this.manageFilters.Name = "manageFilters";
             this.manageFilters.Size = new System.Drawing.Size(25, 25);
@@ -125,7 +125,7 @@
             this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(580, 0);
+            this.searchtextbox.Location = new System.Drawing.Point(581, 0);
             this.searchtextbox.Name = "searchtextbox";
             this.searchtextbox.Size = new System.Drawing.Size(200, 25);
             this.searchtextbox.TabIndex = 5;
@@ -140,7 +140,7 @@
             this.manageSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageSettings.Font = new System.Drawing.Font("Segoe UI Light", 9F);
             this.manageSettings.ForeColor = System.Drawing.Color.White;
-            this.manageSettings.Location = new System.Drawing.Point(486, 0);
+            this.manageSettings.Location = new System.Drawing.Point(487, 0);
             this.manageSettings.Margin = new System.Windows.Forms.Padding(0);
             this.manageSettings.Name = "manageSettings";
             this.manageSettings.Size = new System.Drawing.Size(69, 25);
@@ -158,7 +158,7 @@
             this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exit.Font = new System.Drawing.Font("Segoe UI Light", 8F);
             this.exit.ForeColor = System.Drawing.Color.White;
-            this.exit.Location = new System.Drawing.Point(780, 0);
+            this.exit.Location = new System.Drawing.Point(781, 0);
             this.exit.Margin = new System.Windows.Forms.Padding(0);
             this.exit.Name = "exit";
             this.exit.Size = new System.Drawing.Size(25, 25);
@@ -257,7 +257,7 @@
             this.gamepanel.ForeColor = System.Drawing.Color.White;
             this.gamepanel.Location = new System.Drawing.Point(7, 32);
             this.gamepanel.Name = "gamepanel";
-            this.gamepanel.Size = new System.Drawing.Size(503, 464);
+            this.gamepanel.Size = new System.Drawing.Size(504, 458);
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
             // 
@@ -266,7 +266,7 @@
             this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
             this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
-            this.toggleHomepageContainer.Location = new System.Drawing.Point(460, 178);
+            this.toggleHomepageContainer.Location = new System.Drawing.Point(461, 178);
             this.toggleHomepageContainer.Name = "toggleHomepageContainer";
             this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
             this.toggleHomepageContainer.TabIndex = 14;
@@ -331,7 +331,7 @@
             this.closemenu.AutoSize = true;
             this.closemenu.BackColor = System.Drawing.Color.Transparent;
             this.closemenu.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
-            this.closemenu.Location = new System.Drawing.Point(479, 0);
+            this.closemenu.Location = new System.Drawing.Point(480, 0);
             this.closemenu.Name = "closemenu";
             this.closemenu.Size = new System.Drawing.Size(24, 25);
             this.closemenu.TabIndex = 10;
@@ -349,7 +349,7 @@
             this.gamebtns.Controls.Add(this.VisitButtonContainer);
             this.gamebtns.Location = new System.Drawing.Point(146, 51);
             this.gamebtns.Name = "gamebtns";
-            this.gamebtns.Size = new System.Drawing.Size(343, 100);
+            this.gamebtns.Size = new System.Drawing.Size(344, 100);
             this.gamebtns.TabIndex = 9;
             // 
             // SteamPageContainer
@@ -535,7 +535,7 @@
             this.filtersPanel.Controls.Add(this.tagFilterContainer);
             this.filtersPanel.Controls.Add(this.filterSearch);
             this.filtersPanel.Controls.Add(this.filterControlsContainer);
-            this.filtersPanel.Location = new System.Drawing.Point(555, 25);
+            this.filtersPanel.Location = new System.Drawing.Point(556, 25);
             this.filtersPanel.Name = "filtersPanel";
             this.filtersPanel.Size = new System.Drawing.Size(200, 56);
             this.filtersPanel.TabIndex = 8;
@@ -618,7 +618,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(805, 512);
+            this.ClientSize = new System.Drawing.Size(806, 506);
             this.Controls.Add(this.filtersPanel);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);
@@ -630,7 +630,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
-            this.MinimumSize = new System.Drawing.Size(805, 512);
+            this.MinimumSize = new System.Drawing.Size(806, 506);
             this.Name = "Main";
             this.Text = "OpenVapour";
             this.TransparencyKey = System.Drawing.Color.Snow;
