@@ -47,15 +47,13 @@ namespace OpenVapour.OpenVapourAPI {
         internal static void CheckAutoUpdateIntegrity() {
             try {
                 // delete autoupdate remnants if present
-                if (File.Exists($"{Environment.CurrentDirectory}\\update.bat")) File.Delete($"{Environment.CurrentDirectory}\\update.bat");
-                if (File.Exists($"{Environment.CurrentDirectory}\\OpenVapour.new.zip")) File.Delete($"{Environment.CurrentDirectory}\\OpenVapour.new.zip");
-                if (Directory.Exists($"{Environment.CurrentDirectory}\\OpenVapour-Update")) Directory.Delete($"{Environment.CurrentDirectory}\\OpenVapour-Update"); }
+                string _ = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                try { if (File.Exists($"_\\update.bat")) File.Delete($"_\\update.bat"); } catch (Exception) {}
+                if (File.Exists($"_\\OpenVapour.new.zip")) File.Delete($"_\\OpenVapour.new.zip");
+                if (Directory.Exists($"_\\OpenVapour-Update")) Directory.Delete($"_\\OpenVapour-Update"); }
             catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
         internal static string GetLatestTag() {
             try {
-                // delete autoupdate remnants if present
-                CheckAutoUpdateIntegrity();
-
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
                 request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
                 StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
@@ -73,7 +71,7 @@ namespace OpenVapour.OpenVapourAPI {
                 bool isZip = false;
                 byte[] update = await WebCore.GetWebBytes($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.exe");
                 if (update.Length == 0) {
-                    // i never plan to release openvapour as a zip, but just in case
+                    // i never plan to release openvapour as zip-only, but just in case
                     update = await WebCore.GetWebBytes($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.zip");
                     if (update.Length > 0) isZip = true; else return; }
 

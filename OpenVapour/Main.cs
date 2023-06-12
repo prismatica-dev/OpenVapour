@@ -56,13 +56,13 @@ namespace OpenVapour {
             UpdateStyles();
             CheckCompatibility();
             Cache.CheckCache();
-
+            
+            Utilities.CheckAutoUpdateIntegrity();
             try {
                 string LatestTag = Utilities.GetLatestTag();
                 if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
             } catch (Exception ex) { Utilities.HandleException($"Main.Main_Load(sender, e) [Auto-Update]", ex); }
 
-            Utilities.CheckAutoUpdateIntegrity();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
             DrawGradient();
