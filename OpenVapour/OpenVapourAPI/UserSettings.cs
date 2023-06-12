@@ -12,7 +12,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static Dictionary<string, Color> WindowTheme = new Dictionary<string, Color> {
             { "background1", Color.FromArgb(56, 177, 96) },
             { "background2", Color.FromArgb(173, 101, 255) }};
-        internal static Size WindowSize = new Size(805, 512);
+        internal static Size WindowSize = new Size(806, 503);
         internal static Dictionary<TorrentSource, Implementation> TorrentSources = GetImplementations(SourceScores);
         internal static Dictionary<DirectSource, Implementation> DirectSources = GetImplementations(DirectSourceScores);
 

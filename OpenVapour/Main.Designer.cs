@@ -174,9 +174,9 @@
             this.storeselect.ForeColor = System.Drawing.Color.White;
             this.storeselect.Location = new System.Drawing.Point(3, 0);
             this.storeselect.Name = "storeselect";
-            this.storeselect.Size = new System.Drawing.Size(372, 25);
+            this.storeselect.Size = new System.Drawing.Size(370, 25);
             this.storeselect.TabIndex = 0;
-            this.storeselect.Text = "OpenVapour v1.3.3b — FLOSS Torrent Search";
+            this.storeselect.Text = "OpenVapour v1.3.3c — FLOSS Torrent Search";
             this.storeselect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.storeselect.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
@@ -257,7 +257,7 @@
             this.gamepanel.ForeColor = System.Drawing.Color.White;
             this.gamepanel.Location = new System.Drawing.Point(7, 32);
             this.gamepanel.Name = "gamepanel";
-            this.gamepanel.Size = new System.Drawing.Size(504, 458);
+            this.gamepanel.Size = new System.Drawing.Size(504, 455);
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
             // 
@@ -618,7 +618,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(806, 506);
+            this.ClientSize = new System.Drawing.Size(806, 503);
             this.Controls.Add(this.filtersPanel);
             this.Controls.Add(this.gamepanel);
             this.Controls.Add(this.realsearchtb);
@@ -630,7 +630,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
-            this.MinimumSize = new System.Drawing.Size(806, 506);
+            this.MinimumSize = new System.Drawing.Size(806, 503);
             this.Name = "Main";
             this.Text = "OpenVapour";
             this.TransparencyKey = System.Drawing.Color.Snow;
