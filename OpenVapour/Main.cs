@@ -498,9 +498,11 @@ namespace OpenVapour {
                         try { 
                             string id = file.Substring(file.LastIndexOf("\\") + 1);
                             if (Cache.IsSteamGameCached(id)) { 
-                                SteamGame cached = await Cache.LoadCachedSteamGame(id);
-                                if (cached != null) AddGame(cached);
-                                else AsyncAddGame(Utilities.ToIntSafe(id), false); }
+                                Task<SteamGame> cachetask  = Cache.LoadCachedSteamGame(id);
+                                Task c = cachetask.ContinueWith((result) => {
+                                    if (result.Result != null) AddGame(result.Result);
+                                    else AsyncAddGame(Utilities.ToIntSafe(id), false); });
+                                await c; }
                             else AsyncAddGame(Utilities.ToIntSafe(id), false); }
                         catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
                 else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }

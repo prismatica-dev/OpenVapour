@@ -75,7 +75,7 @@ namespace OpenVapour.Steam {
                 string tags = "";
                 if (Tags != null) tags = ProcessArray(Tags);
 
-                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000);
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000, false);
                 HandleLogging("processing results");
                 JSON = GetAfter(JSON, "[");
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 
@@ -90,7 +90,12 @@ namespace OpenVapour.Steam {
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
                     main?.Invoke((MethodInvoker)async delegate { 
                         if (!IsSteamGameCached(last.AppId.ToString())) main.AsyncAddGame(last.AppId);
-                        else main.AddGame(await LoadCachedSteamGame(last.AppId.ToString()));
+                        else {
+                            Task<SteamGame> cachetask = LoadCachedSteamGame(last.AppId.ToString());
+                            Task c = cachetask.ContinueWith((result) => { 
+                                if (result != null) main.AddGame(result.Result);
+                                else main.AsyncAddGame(last.AppId); });
+                            await c; }
                     }); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
@@ -109,7 +114,7 @@ namespace OpenVapour.Steam {
             try {
                 if (IsSteamGameCached(AppId.ToString())) {
                     SteamGame cached = await LoadCachedSteamGame(AppId.ToString());
-                    if (cached.AppId.Length != 0) return cached;
+                    if (cached != null && cached.AppId.Length != 0) return cached;
                     HandleLogging($"{AppId} fetching from cache failed!"); }
 
                 HandleLogging($"getting game '{AppId}' from steamapi");

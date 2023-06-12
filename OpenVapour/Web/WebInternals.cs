@@ -1,5 +1,6 @@
 ﻿using OpenVapour.OpenVapourAPI;
 using System;
+using System.Net.Http.Headers;
 
 namespace OpenVapour.Web {
     internal class WebInternals {
@@ -104,13 +105,47 @@ namespace OpenVapour.Web {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.71" };
         private static readonly Random rng = new Random();
         internal static string GetRandomUserAgent() => UserAgents[rng.Next(0, UserAgents.Length)]; 
+        internal static void AddHeaders(HttpRequestHeaders Base, string Url, bool FullSpoof = true) {
+            try {
+                if (FullSpoof) { 
+                    // accept headers
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml", 0.9 ));
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("image/avif"));
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("image/webp"));
+                    Base.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*", 0.8)); }
+
+                // accept encoding headers
+                Base.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                Base.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+
+                if (FullSpoof) { 
+                    // accept languages headers
+                    Base.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
+                    Base.AcceptLanguage.Add(new StringWithQualityHeaderValue("en", 0.5));
+
+                    // general headers
+                    Base.Add("Connection", "keep-alive"); // use keep-alive
+                    if (rng.Next(0, 4) == 0) Base.Add("DNT", "1"); // 1/3 chance for DNT header
+                    try { Base.Host = WebCore.GetBaseUrl(Url).Replace("https://", "").Replace("http://", ""); // spoof host header
+                    } catch (Exception) { Utilities.HandleLogging($"Could not add host header for {Url}"); }
+                    Base.Add("Sec-Fetch-Dest", "document"); // top level user navigation
+                    Base.Add("Sec-Fetch-Mode", "navigate"); // indicates HTML origin
+                    Base.Add("Sec-Fetch-Site", "none"); // header that can only be sent by a user
+                    Base.Add("Sec-Fetch-User", "?1"); // another one
+                    Base.Add("TE", "trailers");
+                    Base.Add("Upgrade-Insecure-Requests", "1"); /* https only */ }
+                } catch (Exception ex) { Utilities.HandleException($"WebInternals.AddHeaders(Headers, {Url}, {FullSpoof})", ex); }
+                Base.UserAgent.ParseAdd(GetRandomUserAgent()); }
         internal static string DecodeBlueMediaFiles(string EncodedUrl) {
             try {
                 Utilities.HandleLogging($"[BlueMediaFiles Bypass] Decoding {EncodedUrl}!");
-                EncodedUrl = EncodedUrl.Replace("https://bluemediafiles.com/get-url.php?url=", "")
+                EncodedUrl = Utilities.GetAfter(EncodedUrl, "=");
+                    /*.Replace("https://bluemediafiles.com/get-url.php?url=", "")
                     .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
                     .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
-                    .Replace("https://bluemediafiles.site/get-url.php?url=", "");
+                    .Replace("https://bluemediafiles.site/get-url.php?url=", "");*/
                 if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl.Substring(EncodedUrl.IndexOf('=') + 1);
                 string URL = "";
                 for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
