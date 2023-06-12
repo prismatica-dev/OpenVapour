@@ -75,9 +75,9 @@ Tested With:
 + ✅ Windows 10 + ReviOS 10 (Native)
 + ✅ Windows 10 Virtual Machine (Native)
 + ✅ Arch Linux (Wine 8.7 / Proton 8.0)
+  + ✅ Background image tearing (Dedicated partial 'fix' for Wine)
   + ⚠️ Requires windows fonts (Segoe UI Light+Semilight+Bold)
-  + ⚠️ Background image tearing, resizing lag
-  + ⚠️ Significantly slower multithreaded tasks
+  + ⚠️ Resizing lag, doublebuffering inconsistencies
 + 🚨 Arch Linux (Mono 6.12.0)
   + 🚨 Crashes due to EntryPointNotFoundException
 
