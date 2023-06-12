@@ -31,11 +31,21 @@ namespace OpenVapour {
         private bool gamepanelopen = false;
         private string panelgame = "";
         private bool clearing = false;
+        private string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
+
+        private void CheckCompatibility() {
+            // run a series of checks if wine is in use
+            foreach (string envVar in wineEnvironmentVariables)
+                try { if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(envVar))) Utilities.CompatibilityMode = true;
+                } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #1]", ex); }
+            try { if (Environment.OSVersion.Platform == PlatformID.Unix && Environment.OSVersion.VersionString.Contains("Windows")) Utilities.CompatibilityMode = true;
+            } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #2]", ex); }
+            if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search"; }
 
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
             WebRequest.DefaultWebProxy = null;
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.ContainerControl | ControlStyles.SupportsTransparentBackColor, true);
             UpdateStyles();
             Cache.CheckCache();
 
@@ -47,6 +57,7 @@ namespace OpenVapour {
             Utilities.CheckAutoUpdateIntegrity();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
+            CheckCompatibility();
             DrawGradient();
 
             store.AutoScroll = false;
@@ -76,6 +87,7 @@ namespace OpenVapour {
             DrawSearchBox(sender, e); }
 
         internal void DrawGradient() {
+            BackColor = UserSettings.WindowTheme["background2"];
             BackgroundImage?.Dispose();
             BackgroundImage = Graphics.DrawGradient(Width, Height); }
 
@@ -530,7 +542,7 @@ namespace OpenVapour {
                 if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
                 else {
                     LockWindowUpdate(IntPtr.Zero);
-                    store.Invalidate();
+                    if (Utilities.CompatibilityMode) Invalidate(); // lockwindowupdate is not implemented in wine
                     Update();
                     if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
             } catch (Exception ex) { Utilities.HandleException("Main.BackgroundTearingFix(sender, se)", ex); }}

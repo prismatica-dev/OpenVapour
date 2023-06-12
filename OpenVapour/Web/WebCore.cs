@@ -12,7 +12,7 @@ using static OpenVapour.Web.WebInternals;
 namespace OpenVapour.Web {
     internal static class WebCore {
         // web requests
-        internal const int Timeout = 50;
+        internal const int Timeout = 35;
         internal static Dictionary<string, DateTime> LastTimeout = new Dictionary<string, DateTime>();
         internal static async Task<string> GetWebString(string Url, int MaxTimeout = 3500, bool FullSpoof = true) {
             Utilities.HandleLogging($"[0] http get '{Url}'");
@@ -75,10 +75,10 @@ namespace OpenVapour.Web {
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
             string baseUrl = GetBaseUrl(Url);
             if (LastTimeout.ContainsKey(baseUrl)) {
-                if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
-                    Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 10:N2}ms");
-                while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout))
-                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds) + 10);
+                if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout / 3))
+                    Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 5:N2}ms");
+                while ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout / 3))
+                    await Task.Delay((int)Math.Ceiling((DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds / 3) + 5);
                 LastTimeout[baseUrl] = DateTime.Now;
             } else LastTimeout.Add(baseUrl, DateTime.Now);
 

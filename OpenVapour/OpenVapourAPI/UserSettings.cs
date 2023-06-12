@@ -16,7 +16,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static Dictionary<TorrentSource, Implementation> TorrentSources = GetImplementations(SourceScores);
         internal static Dictionary<DirectSource, Implementation> DirectSources = GetImplementations(DirectSourceScores);
 
-        internal static void CheckSettings() => DirectoryUtilities.CreateDirectory($"{DedicatedSettings}");
+        internal static void CheckSettings() { try { DirectoryUtilities.CreateDirectory($"{DedicatedSettings}"); } catch (Exception ex) { HandleException("CheckSettings()", ex); }}
 
         internal static string ExtractTheme(string key) {
             Color c = WindowTheme[key];

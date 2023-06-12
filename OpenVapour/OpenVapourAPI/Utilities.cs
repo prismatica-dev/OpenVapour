@@ -29,6 +29,7 @@ namespace OpenVapour.OpenVapourAPI {
             "â€", "" };
         private static bool ExceptionLogWritten = false;
         private static bool LogWritten = false;
+        public static bool CompatibilityMode = false;
 
         internal static int GetLevenshteinDistance(string String, string Destination) {
             int length1 = String.Length;
@@ -121,7 +122,7 @@ namespace OpenVapour.OpenVapourAPI {
 
                 if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"\n{logformat}");
                 else { 
-                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
+                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
                     LogWritten = true; }
             } catch (Exception ex) { HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
 
@@ -133,7 +134,7 @@ namespace OpenVapour.OpenVapourAPI {
 
                 if (ExceptionLogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n{logformat}");
                 else { 
-                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
+                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
                     ExceptionLogWritten = true; }
             } catch (Exception) { MessageBox.Show($"Uh oh. The crash-handler threw an error.\nPlease ensure OpenVapour is able to read and write to\n{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", "Exception when Handling Exception"); }}
         internal static float FitText(Font font, string text, Size size, float max) {
