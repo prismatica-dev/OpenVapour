@@ -1,7 +1,9 @@
-﻿using System;
+﻿using OpenVapour.Web;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -59,17 +61,42 @@ namespace OpenVapour.OpenVapourAPI {
                 return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
             catch (Exception ex) { HandleException($"Utilities.GetLatestTag()", ex); }
             return ""; }
-        internal static void UpdateProgram(string TagName) {
+        internal async static void UpdateProgram(string TagName) {
             try {
-                // Download update
-                new WebClient().DownloadFile($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.exe", $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.new.exe");
+                string _ = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                try { if (File.Exists($"{_}\\OpenVapour.new.exe")) File.Delete($"{_}\\OpenVapour.new.exe");
+                } catch (Exception ex) { HandleException($"UpdateProgram({TagName}) [Delete .new]", ex); }
 
-                // Create a batch file to override current version with update then delete itself after 500ms
-                File.WriteAllText($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat", $"@echo off\nping 127.0.0.1 -n 1 -w 500> nul\ndel \"{Assembly.GetExecutingAssembly().Location}\"\nrename \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.new.exe\" \"OpenVapour.exe\"\nstart \"\" \"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\OpenVapour.exe\"\n(goto) 2>nul & del \"%~f0\"");
+                // download update
+                bool isZip = false;
+                byte[] update = await WebCore.GetWebBytes($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.exe");
+                if (update.Length == 0) {
+                    // i never plan to release openvapour as a zip, but just in case
+                    update = await WebCore.GetWebBytes($"https://github.com/{repo}/releases/download/{TagName}/OpenVapour.zip");
+                    if (update.Length > 0) isZip = true; else return; }
 
-                // Run the batch file and immediately terminate process
-                Process.Start(new ProcessStartInfo($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\update.bat") { UseShellExecute = true, Verb = "open" });
-                Process.GetCurrentProcess().Kill(); }
+                if (!isZip) {
+                    // write file to new
+                    File.WriteAllBytes($"{_}\\OpenVapour.new.exe", update);
+                    
+                    // batch script for update
+                    File.WriteAllText($"{_}\\update.bat", $"@echo off\nping 127.0.0.1 -n 1 -w 500> nul\ndel \"{Assembly.GetExecutingAssembly().Location}\"\nrename \"{_}\\OpenVapour.new.exe\" \"OpenVapour.exe\"\nstart \"\" \"{_}\\OpenVapour.exe\"\n(goto) 2>nul & del \"%~f0\"");
+                    
+                    // run batch script and kill process
+                    Process.Start(new ProcessStartInfo($"{_}\\update.bat") { UseShellExecute = true, Verb = "open" });
+                    Process.GetCurrentProcess().Kill(); }
+                else {
+                    // create, clear and extract update to directory
+                    foreach (FileInfo file in Directory.CreateDirectory($"{_}\\OpenVapour-Update").GetFiles()) file.Delete();
+                    File.WriteAllBytes($"{_}\\OpenVapour.new.zip", update);
+                    ZipFile.ExtractToDirectory($"{_}\\OpenVapour.new.zip", $"{_}\\OpenVapour-Update");
+
+                    // batch script for update
+                    File.WriteAllText($"{_}\\update.bat", $"@echo off\nping 127.0.0.1 -n 1 -w 500> nul\"\nmove \"{_}\\OpenVapour-Update\\*.*\" \"{_}\"\nstart \"\" \"{_}\\OpenVapour.exe\"\n(goto) 2>nul & del \"%~f0\"");
+
+                    // run batch script and kill process
+                    Process.Start(new ProcessStartInfo($"{_}\\update.bat") { UseShellExecute = true, Verb = "open" });
+                    Process.GetCurrentProcess().Kill(); }}
             catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName})", ex); }}
 
         internal static void OpenUrl(string Url) {
