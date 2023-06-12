@@ -510,8 +510,6 @@ namespace OpenVapour {
         private void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; 
             LoadLibrary();
-            foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
-                new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = (int)tag }.CheckedChanged += delegate { ForceUpdate(); };
 
             Timer gc = new Timer { Interval = 500 };
             gc.Tick += delegate { GC.Collect(); gc.Stop(); };
@@ -523,12 +521,19 @@ namespace OpenVapour {
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
+
+        public const int WM_SETREDRAW = 0x000B;
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
             try {
                 if (clearing) return; // prevent rendering of elements that are being disposed
                 if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
                 else {
                     LockWindowUpdate(IntPtr.Zero);
+                    store.Invalidate();
                     Update();
                     if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
             } catch (Exception ex) { Utilities.HandleException("Main.BackgroundTearingFix(sender, se)", ex); }}
@@ -576,11 +581,19 @@ namespace OpenVapour {
             gamedescpanel.VerticalScroll.Visible = true;
             gamedescpanel.AutoScroll = true; }
 
+        private bool FiltersGenerated = false;
         private void FilterSearchFocused(object sender, EventArgs e) { 
             if (filterSearch.Text == "Search") filterSearch.Text = ""; 
             ForceUpdate(); }
 
         private void FilterSearchChanged(object sender, KeyEventArgs e) {
+            if (!FiltersGenerated) {
+                FiltersGenerated = true;
+                SuspendLayout();
+                foreach (SteamTag tag in Enum.GetValues(typeof(SteamTag)))
+                    new CheckBox { Visible = false, Padding = new Padding(5, 0, 0, 0), Margin = new Padding(0, 0, 0, 3), Checked = false, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Size = new Size(tagFilterContainer.Width, 30), Parent = tagFilterContainer, Text = ProcessTag(tag), Tag = (int)tag }.CheckedChanged += delegate { ForceUpdate(); };
+                ResumeLayout(true); }
+
             int visible = 0;
             if (filterSearch.Text.Length > 1) {
                 string fslwr = filterSearch.Text.ToLower();
