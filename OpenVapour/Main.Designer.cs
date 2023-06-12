@@ -626,6 +626,7 @@
             this.Controls.Add(this.store);
             this.Controls.Add(this.toolbar);
             this.Controls.Add(this.nogamesnotif);
+            this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI Light", 24.25F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;

@@ -429,6 +429,13 @@ namespace OpenVapour {
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
+                if (e.Control) {
+                    UseWaitCursor = true;
+                    currentgame = new SteamGame("") { Name = realsearchtb.Text };
+                    TorrentSearch(this, new EventArgs());
+                    UseWaitCursor = false;
+                    return; }
+
                 List<SteamTag> tags = new List<SteamTag>();
                 foreach (Control ctrl in tagFilterContainer.Controls)
                     if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
@@ -445,7 +452,7 @@ namespace OpenVapour {
 
         private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
-            AddGame(currentgame);
+            if (currentgame != null && !string.IsNullOrWhiteSpace(currentgame.AppId)) AddGame(currentgame);
             gamepanel.Visible = false;
             gamepanelopen = false;
             ForceUpdate();
