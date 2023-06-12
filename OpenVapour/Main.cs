@@ -31,15 +31,22 @@ namespace OpenVapour {
         private bool gamepanelopen = false;
         private string panelgame = "";
         private bool clearing = false;
-        private string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
+        private readonly string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
 
         private void CheckCompatibility() {
             // run a series of checks if wine is in use
+            Utilities.HandleLogging($"Checking if wine is in use");
             foreach (string envVar in wineEnvironmentVariables)
                 try { if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(envVar))) Utilities.CompatibilityMode = true;
                 } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #1]", ex); }
+
             try { if (Environment.OSVersion.Platform == PlatformID.Unix && Environment.OSVersion.VersionString.Contains("Windows")) Utilities.CompatibilityMode = true;
             } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #2]", ex); }
+
+            try { if (Process.GetProcessesByName("winlogon").Count() == 0) Utilities.CompatibilityMode = true;
+            } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #3]", ex); }
+
+            Utilities.HandleLogging($"{(Utilities.CompatibilityMode?"Detected":"Did not detect")} wine is use");
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search"; }
 
         private void Main_Load(object sender, EventArgs e) {
@@ -47,6 +54,7 @@ namespace OpenVapour {
             WebRequest.DefaultWebProxy = null;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.ContainerControl | ControlStyles.SupportsTransparentBackColor, true);
             UpdateStyles();
+            CheckCompatibility();
             Cache.CheckCache();
 
             try {
@@ -57,7 +65,6 @@ namespace OpenVapour {
             Utilities.CheckAutoUpdateIntegrity();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
-            CheckCompatibility();
             DrawGradient();
 
             store.AutoScroll = false;
