@@ -302,7 +302,10 @@ namespace OpenVapour {
                         List<object> metalist = output.Tag as List<object>;
                         metalist.RemoveAt(0); metalist.Insert(0, states);
                         metalist[2] = true;
+                        Panel prev = metalist[metalist.Count() - 1] as Panel;
                         metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output, name, desc, publish));
+                        foreach (Control ctrl in prev.Controls) ctrl.Dispose();
+                        prev.Dispose();
 
                         if (game is ResultTorrent rt) {
                             // resize panel to appropriate proportions
