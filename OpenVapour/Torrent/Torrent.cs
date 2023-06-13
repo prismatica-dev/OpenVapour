@@ -94,30 +94,28 @@ namespace OpenVapour.Torrent {
                 try {
                     switch (Source) {
                         case TorrentSource.PCGamesTorrents:
+                        case TorrentSource.FitgirlRepacks:
+                        case TorrentSource.SteamRIP:
+                        case TorrentSource.GOG:
                             Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
                             Name = GetBetween(JSON, "<title>", "</title>");
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                            Image = GetBetween(JSON, "src=\"", "\"");
-                            TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
                             PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
-                        break;
+                            if (Source == TorrentSource.PCGamesTorrents || Source == TorrentSource.FitgirlRepacks) Image = GetBetween(JSON, "src=\"", "\"");
+                        break; }
+
+                    switch (Source) {
+                        case TorrentSource.PCGamesTorrents:
+                            TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
+                            break;
                     
                         case TorrentSource.FitgirlRepacks:
-                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                            Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
-                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
-                            Image = GetBetween(JSON, "src=\"", "\"");
                             TorrentUrl = $"magnet:{GetBetween(JSON, "a href=\"magnet:", "\"")}"; // direct magnet
-                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.SteamRIP:
-                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                            Name = GetBetween(JSON, "<title>", "</title>");
-                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             Image = GetBetween(JSON, "<p style=\"text-align: center;\"><a href=\"", "\"");
                             TorrentUrl = GetBetween(GetBetween(JSON, "clearfix", "</item"), "<p style=\"text-align: center;\"><a href=\"", "\"");
-                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.SevenGamers:
@@ -129,9 +127,6 @@ namespace OpenVapour.Torrent {
                             break;
 
                         case TorrentSource.GOG:
-                            Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                            Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
-                            Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             string _ = GetBetween(JSON, "\t<link>", "</link>");
                             if (_.EndsWith("/")) _ = _.Remove(_.Length - 1, 1);
                             HandleLogging(_.Substring(_.LastIndexOf("/") + 1));
@@ -148,7 +143,6 @@ namespace OpenVapour.Torrent {
                             HandleLogging($"image: https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg");
                             Image = $"https://i0.wp.com/uploads.freegogpcgames.com/image/{img}.jpg";
                             TorrentUrl = Url;
-                            PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             break;
 
                         case TorrentSource.Xatab:
@@ -163,9 +157,9 @@ namespace OpenVapour.Torrent {
 
                         case TorrentSource.Unknown:
                         default:
-                            Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = "";
+                            Url = ""; Name = ""; Description = ""; Image = ""; TorrentUrl = ""; PublishDate = "";
                             break; }
-                    } catch (Exception ex) { HandleException($"ResultTorrent.ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; }}
+                    } catch (Exception ex) { HandleException($"ResultTorrent.ResultSource({Source}, JSON)", ex); Url = ""; Name = ""; Image = ""; TorrentUrl = ""; PublishDate = ""; }}
             
             internal async Task<string> GetMagnet() {
                 switch (Source) {
