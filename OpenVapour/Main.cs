@@ -24,7 +24,11 @@ using OpenVapour.Properties;
 namespace OpenVapour {
     internal partial class Main : Form {
         internal Main() { InitializeComponent(); }
-        internal static List<Image> states = new List<Image>();
+        internal static Bitmap blank = new Bitmap(150, 225);
+        internal static List<Image> states = new List<Image> {
+                Graphics.ManipulateDisplayBitmap(blank, Color.FromArgb(125, 0, 0, 0)),
+                Graphics.ManipulateDisplayBitmap(blank, Color.FromArgb(125, 117, 117, 225)),
+                Graphics.ManipulateDisplayBitmap(blank, Color.FromArgb(125, 117, 225, 177)) };
         private SteamGame currentgame = new SteamGame("");
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
@@ -52,7 +56,7 @@ namespace OpenVapour {
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
             WebRequest.DefaultWebProxy = null;
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.ContainerControl | ControlStyles.SupportsTransparentBackColor, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             UpdateStyles();
             CheckCompatibility();
             Cache.CheckCache();
@@ -74,12 +78,6 @@ namespace OpenVapour {
             store.AutoScroll = true;
             gamedesc.MouseWheel += BackgroundTearingFix;
 
-            Bitmap img = new Bitmap(150, 225);
-            states = new List<Image> {
-                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 0, 0, 0)),
-                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 117, 225)),
-                Graphics.ManipulateDisplayBitmap(img, Color.FromArgb(125, 117, 225, 177)) };
-
             Panel storeContainer = new Panel { 
                 BackColor = Color.FromArgb(0, 0, 0, 0),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
@@ -90,7 +88,6 @@ namespace OpenVapour {
             store.Location = new Point(0, 0);
             store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
-            
             DrawSearchBox(sender, e); }
 
         internal void DrawGradient() {
