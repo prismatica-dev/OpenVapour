@@ -132,6 +132,8 @@ namespace OpenVapour {
                             if (clientPoint.X <= RESIZE_HANDLE_SIZE) m.Result = (IntPtr)16;
                             else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE)) m.Result = (IntPtr)15;
                             else m.Result = (IntPtr)17; }}
+                    return;
+                case 0x0014: // optimise form drag
                     return; }
             base.WndProc(ref m); }
 
@@ -286,13 +288,13 @@ namespace OpenVapour {
                     List<Image> states = null;
                     if (torrent)
                         states = new List<Image> {
-                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, overlay, baseState),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, overlay, baseState) };
+                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null
+                            /*Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, overlay, baseState),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, overlay, baseState)*/ };
                     else states = new List<Image> {
-                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5) };
+                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null
+                            /*Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5),
+                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5)*/ };
                     output.Invoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -364,7 +366,10 @@ namespace OpenVapour {
             store.Controls.Add(panel); }
 
         private void GameClickStart(object sender, MouseEventArgs e) {
-            InterpretPictureBox(sender, out PictureBox pb, out _, out List<Image> pbs);
+            InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
+            if (pbs[2] == null) 
+                if (pbl[1] is ResultTorrent rt) pbs[2] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 177), 5, Font, GetSourceName(rt.Source), Color.FromArgb(125, 117, 225, 177));
+                else pbs[2] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 177));
             pb.Image = pbs[2];
             ForceUpdate(); }
         private void GameClickEnd(object sender, EventArgs e) {
@@ -372,6 +377,9 @@ namespace OpenVapour {
             if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
+            if (pbs[1] == null) 
+                if (pbl[1] is ResultTorrent rt) pbs[1] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 255), 5, Font, GetSourceName(rt.Source), Color.FromArgb(125, 117, 225, 177));
+                else pbs[1] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 255));
             pb.Image = pbs[1];
             Panel popup = (Panel)pbl[3];
             popup.BringToFront();

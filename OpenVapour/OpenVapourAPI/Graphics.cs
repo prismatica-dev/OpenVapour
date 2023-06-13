@@ -13,6 +13,20 @@ namespace OpenVapour.OpenVapourAPI {
             Bitmap bitmap = new Bitmap(Width, Height);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap)) { g.FillRectangle(new LinearGradientBrush(new PointF(0, 0), new PointF(0, Height), UserSettings.WindowTheme["background1"], UserSettings.WindowTheme["background2"]), new Rectangle(0, 0, Width, Height)); }
             return bitmap; }
+        internal static Image QuickModify(Image image, Color color, int BorderRadius = 5) {
+            if (image == null) return null;
+            Bitmap r = (Bitmap)image.Clone();
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(r)) {
+                g.FillRectangles(new SolidBrush(color), new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius), new RectangleF(0, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new RectangleF(r.Width - BorderRadius, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) }); }
+            return r; }
+        internal static Image QuickModify(Image image, Color color, int BorderRadius, Font OverlayFont, string Overlay, Color OverlayColor) {
+            if (image == null) return null;
+            Bitmap r = (Bitmap)image.Clone();
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(r)) {
+                g.FillRectangles(new SolidBrush(color), new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius * 4), new RectangleF(0, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new RectangleF(r.Width - BorderRadius, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) });
+                Font overlayfont = Utilities.FitFont(OverlayFont, Overlay, new Size(r.Width, BorderRadius * 4));
+                g.DrawString(Overlay, new Font(overlayfont.FontFamily, overlayfont.Size, FontStyle.Regular), Brushes.White, new PointF(0, 0)); }
+            return r; }
         internal static Image ManipulateDisplayBitmap(Image image, Color color, int BorderRadius = 5) {
             Size _ = GetRatioSize(image);
             Bitmap shadow = new Bitmap(_.Width, _.Height);
