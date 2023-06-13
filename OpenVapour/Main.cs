@@ -207,7 +207,8 @@ namespace OpenVapour {
 
         internal void AsyncAddTorrent(Task<ResultTorrent> torrenttask) {
             Task add = torrenttask.ContinueWith((result) => {
-                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(result.Result); }); }); }
+                Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(result.Result); }); });
+            Task.Run(() => add); }
         internal void AddTorrent(ResultTorrent torrent) {
             try {
                 if (torrent == null) return;
@@ -224,17 +225,18 @@ namespace OpenVapour {
                 LoadGameTorrentBitmap(torrent, panel); }
             catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); }}
         
-        internal void AsyncAddGame(int AppId, bool Basic = false) {
+        internal async void AsyncAddGame(int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
             Task addgame = game.ContinueWith((result) => {
-                Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddGame(result.Result); }); }); }
+                Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddGame(result.Result); }); });
+            await addgame; }
         internal void AddGame(SteamGame game) {
             try {
                 if (game == null) return;
                 if (string.IsNullOrEmpty(game.AppId)) return;
 
                 if (InvokeRequired) {
-                    Invoke((MethodInvoker)delegate { AddGame(game); });
+                    BeginInvoke((MethodInvoker)delegate { AddGame(game); });
                     return; }
 
                 Utilities.HandleLogging($"{game.Name} loading!");
@@ -257,7 +259,7 @@ namespace OpenVapour {
         internal async void LoadGameTorrentBitmap(object game, PictureBox output) {
             try {
                 if (InvokeRequired) {
-                    Invoke((MethodInvoker)delegate { LoadGameTorrentBitmap(game, output); });
+                    BeginInvoke((MethodInvoker)delegate { LoadGameTorrentBitmap(game, output); });
                     return; }
 
                 Task<Bitmap> imgTask = null;
@@ -295,7 +297,7 @@ namespace OpenVapour {
                             Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null
                             /*Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5),
                             Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5)*/ };
-                    output.Invoke((MethodInvoker)delegate { 
+                    output.BeginInvoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
                         metalist.RemoveAt(0); metalist.Insert(0, states);
@@ -310,7 +312,7 @@ namespace OpenVapour {
                                 Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
                         ForceUpdate();
                         }); });
-                await cont;
+                Task.Run(() => cont);
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
         private void LoadGame(SteamGame game, Image art) {
@@ -458,7 +460,7 @@ namespace OpenVapour {
             else Utilities.OpenUrl(currenttorrent.Url);
             ForceUpdate(); }
 
-        private void TorrentSearch(object sender, EventArgs e) {
+        private async void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
             if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
             gamepanel.Visible = false;
@@ -474,7 +476,8 @@ namespace OpenVapour {
                     Task<List<ResultTorrent>> getresults = GetResults(source, _);
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (ResultTorrent torrent in results.Result)
-                            Application.OpenForms[0].Invoke((MethodInvoker)delegate { AddTorrent(torrent); });
+                            Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(torrent); });
+                    Task.Run(() => getresults);
                     }); }
 
             if (_.Length > 7)

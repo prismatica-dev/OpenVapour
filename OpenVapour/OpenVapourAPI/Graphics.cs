@@ -17,12 +17,19 @@ namespace OpenVapour.OpenVapourAPI {
             if (image == null) return null;
             Bitmap r = (Bitmap)image.Clone();
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(r)) {
+                g.FillRectangles(Brushes.Black, new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius), new RectangleF(0, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new RectangleF(r.Width - BorderRadius, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) });
                 g.FillRectangles(new SolidBrush(color), new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius), new RectangleF(0, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new RectangleF(r.Width - BorderRadius, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) }); }
             return r; }
         internal static Image QuickModify(Image image, Color color, int BorderRadius, Font OverlayFont, string Overlay, Color OverlayColor) {
             if (image == null) return null;
             Bitmap r = (Bitmap)image.Clone();
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(r)) {
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.CompositingMode = CompositingMode.SourceOver;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.FillRectangles(Brushes.Black, new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius * 4), new RectangleF(0, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new RectangleF(r.Width - BorderRadius, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) });
                 g.FillRectangles(new SolidBrush(color), new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius * 4), new RectangleF(0, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new RectangleF(r.Width - BorderRadius, BorderRadius * 4, BorderRadius, r.Height - BorderRadius * 5), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) });
                 Font overlayfont = Utilities.FitFont(OverlayFont, Overlay, new Size(r.Width, BorderRadius * 4));
                 g.DrawString(Overlay, new Font(overlayfont.FontFamily, overlayfont.Size, FontStyle.Regular), Brushes.White, new PointF(0, 0)); }
