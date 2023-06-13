@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using static OpenVapour.Torrent.Torrent;
 using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
-using static OpenVapour.OpenVapourAPI.Compression;
 using System.IO;
 using OpenVapour.OpenVapourAPI;
+using System.Text;
+using System.Diagnostics;
 
 namespace OpenVapour.Torrent {
     internal class TorrentUtilities {
@@ -44,26 +45,31 @@ namespace OpenVapour.Torrent {
                         // check game list (sometimes results provided by pcgt are insufficient)
                         if (PCGTGameList.Length == 0) {
                             string list = GetBetween(await WebCore.GetWebString("https://pcgamestorrents.com/games-list.html", 20000), "<ul>", "</ul>\n<div");
+                            Stopwatch sw = Stopwatch.StartNew();
+                            HandleLogging("[PCGT] Buliding index");
                             string[] split = list.Split('\n');
-                            List<Tuple<byte[], byte[]>> pcgtindex = new List<Tuple<byte[], byte[]>>(split.Length);
+                            List<Tuple<string, string>> pcgtindex = new List<Tuple<string, string>>(split.Length);
                             for (int i = 0; i < split.Length; i++) {
                                 string seg = split[i];
                                 if (seg.StartsWith("li")) continue;
                                 string name = GetBetween(seg, "\">", "</a");
                                 if (name.Length > 0)
-                                    pcgtindex.Add(new Tuple<byte[], byte[]>(CompressToBytes(name), CompressToBytes(GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\"")))); }
+                                    pcgtindex.Add(new Tuple<string, string>(name, GetBetween(seg, "href=\"https://pcgamestorrents.com/", ".html\""))); }
                             PCGTGameList = pcgtindex.ToArray();
-                            pcgtindex.Clear(); }
+                            pcgtindex.Clear();
+                            HandleLogging($"[PCGT] Built index in {sw.ElapsedMilliseconds:N0}ms"); }
                 
                         // process game list
-                        foreach (Tuple<byte[], byte[]> game in PCGTGameList) {
+                        foreach (Tuple<string, string> game in PCGTGameList) {
                             if (game.Item1.Length > 0) {
-                                string name = DecompressFromBytes(game.Item1);
+                                string name = game.Item1; // DecompressFromBytes(game.Item1);
                                 string filtname = FilterAlphanumeric(name.ToLower());
+                                if (filtname.Length < 4 || filtName.Length < 4) continue;
                                 int levenshteindistance = GetLevenshteinDistance(filtname, filtName);
+                                int _ = filtName.Length / 4;
                                 // really bad backup search algorithm
-                                if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < filtName.Length / 4 && filtname.Length >= 4 && filtName.Length >= 4)) {
-                                    string url = $"https://pcgamestorrents.com/{DecompressFromBytes(game.Item2)}.html";
+                                if (filtname.Contains(filtName) || filtname == filtName || (levenshteindistance < _)) {
+                                    string url = $"https://pcgamestorrents.com/{game.Item2}.html";
                                     HandleLogging("search result found! " + url);
                                     if (!resulturls.Contains(url))
                                         results.Add(ResultTorrent.TorrentFromUrl(TorrentSource.PCGamesTorrents, url, name)); }}}
@@ -81,7 +87,7 @@ namespace OpenVapour.Torrent {
                             while (rawgamelist.Contains("<a href=\"https://kaoskrew.org/viewtopic.php?")) {
                                 internalIndex.Add($"<a href=\"https://kaoskrew.org/viewtopic.php?{GetBetween(rawgamelist, "\"https://kaoskrew.org/viewtopic.php?", "</a>")}</a>".Replace("&amp;", "&"));
                                 string _ = GetAfter(rawgamelist, "<a href=\"https://kaoskrew.org/viewtopic.php?");
-                                if (_ == rawgamelist) rawgamelist = rawgamelist.Substring(10); else rawgamelist = _; }
+                                if (_ == rawgamelist) rawgamelist = rawgamelist.Substring(50); else rawgamelist = _; }
                             HandleLogging("built index");
                             KaOSGameList = internalIndex.ToArray();
                             internalIndex.Clear(); }

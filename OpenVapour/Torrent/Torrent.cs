@@ -8,7 +8,7 @@ using OpenVapour.OpenVapourAPI;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {
-        internal static Tuple<byte[], byte[]>[] PCGTGameList = new Tuple<byte[], byte[]>[] { };
+        internal static Tuple<string, string>[] PCGTGameList = new Tuple<string, string>[] { };
         internal static string[] KaOSGameList = new string[] { };
         internal class ResultTorrent {
             internal TorrentSource Source { get; set; }

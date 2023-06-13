@@ -312,7 +312,7 @@ namespace OpenVapour {
                                 Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
                         ForceUpdate();
                         }); });
-                Task.Run(() => cont);
+                await Task.Run(() => cont);
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
         private void LoadGame(SteamGame game, Image art) {
@@ -460,7 +460,7 @@ namespace OpenVapour {
             else Utilities.OpenUrl(currenttorrent.Url);
             ForceUpdate(); }
 
-        private async void TorrentSearch(object sender, EventArgs e) {
+        private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
             if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
             gamepanel.Visible = false;
