@@ -38,6 +38,7 @@ namespace OpenVapour {
             WebRequest.DefaultWebProxy = null;
             UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
+            SetStyle(ControlStyles.ResizeRedraw, false);
             UpdateStyles();
             Utilities.CheckCompatibility();
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search";
@@ -118,6 +119,11 @@ namespace OpenVapour {
                 case 0x0014: // optimise form drag
                     return; }
             base.WndProc(ref m); }
+        protected override void OnPaint(PaintEventArgs e) {
+            e.Graphics.FillRectangles(new SolidBrush(Color.FromArgb(50, 0, 0, 0)), new Rectangle[] {
+                new Rectangle(0, 25, RESIZE_BUFFER_SIZE, Height - 25),
+                new Rectangle(Width - RESIZE_BUFFER_SIZE, 25, RESIZE_BUFFER_SIZE, Height - 25),
+                new Rectangle(RESIZE_BUFFER_SIZE, Height - RESIZE_BUFFER_SIZE, Width - RESIZE_BUFFER_SIZE * 2, RESIZE_BUFFER_SIZE)}); }
 
         internal Panel CreatePopUp(PictureBox selector, string Name, string Description, string Publish = "") {
             List<object> pbo = (List<object>)selector.Tag;
