@@ -69,6 +69,8 @@ namespace OpenVapour {
 
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
+            ForeColor = Color.White;
+            UpdateControls(this);
             ForeColor = UserSettings.WindowTheme["text1"];
             DrawGradient();
 
@@ -139,7 +141,7 @@ namespace OpenVapour {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
 
-            Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = Color.White, Visible = false, Name = "Popup" };
+            Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = UserSettings.WindowTheme["text1"], Visible = false, Name = "Popup" };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0))), BackColor = Color.Transparent };
@@ -444,8 +446,7 @@ namespace OpenVapour {
             if (DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) t = t.Insert(realsearchtb.SelectionStart, "|");
 
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
-                g.CompositingQuality = CompositingQuality.HighQuality; g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = SmoothingMode.AntiAlias; g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                Graphics.ApplyQuality(g);
                 g.DrawString(t, new Font("Segoe UI Light", 14f), Brushes.White, new PointF(0, 0)); } 
             searchtextbox.BackgroundImage?.Dispose();
             searchtextbox.BackgroundImage = bit;
@@ -595,9 +596,15 @@ namespace OpenVapour {
         private void BackgroundTearingFix(object sender, EventArgs e) {}
         private void ForceUpdate() => BackgroundTearingFix(this, new ScrollEventArgs(ScrollEventType.SmallDecrement, 0));
 
+        private void UpdateControls(Control ctrl, bool First = true) {
+            if (ctrl.ForeColor == ForeColor && !First) ctrl.ForeColor = UserSettings.WindowTheme["text1"];
+            foreach (Control sctrl in ctrl.Controls) UpdateControls(sctrl, false); }
+
         private void OpenSettings(object sender, EventArgs e) {
             Settings settings = new Settings(UserSettings.WindowTheme, UserSettings.GetImplementations(SourceScores), UserSettings.GetImplementations(DirectSourceScores));
             settings.ShowDialog();
+            UpdateControls(this);
+            ForeColor = UserSettings.WindowTheme["text1"];
             UserSettings.WindowTheme = settings.WindowTheme;
             UserSettings.WindowSize = Size;
             foreach (TorrentSource ts in settings.TorrentSources.Keys) {

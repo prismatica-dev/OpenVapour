@@ -649,6 +649,7 @@
             this.Controls.Add(this.nogamesnotif);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI Light", 24.25F);
+            this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);

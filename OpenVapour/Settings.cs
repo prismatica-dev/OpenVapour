@@ -40,6 +40,7 @@ namespace OpenVapour {
             themeColour2.BackColor = WindowTheme["background2"];
             themeColour3.BackColor = WindowTheme["text1"];
             themeColour4.BackColor = WindowTheme["text2"];
+            UpdateControls(this);
             DrawGradient();
 
             // disable horizontal scrollbars
@@ -70,11 +71,18 @@ namespace OpenVapour {
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(background)) { g.FillRectangle(gradientbrush, new Rectangle(0, 0, Width, Height)); }
             BackgroundImage = background; }
 
+        private void UpdateControls(Control ctrl, bool First = true) {
+            Console.WriteLine($"{ForeColor.R},{ForeColor.G},{ForeColor.B}");
+            if (ctrl.ForeColor == ForeColor && !First) ctrl.ForeColor = WindowTheme["text1"];
+            foreach (Control sctrl in ctrl.Controls) UpdateControls(sctrl, false); }
+
         private void UpdateTheme() {
             WindowTheme["background1"] = themeColour1.BackColor;
             WindowTheme["background2"] = themeColour2.BackColor;
             WindowTheme["text1"] = themeColour3.BackColor;
             WindowTheme["text2"] = themeColour4.BackColor;
+            UpdateControls(this);
+            ForeColor = WindowTheme["text1"];
             DrawGradient(); }
 
         private void ChangeColour(object sender, EventArgs e) {
