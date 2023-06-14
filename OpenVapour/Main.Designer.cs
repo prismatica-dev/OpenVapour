@@ -504,7 +504,7 @@
             this.gamename.AutoSize = true;
             this.gamename.BackColor = System.Drawing.Color.Transparent;
             this.gamename.Font = new System.Drawing.Font("Segoe UI Light", 22.25F);
-            this.gamename.Location = new System.Drawing.Point(139, 7);
+            this.gamename.Location = new System.Drawing.Point(142, 7);
             this.gamename.MaximumSize = new System.Drawing.Size(350, 50);
             this.gamename.Name = "gamename";
             this.gamename.Size = new System.Drawing.Size(203, 41);

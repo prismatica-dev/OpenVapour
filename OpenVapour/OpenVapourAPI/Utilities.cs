@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -28,7 +29,7 @@ namespace OpenVapour.OpenVapourAPI {
             "?", "? ", "â€", "" };
         private static bool ExceptionLogWritten = false;
         private static bool LogWritten = false;
-        public static bool CompatibilityMode = false;
+        internal static bool CompatibilityMode = false;
 
         internal static int GetLevenshteinDistance(string String, string Destination) {
             int length1 = String.Length;
@@ -65,7 +66,7 @@ namespace OpenVapour.OpenVapourAPI {
             try {
                 string _ = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 try { if (File.Exists($"{_}\\OpenVapour.new.exe")) File.Delete($"{_}\\OpenVapour.new.exe");
-                } catch (Exception ex) { HandleException($"UpdateProgram({TagName}) [Delete .new]", ex); }
+                } catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName}) [Delete .new]", ex); }
 
                 // download update
                 bool isZip = false;
@@ -161,6 +162,24 @@ namespace OpenVapour.OpenVapourAPI {
                     File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
                     ExceptionLogWritten = true; }
             } catch (Exception) { MessageBox.Show($"Uh oh. The crash-handler threw an error.\nPlease ensure OpenVapour is able to read and write to\n{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", "Exception when Handling Exception"); }}
+
+        
+        private static readonly string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
+
+        internal static void CheckCompatibility() {
+            // run a series of checks if wine is in use
+            HandleLogging($"Checking if wine is in use");
+            try { if (Process.GetProcessesByName("winlogon").Count() == 0) CompatibilityMode = true;
+            } catch (Exception ex) { HandleException($"Main.CheckCompatibility() [Check #1]", ex); }
+
+            foreach (string envVar in wineEnvironmentVariables)
+                try { if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(envVar))) CompatibilityMode = true;
+                } catch (Exception ex) { HandleException($"Main.CheckCompatibility() [Check #2]", ex); }
+
+            try { if (Environment.OSVersion.Platform == PlatformID.Unix && Environment.OSVersion.VersionString.Contains("Windows")) CompatibilityMode = true;
+            } catch (Exception ex) { HandleException($"Main.CheckCompatibility() [Check #3]", ex); }
+            HandleLogging($"{(CompatibilityMode?"Detected":"Did not detect")} wine is in use"); }
+
         internal static float FitText(Font font, string text, Size size, float max) {
             bool fit = false;
             font = new Font(font.FontFamily, max, font.Style);

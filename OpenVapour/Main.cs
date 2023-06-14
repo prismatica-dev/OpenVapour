@@ -32,23 +32,6 @@ namespace OpenVapour {
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
         private bool clearing = false;
-        private readonly string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
-
-        private void CheckCompatibility() {
-            // run a series of checks if wine is in use
-            Utilities.HandleLogging($"Checking if wine is in use");
-            foreach (string envVar in wineEnvironmentVariables)
-                try { if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(envVar))) Utilities.CompatibilityMode = true;
-                } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #1]", ex); }
-
-            try { if (Environment.OSVersion.Platform == PlatformID.Unix && Environment.OSVersion.VersionString.Contains("Windows")) Utilities.CompatibilityMode = true;
-            } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #2]", ex); }
-
-            try { if (Process.GetProcessesByName("winlogon").Count() == 0) Utilities.CompatibilityMode = true;
-            } catch (Exception ex) { Utilities.HandleException($"Main.CheckCompatibility() [Check #3]", ex); }
-
-            Utilities.HandleLogging($"{(Utilities.CompatibilityMode?"Detected":"Did not detect")} wine is in use");
-            if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search"; }
 
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
@@ -56,7 +39,8 @@ namespace OpenVapour {
             UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             UpdateStyles();
-            CheckCompatibility();
+            Utilities.CheckCompatibility();
+            if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search";
             Cache.CheckCache();
             
             Utilities.CheckAutoUpdateIntegrity();
@@ -153,9 +137,7 @@ namespace OpenVapour {
                 if (image.Height > image.Width) gameart.Size = new Size(107, 160);
                 else gameart.Size = new Size(107, 107); }
 
-            popup.Controls.Add(gameart);
-            popup.Controls.Add(gamename);
-            popup.Controls.Add(gameabout);
+            popup.Controls.AddRange(new Control[] { gameart, gamename, gameabout });
             if (gamedate != null) popup.Controls.Add(gamedate);
             Controls.Add(popup);
             gamedate?.BringToFront();
@@ -176,7 +158,6 @@ namespace OpenVapour {
                         if (meta[1] == currentgame || meta[1] == currenttorrent) continue;
                         if (meta == null || i == null) continue;
                         if (i.Equals(states)) continue;
-                        //pb.Image?.Dispose();
                         pb.Image = null;
                         foreach (Image im in i) im?.Dispose();
                         for (int x = 0; x < meta.Count(); x++) meta[x] = null;
@@ -287,14 +268,8 @@ namespace OpenVapour {
                     if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
                     List<Image> states = null;
                     if (torrent)
-                        states = new List<Image> {
-                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null
-                            /*Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5, Font, overlay, baseState),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5, Font, overlay, baseState)*/ };
-                    else states = new List<Image> {
-                            Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null
-                            /*Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 117, 225), 5),
-                            Graphics.ManipulateDisplayBitmap(img.Result, Color.FromArgb(125, 117, 225, 177), 5)*/ };
+                        states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null };
+                    else states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null };
                     output.BeginInvoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -391,7 +366,7 @@ namespace OpenVapour {
             popup.BringToFront();
             gamepanel.BringToFront();
 
-            if (pb.Location.X > Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
+            if (pb.Location.X >= Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
             else popup.Location = new Point(pb.Location.X + pb.Width + 5, pb.Location.Y + toolbar.Height);
 
             popup.Visible = true;
@@ -512,7 +487,6 @@ namespace OpenVapour {
 
                 magnetbutton.Text = "Fetching";
                 ForceUpdate();
-
                 magnet = await currenttorrent.GetMagnet();
 
                 Utilities.HandleLogging("copying magnet url " + magnet);
@@ -572,10 +546,10 @@ namespace OpenVapour {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
 
-        public const int WM_SETREDRAW = 0x000B;
+        internal const int WM_SETREDRAW = 0x000B;
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
             try {
@@ -663,8 +637,9 @@ namespace OpenVapour {
                     if (_v) visible++; }}
             else 
                 foreach (Control ctrl in tagFilterContainer.Controls) { 
-                    if ((ctrl as CheckBox).Checked) visible++;
-                    ctrl.Visible = (ctrl as CheckBox).Checked; }
+                    bool _ = (ctrl as CheckBox).Checked;
+                    if (_) visible++;
+                    ctrl.Visible = _; }
             filtersPanel.Height = Math.Min(318, 56 + visible * 33 + (visible>0?-3:0));
             Application.DoEvents();
             ForceUpdate(); }
