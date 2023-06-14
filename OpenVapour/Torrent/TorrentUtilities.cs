@@ -128,51 +128,30 @@ namespace OpenVapour.Torrent {
             try {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
+                    case TorrentSource.FitgirlRepacks:
+                    case TorrentSource.SteamRIP:
+                    case TorrentSource.GOG:
+                        string name = GetSourceName(Source);
+
                         // scrape the rss2 feed to avoid cloudflare
-                        string XML = await WebCore.GetWebString($"https://pcgamestorrents.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
+                        string XML = await WebCore.GetWebString($"https://{name}/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
                         HandleLogging($"[PCGT] found {items.Count():N0} torrents!");
 
                         // skip first non-item result
                         if (items.Count() > 1)
                             for (int i = 1; i < items.Count(); i++) {
+                                if (Source == TorrentSource.SteamRIP && items[i].Contains("TORRENT")) continue;
                                 ResultTorrent torrent = new ResultTorrent(Source, items[i]);
+
+                                // source specific irrelevance
+                                if (Source == TorrentSource.FitgirlRepacks && !torrent.TorrentUrl.StartsWith("magnet:?xt")) continue;
+                                else if (Source == TorrentSource.GOG && GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
+                                
                                 results.Add(torrent);
-                                HandleLogging("[PCGT] found torrent " + torrent.Url);
+                                HandleLogging($"[{name}] found torrent {torrent.Url}");
                                 resulturls.Add(GetBetween(items[i], "\t<link>", "</link>")); }
                     break; 
-                        
-                    case TorrentSource.FitgirlRepacks:
-                        string fitgirlrss = await WebCore.GetWebString($"https://fitgirl-repacks.site/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
-                        string[] fitgirlitems = fitgirlrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        HandleLogging($"[FITGIRL] found {fitgirlitems.Count():N0} torrents!");
-                        
-                        // skip first non-item result
-                        if (fitgirlitems.Count() > 1)
-                            for (int i = 1; i < fitgirlitems.Count(); i++) {
-                                ResultTorrent torrent = new ResultTorrent(Source, fitgirlitems[i]);
-                                if (!torrent.TorrentUrl.StartsWith("magnet:?xt")) continue; // blog post, not torrent
-                                results.Add(torrent);
-                                HandleLogging("[FITGIRL] found torrent " + torrent.Url);
-                                resulturls.Add(GetBetween(fitgirlitems[i], "\t<link>", "</link>")); }
-                        break;
-
-                    case TorrentSource.GOG:
-                        string gogrss = await WebCore.GetWebString($"https://freegogpcgames.com/search/{Uri.EscapeDataString(Name)}/feed/rss2", 10000);
-                        string[] gogitems = gogrss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        HandleLogging($"[GOG] found {gogitems.Count():N0} torrents!");
-                        
-                        // skip first non-item result
-                        if (gogitems.Count() > 1)
-                            for (int i = 1; i < gogitems.Count(); i++) {
-                                ResultTorrent torrent = new ResultTorrent(Source, gogitems[i]);
-                                HandleLogging(torrent.Name);
-                                // GOG often returns results that aren't even close to what you asked for
-                                if (GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
-                                results.Add(torrent);
-                                HandleLogging("[GOG] found torrent " + torrent.Url);
-                                resulturls.Add(GetBetween(gogitems[i], "\t<link>", "</link>")); }
-                        break;
 
                     case TorrentSource.Xatab:
                         string xatabhtml = await WebCore.GetWebString($"https://byxatab.com/index.php?do=search&subaction=search&from_page=0&story={Uri.EscapeDataString(Name)}");
@@ -186,21 +165,6 @@ namespace OpenVapour.Torrent {
                                 HandleLogging("[XATAB] found torrent " + torrent.Url);
                                 results.Add(torrent);
                                 resulturls.Add(torrent.Url); }
-                        break;
-
-                    case TorrentSource.SteamRIP:
-                        // no url shortener bypass implemented yet
-                        string steamriprss = await WebCore.GetWebString($"https://steamrip.com/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 5000);
-                        string[] steamripitems = steamriprss.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        
-                        // skip first non-item result
-                        if (steamripitems.Count() > 1)
-                            for (int i = 1; i < steamripitems.Count(); i++) {
-                                if (steamripitems[i].Contains("TORRENT")) {
-                                    ResultTorrent torrent = new ResultTorrent(Source, steamripitems[i]);
-                                    results.Add(torrent);
-                                    HandleLogging("[SteamRIP] found torrent " + torrent.Url);
-                                    resulturls.Add(GetBetween(steamripitems[i], "\t<link>", "</link>")); }}
                         break;
 
                     case TorrentSource.SevenGamers:
