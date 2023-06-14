@@ -405,21 +405,32 @@ namespace OpenVapour {
         private static void InterpretPictureBox(object sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs) { pb = (PictureBox)sender; pbl = (List<object>)pb.Tag; pbs = (List<Image>)pbl[0]; }
 
         private void ClosePanel(bool IsTorrent, bool OpenNext, List<object> List) {
-            Timer time = new Timer { Interval = 30 };
+            Timer time = new Timer { Interval = 1 };
             object game = null;
             List<Image> pbs = null;
 
             if (OpenNext && !IsTorrent) { game = (SteamGame)List[1]; pbs = (List<Image>)List[0]; }
             else if (IsTorrent) { game = (ResultTorrent)List[1]; pbs = (List<Image>)List[0]; }
+            DateTime start = DateTime.Now;
+            DateTime lasttick = DateTime.Now;
+            
             time.Tick += delegate {
-                if (gamepanel.Location.X > -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - 90, gamepanel.Location.Y);
+                int _ = (int)Math.Round(gamepanel.Width / 6f * ((DateTime.Now - lasttick).TotalMilliseconds / 50f));
+                lasttick = DateTime.Now;
+                if (gamepanel.Location.X >= -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - _, gamepanel.Location.Y);
                 else { 
+                    time.Enabled = false; 
+                    panelgame = "";
                     if (OpenNext) 
                         if (IsTorrent) LoadTorrent((ResultTorrent)game, pbs[0]);
                         else LoadGame((SteamGame)game, pbs[0]);
-                    panelgame = ""; time.Enabled = false; }
+                    time.Stop(); }
+                if ((DateTime.Now - start).TotalMilliseconds > 1000) { 
+                    gamepanel.Location = new Point(-gamepanel.Width - 1, gamepanel.Location.Y); 
+                    time.Stop(); }
+                Invalidate();
                 ForceUpdate(); };
-            time.Enabled = true; }
+            time.Start(); }
 
         private void ClosePanelBtn(object sender, EventArgs e) => ClosePanel(false, false, null);
         private void Searchtextbox_Click(object sender, EventArgs e) { realsearchtb.Text = ""; realsearchtb.Focus(); }
