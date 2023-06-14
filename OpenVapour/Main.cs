@@ -31,8 +31,6 @@ namespace OpenVapour {
         private SteamGame currentgame = new SteamGame("");
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
-        private bool gamepanelopen = false;
-        private string panelgame = "";
         private bool clearing = false;
         private readonly string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
 
@@ -318,30 +316,35 @@ namespace OpenVapour {
                 await Task.Run(() => cont);
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
-        private void LoadGame(SteamGame game, Image art) {
-            if (game.Name == "") return;
-            currentgame = game; MagnetButtonContainer.Visible = false; TorrentSearchContainer.Visible = true; Focus();
-            SteamPageContainer.Visible = true; steampage.Text = "Steam Page"; 
+        private void LoadGameTorrent(object game, Image art) {
+            string _n = ""; string _d = "";
+            if (game is ResultTorrent rt) {
+                currenttorrent = rt; 
+                if (!(rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) && rt.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
+                else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
+                steampage.Text = "Torrent Page";
+                MagnetButtonContainer.Visible = true; 
+                toggleHomepageContainer.Visible = false; 
+                TorrentSearchContainer.Visible = false;
 
-            panelgame = game.Name; gamename.Text = game.Name; sourcename.Text = "Source: Steam"; gameart.Image = art; gamedesc.Text = game.Description.Trim(); 
-            toggleHomepageContainer.Visible = true; toggleHomepage.BackColor = Cache.IsHomepaged(game.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
-            gamepanel.Location = new Point(7, 32); gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize); ResizeGameArt();
-            gamepanel.Visible = true; gamepanel.BringToFront(); gamepanelopen = true;
-            ForceUpdate(); }
+                sourcename.Text = $"Source: {GetSourceName(rt.Source)}\nTrustworthiness: {SourceScores[rt.Source].Item1}\nQuality: {SourceScores[rt.Source].Item2}\nIntegration: {((rt.Source == TorrentSource.KaOs&&!rt.SafeAnyway)?GetIntegrationSummary(Integration.NoBypass):GetIntegrationSummary(GetIntegration(rt.Source)))}";
+                _n = rt.Name; _d = $"{rt.Name}{(!string.IsNullOrWhiteSpace(rt.PublishDate)?" — ":"")}{rt.PublishDate}\n\n{rt.Description.Trim()}"; }
+            else if (game is SteamGame sg) {
+                if (sg.Name == "") return;
+                currentgame = sg;
+                steampage.Text = "Steam Page"; 
+                MagnetButtonContainer.Visible = false;
+                toggleHomepageContainer.Visible = true; 
+                TorrentSearchContainer.Visible = true;
+                toggleHomepage.BackColor = Cache.IsHomepaged(sg.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
+                sourcename.Text = "Source: Steam";
+                _n = sg.Name; _d = sg.Description; }
 
-        private void LoadTorrent(ResultTorrent game, Image art) {
-            currenttorrent = game; 
-            if (!(game.Source == TorrentSource.KaOs && !game.SafeAnyway) && game.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
-            else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
-            SteamPageContainer.Visible = true; steampage.Text = "Torrent Page";
-
-            MagnetButtonContainer.Visible = true; toggleHomepageContainer.Visible = false;
-            TorrentSearchContainer.Visible = false; Focus(); panelgame = game.Name; gamename.Text = game.Name; 
-            sourcename.Text = $"Source: {GetSourceName(game.Source)}\nTrustworthiness: {SourceScores[game.Source].Item1}\nQuality: {SourceScores[game.Source].Item2}\nIntegration: {((game.Source == TorrentSource.KaOs&&!game.SafeAnyway)?GetIntegrationSummary(Integration.NoBypass):GetIntegrationSummary(GetIntegration(game.Source)))}"; 
-            gameart.Image = art; gamedesc.Text = $"{game.Name}{(!string.IsNullOrWhiteSpace(game.PublishDate)?" — ":"")}{game.PublishDate}\n\n{game.Description.Trim()}"; 
+            Focus(); gamename.Text = _n;  
+            gameart.Image = art; gamedesc.Text = _d; 
             gamepanel.Location = new Point(7, 32); ResizeGameArt(); gamepanel.Visible = true; 
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
-            gamepanel.BringToFront(); gamepanelopen = true;
+            gamepanel.BringToFront(); 
             ForceUpdate(); }
 
         private void GameTorrentClick(object sender, EventArgs e) {
@@ -349,12 +352,8 @@ namespace OpenVapour {
                 InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
                 GameHoverEnd(sender, e);
                 object game = pbl[1];
-                if (game is SteamGame steamgame) {
-                    if (!gamepanelopen) LoadGame(steamgame, pbs[0]); 
-                    else if (panelgame != steamgame.Name) ClosePanel(false, true, pbl);
-                } else if (game is ResultTorrent resulttorrent) {
-                    if (!gamepanelopen) LoadTorrent(resulttorrent, pbs[0]); 
-                    else if (panelgame != resulttorrent.Name) ClosePanel(true, true, pbl); }
+                if (!gamepanel.Visible) LoadGameTorrent(game, pbs[0]);
+                else ClosePanel(game is ResultTorrent, true, pbl);
             } catch (Exception ex) { Utilities.HandleException($"Main.GameTorrentClick(sender, e)", ex); }}
 
         private void ResizeGameArt() {
@@ -390,6 +389,7 @@ namespace OpenVapour {
             pb.Image = pbs[1];
             Panel popup = (Panel)pbl[3];
             popup.BringToFront();
+            gamepanel.BringToFront();
 
             if (pb.Location.X > Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
             else popup.Location = new Point(pb.Location.X + pb.Width + 5, pb.Location.Y + toolbar.Height);
@@ -425,15 +425,12 @@ namespace OpenVapour {
                 if (gamepanel.Location.X >= -gamepanel.Width) gamepanel.Location = new Point(gamepanel.Location.X - _, gamepanel.Location.Y);
                 else { 
                     time.Enabled = false; 
-                    panelgame = "";
-                    if (OpenNext) 
-                        if (IsTorrent) LoadTorrent((ResultTorrent)game, pbs[0]);
-                        else LoadGame((SteamGame)game, pbs[0]);
+                    if (OpenNext) LoadGameTorrent(game, pbs[0]);
                     time.Stop(); }
                 if ((DateTime.Now - start).TotalMilliseconds > 1000) { 
                     gamepanel.Location = new Point(-gamepanel.Width - 1, gamepanel.Location.Y); 
                     time.Stop(); }
-                Invalidate();
+                Invalidate(true);
                 ForceUpdate(); };
             time.Start(); }
 
@@ -481,7 +478,6 @@ namespace OpenVapour {
             ClearStore(); 
             if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
             gamepanel.Visible = false;
-            gamepanelopen = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
@@ -587,7 +583,7 @@ namespace OpenVapour {
                 if (se.Type == ScrollEventType.First) LockWindowUpdate(Handle);
                 else {
                     LockWindowUpdate(IntPtr.Zero);
-                    if (Utilities.CompatibilityMode) { store.Invalidate(); Application.DoEvents(); } // lockwindowupdate is not implemented in wine
+                    if (Utilities.CompatibilityMode) { store.Invalidate(true); Application.DoEvents(); } // lockwindowupdate is not implemented in wine
                     Update();
                     if (se.Type != ScrollEventType.Last) LockWindowUpdate(Handle); }
             } catch (Exception ex) { Utilities.HandleException("Main.BackgroundTearingFix(sender, se)", ex); }}
