@@ -33,6 +33,7 @@
             this.themeColour2 = new System.Windows.Forms.Button();
             this.themeColour3 = new System.Windows.Forms.Button();
             this.themeColour4 = new System.Windows.Forms.Button();
+            this.resetTheme = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // torrentSourcesHeader
@@ -163,12 +164,29 @@
             this.themeColour4.UseVisualStyleBackColor = false;
             this.themeColour4.Click += new System.EventHandler(this.ChangeColour);
             // 
+            // resetTheme
+            // 
+            this.resetTheme.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.resetTheme.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.resetTheme.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetTheme.Font = new System.Drawing.Font("Segoe UI Light", 10F);
+            this.resetTheme.ForeColor = System.Drawing.Color.White;
+            this.resetTheme.Location = new System.Drawing.Point(165, 279);
+            this.resetTheme.Margin = new System.Windows.Forms.Padding(0);
+            this.resetTheme.Name = "resetTheme";
+            this.resetTheme.Size = new System.Drawing.Size(30, 30);
+            this.resetTheme.TabIndex = 10;
+            this.resetTheme.Text = "↻ ";
+            this.resetTheme.UseVisualStyleBackColor = false;
+            this.resetTheme.Click += new System.EventHandler(this.ResetTheme);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MediumOrchid;
             this.ClientSize = new System.Drawing.Size(200, 381);
+            this.Controls.Add(this.resetTheme);
             this.Controls.Add(this.themeColour4);
             this.Controls.Add(this.themeColour3);
             this.Controls.Add(this.themeColour2);
@@ -209,5 +227,6 @@
         private System.Windows.Forms.Button themeColour2;
         private System.Windows.Forms.Button themeColour3;
         private System.Windows.Forms.Button themeColour4;
+        private System.Windows.Forms.Button resetTheme;
     }
 }

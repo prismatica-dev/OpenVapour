@@ -14,6 +14,7 @@ namespace OpenVapour.OpenVapourAPI {
             { "background2", Color.FromArgb(173, 101, 255) },
             { "text1", Color.White },
             { "text2", Color.FromArgb(170, 170, 170) } };
+        internal static Dictionary<string, Color> OriginalTheme = WindowTheme;
         internal static Size WindowSize = new Size(806, 503);
         internal static Dictionary<TorrentSource, Implementation> TorrentSources = GetImplementations(SourceScores);
         internal static Dictionary<DirectSource, Implementation> DirectSources = GetImplementations(DirectSourceScores);

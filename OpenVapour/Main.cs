@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -56,6 +55,7 @@ namespace OpenVapour {
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
             WebRequest.DefaultWebProxy = null;
+            UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             UpdateStyles();
             CheckCompatibility();
@@ -485,7 +485,6 @@ namespace OpenVapour {
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
-            Console.WriteLine(currentgame.AppId);
 
             if (_.Length != 0)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {

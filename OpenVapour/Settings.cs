@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static OpenVapour.Torrent.TorrentSources;
@@ -36,12 +37,7 @@ namespace OpenVapour {
 
         private void SettingsLoad(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
-            themeColour1.BackColor = WindowTheme["background1"];
-            themeColour2.BackColor = WindowTheme["background2"];
-            themeColour3.BackColor = WindowTheme["text1"];
-            themeColour4.BackColor = WindowTheme["text2"];
-            UpdateControls(this);
-            DrawGradient();
+            LoadTheme();
 
             // disable horizontal scrollbars
             torrentSourcesContainer.HorizontalScroll.Maximum = 0;
@@ -72,9 +68,17 @@ namespace OpenVapour {
             BackgroundImage = background; }
 
         private void UpdateControls(Control ctrl, bool First = true) {
-            Console.WriteLine($"{ForeColor.R},{ForeColor.G},{ForeColor.B}");
             if (ctrl.ForeColor == ForeColor && !First) ctrl.ForeColor = WindowTheme["text1"];
             foreach (Control sctrl in ctrl.Controls) UpdateControls(sctrl, false); }
+
+        private void LoadTheme() {
+            themeColour1.BackColor = WindowTheme["background1"];
+            themeColour2.BackColor = WindowTheme["background2"];
+            themeColour3.BackColor = WindowTheme["text1"];
+            themeColour4.BackColor = WindowTheme["text2"];
+            UpdateControls(this);
+            ForeColor = WindowTheme["text1"];
+            DrawGradient(); }
 
         private void UpdateTheme() {
             WindowTheme["background1"] = themeColour1.BackColor;
@@ -88,4 +92,9 @@ namespace OpenVapour {
         private void ChangeColour(object sender, EventArgs e) {
             ColorDialog cd = new ColorDialog { Color = (sender as Control).BackColor, FullOpen = true, AnyColor = true, AllowFullOpen = true };
             if (cd.ShowDialog() == DialogResult.OK) (sender as Control).BackColor = cd.Color;
-            UpdateTheme(); }}}
+            UpdateTheme(); }
+
+        private void ResetTheme(object sender, EventArgs e) { 
+            UserSettings.WindowTheme = UserSettings.OriginalTheme.ToDictionary(n => n.Key, n => n.Value);
+            WindowTheme = UserSettings.WindowTheme;
+            LoadTheme(); }}}

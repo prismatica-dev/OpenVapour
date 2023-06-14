@@ -26,7 +26,7 @@ namespace OpenVapour.OpenVapourAPI {
                 g.FillRectangles(Brushes.Black, new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius), new RectangleF(0, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new RectangleF(r.Width - BorderRadius, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) });
                 g.FillRectangles(new SolidBrush(color), new RectangleF[] { new RectangleF(0, 0, r.Width, BorderRadius), new RectangleF(0, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new RectangleF(r.Width - BorderRadius, BorderRadius, BorderRadius, r.Height - BorderRadius * 2), new Rectangle(0, r.Height - BorderRadius, r.Width, BorderRadius) }); }
             return r; }
-        internal static Image QuickModify(Image image, Color color, int BorderRadius, Font OverlayFont, string Overlay, Color OverlayColor) {
+        internal static Image QuickModify(Image image, Color color, int BorderRadius, Font OverlayFont, string Overlay) {
             if (image == null) return null;
             Bitmap r = ((Bitmap)image).Clone(new Rectangle(0, 0, image.Width, image.Height), image.PixelFormat);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(r)) {
