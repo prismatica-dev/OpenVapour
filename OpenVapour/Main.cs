@@ -374,7 +374,7 @@ namespace OpenVapour {
         private void GameClickStart(object sender, MouseEventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             if (pbs[2] == null) 
-                if (pbl[1] is ResultTorrent rt) pbs[2] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 177), 5, Font, GetSourceName(rt.Source), Color.FromArgb(125, 117, 225, 177));
+                if (pbl[1] is ResultTorrent rt) pbs[2] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 177), 5, Font, GetSourceName(rt.Source));
                 else pbs[2] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 177));
             pb.Image = pbs[2];
             ForceUpdate(); }
@@ -385,7 +385,7 @@ namespace OpenVapour {
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             if (pbs[1] == null) 
-                if (pbl[1] is ResultTorrent rt) pbs[1] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 255), 5, Font, GetSourceName(rt.Source), Color.FromArgb(125, 117, 225, 177));
+                if (pbl[1] is ResultTorrent rt) pbs[1] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 255), 5, Font, GetSourceName(rt.Source));
                 else pbs[1] = Graphics.QuickModify(pbs[0], Color.FromArgb(125, 117, 225, 255));
             pb.Image = pbs[1];
             Panel popup = (Panel)pbl[3];
