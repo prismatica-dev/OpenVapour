@@ -98,7 +98,7 @@ namespace OpenVapour {
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0); }}
 
-        private const int RESIZE_HANDLE_SIZE = 5;
+        private const int RESIZE_HANDLE_SIZE = 12;
         private const int RESIZE_BUFFER_SIZE = 3;
         protected override void WndProc(ref Message m) {
             switch (m.Msg) {
@@ -121,9 +121,10 @@ namespace OpenVapour {
             base.WndProc(ref m); }
         protected override void OnPaint(PaintEventArgs e) {
             e.Graphics.FillRectangles(new SolidBrush(Color.FromArgb(50, 0, 0, 0)), new Rectangle[] {
-                new Rectangle(0, 25, RESIZE_BUFFER_SIZE, Height - 25),
-                new Rectangle(Width - RESIZE_BUFFER_SIZE, 25, RESIZE_BUFFER_SIZE, Height - 25),
-                new Rectangle(RESIZE_BUFFER_SIZE, Height - RESIZE_BUFFER_SIZE, Width - RESIZE_BUFFER_SIZE * 2, RESIZE_BUFFER_SIZE)}); }
+                    new Rectangle(0, 25, RESIZE_BUFFER_SIZE, Height - 25),
+                    new Rectangle(Width - RESIZE_BUFFER_SIZE, 25, RESIZE_BUFFER_SIZE, Height - 25),
+                    new Rectangle(RESIZE_BUFFER_SIZE, Height - RESIZE_BUFFER_SIZE, Width - RESIZE_BUFFER_SIZE * 2, RESIZE_BUFFER_SIZE)}); }
+        private void BaseMouseUp(object sender, MouseEventArgs e) => DrawGradient();
 
         internal Panel CreatePopUp(PictureBox selector, string Name, string Description, string Publish = "") {
             List<object> pbo = (List<object>)selector.Tag;
@@ -615,7 +616,8 @@ namespace OpenVapour {
             gamedescpanel.VerticalScroll.Maximum = gamedesc.Height;
             gamedescpanel.VerticalScroll.Enabled = true;
             gamedescpanel.VerticalScroll.Visible = true;
-            gamedescpanel.AutoScroll = true; }
+            gamedescpanel.AutoScroll = true;
+            DrawGradient(); }
 
         private bool FiltersGenerated = false;
         private void FilterSearchFocused(object sender, EventArgs e) { 

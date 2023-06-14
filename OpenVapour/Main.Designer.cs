@@ -401,6 +401,7 @@
             this.steampage.Click += new System.EventHandler(this.SteamPage_Click);
             this.steampage.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.steampage.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
+            this.steampage.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // TorrentSearchContainer
             // 
@@ -430,6 +431,7 @@
             this.torrentsearch.Click += new System.EventHandler(this.TorrentSearch);
             this.torrentsearch.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.torrentsearch.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
+            this.torrentsearch.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
             // 
             // MagnetButtonContainer
             // 
@@ -638,7 +640,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orchid;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(806, 503);
             this.Controls.Add(this.filtersPanel);
             this.Controls.Add(this.gamepanel);
@@ -662,6 +664,7 @@
             this.Shown += new System.EventHandler(this.MainShown);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.BackgroundTearingFix);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BaseMouseUp);
             this.Resize += new System.EventHandler(this.Resized);
             this.toolbar.ResumeLayout(false);
             this.toolbar.PerformLayout();
