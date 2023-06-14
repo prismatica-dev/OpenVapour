@@ -147,7 +147,7 @@ namespace OpenVapour.OpenVapourAPI {
 
                 if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"\n{logformat}");
                 else { 
-                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
+                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
                     LogWritten = true; }
             } catch (Exception ex) { HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
 
