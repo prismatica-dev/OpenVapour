@@ -141,7 +141,7 @@ namespace OpenVapour.Torrent {
                         // skip first non-item result
                         if (items.Count() > 1)
                             for (int i = 1; i < items.Count(); i++) {
-                                if (Source == TorrentSource.SteamRIP && items[i].Contains("TORRENT")) continue;
+                                if (Source == TorrentSource.SteamRIP && !items[i].Contains("TORRENT")) continue;
                                 ResultTorrent torrent = new ResultTorrent(Source, items[i]);
 
                                 // source specific irrelevance

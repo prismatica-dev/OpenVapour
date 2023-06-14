@@ -68,8 +68,7 @@ namespace OpenVapour.Web {
                 using (MemoryStream ms = new MemoryStream()) {
                     (await req.GetResponseAsync()).GetResponseStream().CopyTo(ms);
                     return ms.ToArray(); }
-            } catch (Exception ex) {
-                Utilities.HandleException($"WebCore.GetWebBytes({Url})", ex); }
+            } catch (Exception ex) { Utilities.HandleException($"WebCore.GetWebBytes({Url})", ex); }
             return new byte[0]; }
 
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
