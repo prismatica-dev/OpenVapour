@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
+            this.searchButton = new System.Windows.Forms.Button();
             this.manageFilters = new System.Windows.Forms.Button();
             this.searchtextbox = new System.Windows.Forms.Panel();
             this.manageSettings = new System.Windows.Forms.Button();
@@ -87,6 +88,7 @@
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolbar.Controls.Add(this.searchButton);
             this.toolbar.Controls.Add(this.manageFilters);
             this.toolbar.Controls.Add(this.searchtextbox);
             this.toolbar.Controls.Add(this.manageSettings);
@@ -102,6 +104,24 @@
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
+            // searchButton
+            // 
+            this.searchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.searchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(70)))), ((int)(((byte)(180)))), ((int)(((byte)(70)))));
+            this.searchButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.searchButton.FlatAppearance.BorderSize = 0;
+            this.searchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.searchButton.Font = new System.Drawing.Font("Segoe UI Light", 8F);
+            this.searchButton.ForeColor = System.Drawing.Color.White;
+            this.searchButton.Location = new System.Drawing.Point(756, 0);
+            this.searchButton.Margin = new System.Windows.Forms.Padding(0);
+            this.searchButton.Name = "searchButton";
+            this.searchButton.Size = new System.Drawing.Size(25, 25);
+            this.searchButton.TabIndex = 9;
+            this.searchButton.Text = ">";
+            this.searchButton.UseVisualStyleBackColor = false;
+            this.searchButton.Click += new System.EventHandler(this.SearchButton);
+            // 
             // manageFilters
             // 
             this.manageFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -111,7 +131,7 @@
             this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.manageFilters.ForeColor = System.Drawing.Color.White;
-            this.manageFilters.Location = new System.Drawing.Point(556, 0);
+            this.manageFilters.Location = new System.Drawing.Point(531, 0);
             this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
             this.manageFilters.Name = "manageFilters";
             this.manageFilters.Size = new System.Drawing.Size(25, 25);
@@ -125,7 +145,7 @@
             this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(581, 0);
+            this.searchtextbox.Location = new System.Drawing.Point(556, 0);
             this.searchtextbox.Name = "searchtextbox";
             this.searchtextbox.Size = new System.Drawing.Size(200, 25);
             this.searchtextbox.TabIndex = 5;
@@ -140,7 +160,7 @@
             this.manageSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageSettings.Font = new System.Drawing.Font("Segoe UI Light", 9F);
             this.manageSettings.ForeColor = System.Drawing.Color.White;
-            this.manageSettings.Location = new System.Drawing.Point(487, 0);
+            this.manageSettings.Location = new System.Drawing.Point(462, 0);
             this.manageSettings.Margin = new System.Windows.Forms.Padding(0);
             this.manageSettings.Name = "manageSettings";
             this.manageSettings.Size = new System.Drawing.Size(69, 25);
@@ -163,6 +183,7 @@
             this.exit.Name = "exit";
             this.exit.Size = new System.Drawing.Size(25, 25);
             this.exit.TabIndex = 6;
+            this.exit.Text = "x";
             this.exit.UseVisualStyleBackColor = false;
             this.exit.Click += new System.EventHandler(this.Exit_Click);
             // 
@@ -711,6 +732,7 @@
         private System.Windows.Forms.TextBox filterSearch;
         private System.Windows.Forms.Panel filterControlsContainer;
         private System.Windows.Forms.Button resetFilters;
+        private System.Windows.Forms.Button searchButton;
     }
 }
 

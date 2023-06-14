@@ -439,6 +439,8 @@ namespace OpenVapour {
 
         private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) { 
+                if (realsearchtb.Text == "Search") realsearchtb.Text = "";
+
                 if (e.Control) {
                     UseWaitCursor = true;
                     currentgame = new SteamGame("") { Name = realsearchtb.Text };
@@ -479,14 +481,14 @@ namespace OpenVapour {
                             Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(torrent); });
                     Task.Run(() => getresults);
                     }); }
-
             if (_.Length > 7)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                     if (SourceScores[source].Item3 != Implementation.Enabled) continue;
                     Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (Task<ResultTorrent> torrenttask in results.Result)
-                            AsyncAddTorrent(torrenttask); }); }}
+                            AsyncAddTorrent(torrenttask); });
+                    Task.Run(() => getresults); }}
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
@@ -664,4 +666,6 @@ namespace OpenVapour {
                 ctrl.Visible = false; }
             clearing = false;
             filtersPanel.Height = 56;
-            ForceUpdate(); }}}
+            ForceUpdate(); }
+
+        private void SearchButton(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter)); }}
