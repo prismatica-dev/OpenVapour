@@ -69,6 +69,7 @@ namespace OpenVapour {
 
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
+            ForeColor = UserSettings.WindowTheme["text1"];
             DrawGradient();
 
             store.AutoScroll = false;
@@ -144,7 +145,7 @@ namespace OpenVapour {
             Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0))), BackColor = Color.Transparent };
             Label gamedate = null;
             if (!string.IsNullOrWhiteSpace(Publish))
-                gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish.Replace("+0000", ""), BackColor = Color.Transparent, ForeColor = Color.FromArgb(170, 170, 170), Parent = popup };
+                gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish.Replace("+0000", ""), BackColor = Color.Transparent, ForeColor = UserSettings.WindowTheme["text2"], Parent = popup };
             gamename.Font = Utilities.FitFont(Font, gamename.Text, gamename.MaximumSize);
 
             if (gameart.Image != null) {

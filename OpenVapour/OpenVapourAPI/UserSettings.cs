@@ -11,7 +11,9 @@ namespace OpenVapour.OpenVapourAPI {
         
         internal static Dictionary<string, Color> WindowTheme = new Dictionary<string, Color> {
             { "background1", Color.FromArgb(56, 177, 96) },
-            { "background2", Color.FromArgb(173, 101, 255) }};
+            { "background2", Color.FromArgb(173, 101, 255) },
+            { "text1", Color.White },
+            { "text2", Color.FromArgb(170, 170, 170) } };
         internal static Size WindowSize = new Size(806, 503);
         internal static Dictionary<TorrentSource, Implementation> TorrentSources = GetImplementations(SourceScores);
         internal static Dictionary<DirectSource, Implementation> DirectSources = GetImplementations(DirectSourceScores);
@@ -54,12 +56,12 @@ namespace OpenVapour.OpenVapourAPI {
                 if (File.Exists($"{DedicatedSettings}\\window-theme.ini"))
                     foreach (string theme in File.ReadAllLines($"{DedicatedSettings}\\window-theme.ini")) {
                         string[] args = theme.Split(',');
-                        WindowTheme[args[0]] = Color.FromArgb(ToIntSafe(args[1]), ToIntSafe(args[2]), ToIntSafe(args[3]), ToIntSafe(args[4])); }
+                        if (args.Length > 0 && WindowTheme.ContainsKey(args[0]))
+                            WindowTheme[args[0]] = Color.FromArgb(ToIntSafe(args[1]), ToIntSafe(args[2]), ToIntSafe(args[3]), ToIntSafe(args[4])); }
                 
                 if (File.Exists($"{DedicatedSettings}\\window-configuration.ini")) {
                     string[] config = File.ReadAllLines($"{DedicatedSettings}\\window-configuration.ini");
-                    try {
-                        WindowSize = new Size(ToIntSafe(config[0]), ToIntSafe(config[1]));
+                    try { WindowSize = new Size(ToIntSafe(config[0]), ToIntSafe(config[1]));
                     } catch (Exception ex) { HandleException($"UserSettings.LoadSettings() [window-configuration.ini]", ex); File.Delete($"{DedicatedSettings}\\window-configuration.ini"); }
             }} catch (Exception ex) { 
                 HandleException($"UserSettings.LoadSettings()", ex);
@@ -73,10 +75,12 @@ namespace OpenVapour.OpenVapourAPI {
                 CheckSettings();
                 List<string> ts = new List<string>();
                 List<string> ds = new List<string>();
+                List<string> themekeys = new List<string>();
                 foreach (TorrentSource _ts in TorrentSources.Keys) ts.Add($"{(int)_ts}|{(int)TorrentSources[_ts]}");
                 foreach (DirectSource _ds in DirectSources.Keys) ds.Add($"{(int)_ds}|{(int)DirectSources[_ds]}");
+                foreach (string key in WindowTheme.Keys) { themekeys.Add(ExtractTheme(key)); }
                 File.WriteAllLines($"{DedicatedSettings}\\torrent-sources.ini", ts);
                 File.WriteAllLines($"{DedicatedSettings}\\direct-sources.ini", ds);
-                File.WriteAllText($"{DedicatedSettings}\\window-theme.ini", $"{ExtractTheme("background1")}\n{ExtractTheme("background2")}");
+                File.WriteAllText($"{DedicatedSettings}\\window-theme.ini", string.Join("\n", themekeys));
                 File.WriteAllText($"{DedicatedSettings}\\window-configuration.ini", $"{WindowSize.Width}\n{WindowSize.Height}");
             } catch (Exception ex) { HandleException("UserSettings.SaveSettings()", ex); }}}}

@@ -23,7 +23,6 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             this.torrentSourcesHeader = new System.Windows.Forms.Label();
             this.torrentSourcesContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.directSourcesHeader = new System.Windows.Forms.Label();
@@ -32,6 +31,8 @@
             this.windowThemeHeader = new System.Windows.Forms.Label();
             this.themeColour1 = new System.Windows.Forms.Button();
             this.themeColour2 = new System.Windows.Forms.Button();
+            this.themeColour3 = new System.Windows.Forms.Button();
+            this.themeColour4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // torrentSourcesHeader
@@ -136,12 +137,40 @@
             this.themeColour2.UseVisualStyleBackColor = false;
             this.themeColour2.Click += new System.EventHandler(this.ChangeColour);
             // 
+            // themeColour3
+            // 
+            this.themeColour3.BackColor = System.Drawing.Color.White;
+            this.themeColour3.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.themeColour3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.themeColour3.ForeColor = System.Drawing.Color.White;
+            this.themeColour3.Location = new System.Drawing.Point(5, 346);
+            this.themeColour3.Name = "themeColour3";
+            this.themeColour3.Size = new System.Drawing.Size(94, 32);
+            this.themeColour3.TabIndex = 8;
+            this.themeColour3.UseVisualStyleBackColor = false;
+            this.themeColour3.Click += new System.EventHandler(this.ChangeColour);
+            // 
+            // themeColour4
+            // 
+            this.themeColour4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(170)))));
+            this.themeColour4.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.themeColour4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.themeColour4.ForeColor = System.Drawing.Color.White;
+            this.themeColour4.Location = new System.Drawing.Point(101, 346);
+            this.themeColour4.Name = "themeColour4";
+            this.themeColour4.Size = new System.Drawing.Size(94, 32);
+            this.themeColour4.TabIndex = 9;
+            this.themeColour4.UseVisualStyleBackColor = false;
+            this.themeColour4.Click += new System.EventHandler(this.ChangeColour);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MediumOrchid;
-            this.ClientSize = new System.Drawing.Size(200, 348);
+            this.ClientSize = new System.Drawing.Size(200, 381);
+            this.Controls.Add(this.themeColour4);
+            this.Controls.Add(this.themeColour3);
             this.Controls.Add(this.themeColour2);
             this.Controls.Add(this.themeColour1);
             this.Controls.Add(this.windowThemeHeader);
@@ -153,7 +182,6 @@
             this.Font = new System.Drawing.Font("Segoe UI Light", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -179,5 +207,7 @@
         private System.Windows.Forms.Label windowThemeHeader;
         private System.Windows.Forms.Button themeColour1;
         private System.Windows.Forms.Button themeColour2;
+        private System.Windows.Forms.Button themeColour3;
+        private System.Windows.Forms.Button themeColour4;
     }
 }
