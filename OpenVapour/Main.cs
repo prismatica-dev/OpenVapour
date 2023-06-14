@@ -344,6 +344,7 @@ namespace OpenVapour {
         private void GameTorrentClick(object sender, EventArgs e) {
             try {
                 InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
+                GameHoverEnd(sender, e);
                 object game = pbl[1];
                 if (game is SteamGame steamgame) {
                     if (!gamepanelopen) LoadGame(steamgame, pbs[0]); 
@@ -376,7 +377,8 @@ namespace OpenVapour {
             ForceUpdate(); }
         private void GameClickEnd(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> _, out List<Image> pbs);
-            if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0]; }
+            if (hover) pb.Image = pbs[1]; else pb.Image = pbs[0];
+            GameHoverEnd(sender, e); }
         private async void GameHoverStart(object sender, EventArgs e) {
             InterpretPictureBox(sender, out PictureBox pb, out List<object> pbl, out List<Image> pbs);
             if (pbs[1] == null) 
