@@ -26,7 +26,8 @@ namespace OpenVapour.OpenVapourAPI {
             "</h1>", Environment.NewLine + Environment.NewLine, "</h2>", Environment.NewLine + Environment.NewLine,
             "\\t", "\t", "!", "! ", 
             ".", ". ", ". 0", ".0", 
-            "?", "? ", "â€", "" };
+            "?", "? ", "â€", "",
+            "store. steampowered. com", "store.steampowered.com" };
         private static bool ExceptionLogWritten = false;
         private static bool LogWritten = false;
         internal static bool CompatibilityMode = false;

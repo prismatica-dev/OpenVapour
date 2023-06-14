@@ -584,6 +584,7 @@
             this.filterSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.filterSearch.Dock = System.Windows.Forms.DockStyle.Top;
             this.filterSearch.Font = new System.Drawing.Font("Segoe UI Light", 14.25F);
+            this.filterSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(170)))));
             this.filterSearch.Location = new System.Drawing.Point(0, 30);
             this.filterSearch.Name = "filterSearch";
             this.filterSearch.Size = new System.Drawing.Size(200, 26);
