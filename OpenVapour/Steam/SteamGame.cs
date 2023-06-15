@@ -115,7 +115,7 @@ namespace OpenVapour.Steam {
                     if (cached != null && cached.AppId.Length != 0) return cached;
                     HandleLogging($"{AppId} fetching from cache failed!"); }
                 HandleLogging($"getting game '{AppId}' from steamapi");
-                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}");
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}", 8000, false);
                 HandleLogging("returning relevant json,,,");
                 SteamGame game = new SteamGame(GetAfter(JSON, "\"data\":{"));
                 CacheSteamGame(game);
