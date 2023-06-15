@@ -152,6 +152,7 @@ namespace OpenVapour {
             gameabout.BringToFront();
             gamename.BringToFront();
             popup.BringToFront();
+            selector.Invalidated += delegate { popup.Location = new Point(popup.Location.X, selector.Location.Y + toolbar.Height); };
             popup.ControlRemoved += delegate { popup.Dispose(); };
             return popup; }
 
@@ -198,7 +199,7 @@ namespace OpenVapour {
             Task.Run(() => add); }
         internal void AddTorrent(ResultTorrent torrent) {
             try {
-                if (torrent == null) return;
+                if (torrent == null || string.IsNullOrWhiteSpace(torrent.Name)) return;
                 if (torrent.TorrentUrl.Contains("paste.masquerade.site")) return; // dead site
                 PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
                 List<object> metalist = new List<object> { states, torrent, false };
@@ -219,8 +220,7 @@ namespace OpenVapour {
             await addgame; }
         internal void AddGame(SteamGame game) {
             try {
-                if (game == null) return;
-                if (string.IsNullOrEmpty(game.AppId) || string.IsNullOrWhiteSpace(game.Name)) return;
+                if (game == null || string.IsNullOrEmpty(game.AppId) || string.IsNullOrWhiteSpace(game.Name)) return;
 
                 if (InvokeRequired) {
                     BeginInvoke((MethodInvoker)delegate { AddGame(game); });
