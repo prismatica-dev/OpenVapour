@@ -68,6 +68,7 @@
             this.filterControlsContainer = new System.Windows.Forms.Panel();
             this.resetFilters = new System.Windows.Forms.Button();
             this.tagFilterHeader = new System.Windows.Forms.Label();
+            this.torrentButton = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -88,6 +89,7 @@
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolbar.Controls.Add(this.torrentButton);
             this.toolbar.Controls.Add(this.searchButton);
             this.toolbar.Controls.Add(this.manageFilters);
             this.toolbar.Controls.Add(this.searchtextbox);
@@ -113,7 +115,7 @@
             this.searchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.searchButton.Font = new System.Drawing.Font("Segoe UI Light", 8F);
             this.searchButton.ForeColor = System.Drawing.Color.White;
-            this.searchButton.Location = new System.Drawing.Point(756, 0);
+            this.searchButton.Location = new System.Drawing.Point(731, 0);
             this.searchButton.Margin = new System.Windows.Forms.Padding(0);
             this.searchButton.Name = "searchButton";
             this.searchButton.Size = new System.Drawing.Size(25, 25);
@@ -131,7 +133,7 @@
             this.manageFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageFilters.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.manageFilters.ForeColor = System.Drawing.Color.White;
-            this.manageFilters.Location = new System.Drawing.Point(531, 0);
+            this.manageFilters.Location = new System.Drawing.Point(506, 0);
             this.manageFilters.Margin = new System.Windows.Forms.Padding(0);
             this.manageFilters.Name = "manageFilters";
             this.manageFilters.Size = new System.Drawing.Size(25, 25);
@@ -145,7 +147,7 @@
             this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchtextbox.Location = new System.Drawing.Point(556, 0);
+            this.searchtextbox.Location = new System.Drawing.Point(531, 0);
             this.searchtextbox.Name = "searchtextbox";
             this.searchtextbox.Size = new System.Drawing.Size(200, 25);
             this.searchtextbox.TabIndex = 5;
@@ -160,7 +162,7 @@
             this.manageSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manageSettings.Font = new System.Drawing.Font("Segoe UI Light", 9F);
             this.manageSettings.ForeColor = System.Drawing.Color.White;
-            this.manageSettings.Location = new System.Drawing.Point(462, 0);
+            this.manageSettings.Location = new System.Drawing.Point(437, 0);
             this.manageSettings.Margin = new System.Windows.Forms.Padding(0);
             this.manageSettings.Name = "manageSettings";
             this.manageSettings.Size = new System.Drawing.Size(69, 25);
@@ -635,6 +637,24 @@
             this.tagFilterHeader.TabIndex = 0;
             this.tagFilterHeader.Text = "Filter by Tag";
             // 
+            // torrentButton
+            // 
+            this.torrentButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.torrentButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(180)))));
+            this.torrentButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.torrentButton.FlatAppearance.BorderSize = 0;
+            this.torrentButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.torrentButton.Font = new System.Drawing.Font("Segoe UI Light", 8F);
+            this.torrentButton.ForeColor = System.Drawing.Color.White;
+            this.torrentButton.Location = new System.Drawing.Point(756, 0);
+            this.torrentButton.Margin = new System.Windows.Forms.Padding(0);
+            this.torrentButton.Name = "torrentButton";
+            this.torrentButton.Size = new System.Drawing.Size(25, 25);
+            this.torrentButton.TabIndex = 10;
+            this.torrentButton.Text = "🧲";
+            this.torrentButton.UseVisualStyleBackColor = false;
+            this.torrentButton.Click += new System.EventHandler(this.QuickTorrent);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
@@ -737,6 +757,7 @@
         private System.Windows.Forms.Panel filterControlsContainer;
         private System.Windows.Forms.Button resetFilters;
         private System.Windows.Forms.Button searchButton;
+        private System.Windows.Forms.Button torrentButton;
     }
 }
 

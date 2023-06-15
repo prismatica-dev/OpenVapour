@@ -19,6 +19,7 @@ using static OpenVapour.Torrent.TorrentSources;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using OpenVapour.Web;
 using OpenVapour.Properties;
+using System.Web;
 
 namespace OpenVapour {
     internal partial class Main : Form {
@@ -457,11 +458,12 @@ namespace OpenVapour {
             searchtextbox.BackgroundImage = bit;
             ForceUpdate(); }
 
-        private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e) {
+        private void Realsearchtb_KeyDown(object sender, KeyEventArgs e) => Realsearchtb_KeyDown(sender, e, false);
+        private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e, bool quick) {
             if (e.KeyCode == Keys.Enter) { 
                 if (realsearchtb.Text == "Search") realsearchtb.Text = "";
 
-                if (e.Control) {
+                if (e.Control || quick) {
                     UseWaitCursor = true;
                     currentgame = new SteamGame("") { Name = realsearchtb.Text };
                     TorrentSearch(this, new EventArgs());
@@ -695,4 +697,8 @@ namespace OpenVapour {
             filtersPanel.Height = 56;
             ForceUpdate(); }
 
-        private void SearchButton(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter)); }}
+        private void SearchButton(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter));
+
+        private void QuickTorrent(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter), true);
+    }
+}
