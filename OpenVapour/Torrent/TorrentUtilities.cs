@@ -136,7 +136,7 @@ namespace OpenVapour.Torrent {
                         // scrape the rss2 feed to avoid cloudflare
                         string XML = await WebCore.GetWebString($"https://{name}/search/{Uri.EscapeDataString(Name)}/feed/rss2/", 10000);
                         string[] items = XML.Split(new string[] { "<item>" }, StringSplitOptions.RemoveEmptyEntries);
-                        HandleLogging($"[PCGT] found {items.Count():N0} torrents!");
+                        HandleLogging($"[{name}] found {items.Count():N0} torrents!");
 
                         // skip first non-item result
                         if (items.Count() > 1)
@@ -146,7 +146,7 @@ namespace OpenVapour.Torrent {
 
                                 // source specific irrelevance
                                 if (Source == TorrentSource.FitgirlRepacks && !torrent.TorrentUrl.StartsWith("magnet:?xt")) continue;
-                                else if (Source == TorrentSource.GOG && GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
+                                // else if (Source == TorrentSource.GOG && GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
                                 
                                 results.Add(torrent);
                                 HandleLogging($"[{name}] found torrent {torrent.Url}");

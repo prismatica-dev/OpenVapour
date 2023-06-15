@@ -100,7 +100,8 @@ namespace OpenVapour {
         internal void DrawGradient() {
             BackColor = UserSettings.WindowTheme["background2"];
             BackgroundImage?.Dispose();
-            BackgroundImage = Graphics.DrawGradient(Width, Height); }
+            if (BackColor == UserSettings.WindowTheme["background1"]);
+                BackgroundImage = Graphics.DrawGradient(Width, Height); }
 
         internal const int WM_NCLBUTTONDOWN = 0xA1;
         internal const int HT_CAPTION = 0x2;
@@ -150,11 +151,13 @@ namespace OpenVapour {
         internal Panel CreatePopUp(PictureBox selector, string Name, string Description, string Publish = "") {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
+            string _d = "";
+            if (Description.Length > 0) _d = Description.Replace("store. steampowered. com", "store.steampowered.com").Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0)));
 
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = UserSettings.WindowTheme["text1"], Visible = false, Name = "Popup" };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
             Label gamename = new Label { AutoSize = true, Location = new Point(114, 5), MaximumSize = new Size(201, 35), Font = new Font("Segoe UI Light", 18f, FontStyle.Regular), Text = Name, BackColor = Color.Transparent };
-            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = Description.Replace("store. steampowered. com", "store.steampowered.com").Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0))), BackColor = Color.Transparent };
+            Label gameabout = new Label { AutoSize = true, Location = new Point(117, 40), MaximumSize = new Size(198, 92 + (Publish.Length==0?25:0)), Font = new Font("Segoe UI Light", 12f, FontStyle.Regular), Text = _d, BackColor = Color.Transparent };
             Label gamedate = null;
             if (!string.IsNullOrWhiteSpace(Publish))
                 gamedate = new Label { AutoSize = true, Location = new Point(117, 132), MaximumSize = new Size(198, 28), Font = new Font("Segoe UI Light", 14f, FontStyle.Italic), Text = Publish.Replace("+0000", ""), BackColor = Color.Transparent, ForeColor = UserSettings.WindowTheme["text2"], Parent = popup };
@@ -172,6 +175,7 @@ namespace OpenVapour {
             gameabout.BringToFront();
             gamename.BringToFront();
             popup.BringToFront();
+            toolbar.BringToFront();
             selector.Invalidated += delegate { popup.Location = new Point(popup.Location.X, selector.Location.Y + toolbar.Height); };
             popup.ControlRemoved += delegate { popup.Dispose(); };
             return popup; }
@@ -393,6 +397,7 @@ namespace OpenVapour {
             Panel popup = (Panel)pbl[3];
             popup.BringToFront();
             gamepanel.BringToFront();
+            toolbar.BringToFront();
 
             if (pb.Location.X >= Width - pb.Width - popup.Width - 5) popup.Location = new Point(pb.Location.X - popup.Width - 5, pb.Location.Y + toolbar.Height);
             else popup.Location = new Point(pb.Location.X + pb.Width + 5, pb.Location.Y + toolbar.Height);
