@@ -299,7 +299,7 @@
             this.toggleHomepage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.toggleHomepage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.toggleHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 12F);
+            this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 10F);
             this.toggleHomepage.Location = new System.Drawing.Point(-11, -11);
             this.toggleHomepage.MaximumSize = new System.Drawing.Size(54, 54);
             this.toggleHomepage.Name = "toggleHomepage";
@@ -608,7 +608,6 @@
             // resetFilters
             // 
             this.resetFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.resetFilters.Dock = System.Windows.Forms.DockStyle.Right;
             this.resetFilters.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.resetFilters.FlatAppearance.BorderSize = 0;
             this.resetFilters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;

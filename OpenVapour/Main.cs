@@ -75,7 +75,27 @@ namespace OpenVapour {
             store.Location = new Point(0, 0);
             store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
+
+            ButtonFix(this, true);
+            foreach (Control ctrl in toolbar.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
+            ContainButton(filterControlsContainer, resetFilters);
+
             DrawSearchBox(sender, e); }
+
+        internal void ContainButton(Control parent, Control ctrl) {
+            Panel container = new Panel { Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = parent };
+            ctrl.Parent = container;
+            ctrl.Location = new Point(-10, -10);
+            ctrl.Size = new Size(ctrl.Width + 20, ctrl.Height + 20); }
+
+        internal void ButtonFix(Control ctrl, bool initiate) {
+            if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
+            if (ctrl is Button) {
+                ctrl.MouseEnter += delegate { ForceUpdate(); };
+                ctrl.MouseLeave += delegate { ForceUpdate(); };
+                ctrl.MouseDown += delegate { ForceUpdate(); };
+                ctrl.MouseUp += delegate { ForceUpdate(); }; }
+            else foreach (Control sctrl in ctrl.Controls) ButtonFix(sctrl, false); }
 
         internal void DrawGradient() {
             BackColor = UserSettings.WindowTheme["background2"];
@@ -614,6 +634,7 @@ namespace OpenVapour {
             gamedescpanel.Size = new Size(gamepanel.Width + SystemInformation.VerticalScrollBarWidth, gamepanel.Height - 219);
             gamedesc.MaximumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, 0);
             gamedesc.MinimumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, gamedescpanel.Height);
+            toggleHomepageContainer.Location = new Point(gamedescpanel.Location.X + gamedesc.Location.X + gamedesc.Width - toggleHomepageContainer.Width, toggleHomepageContainer.Location.Y);
             gamedescpanel.AutoScroll = false;
             gamedescpanel.VerticalScroll.Maximum = gamedesc.Height;
             gamedescpanel.VerticalScroll.Enabled = true;
