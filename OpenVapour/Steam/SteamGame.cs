@@ -118,6 +118,6 @@ namespace OpenVapour.Steam {
                 string JSON = await WebCore.GetWebString($"https://store.steampowered.com/api/appdetails?appids={AppId}{(Basic ? "&filters=basic" : "")}", 8000, false);
                 HandleLogging("returning relevant json,,,");
                 SteamGame game = new SteamGame(GetAfter(JSON, "\"data\":{"));
-                CacheSteamGame(game);
+                if (!string.IsNullOrWhiteSpace(game.AppId) && !string.IsNullOrWhiteSpace(game.Name)) CacheSteamGame(game);
                 return game;
             } catch (Exception ex) { HandleException($"SteamCore.GetGame({AppId}, {Basic})", ex); return new SteamGame(""); }}}}

@@ -220,7 +220,7 @@ namespace OpenVapour {
         internal void AddGame(SteamGame game) {
             try {
                 if (game == null) return;
-                if (string.IsNullOrEmpty(game.AppId)) return;
+                if (string.IsNullOrEmpty(game.AppId) || string.IsNullOrWhiteSpace(game.Name)) return;
 
                 if (InvokeRequired) {
                     BeginInvoke((MethodInvoker)delegate { AddGame(game); });
