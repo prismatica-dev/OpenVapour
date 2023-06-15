@@ -45,15 +45,15 @@ namespace OpenVapour.Web {
         internal static string DecodeBlueMediaFiles(string EncodedUrl) {
             try {
                 Utilities.HandleLogging($"[BlueMediaFiles Bypass] Decoding {EncodedUrl}!");
-                EncodedUrl = Utilities.GetAfter(EncodedUrl, "=");
+                // EncodedUrl = Utilities.GetAfter(EncodedUrl, "=");
                     /*.Replace("https://bluemediafiles.com/get-url.php?url=", "")
                     .Replace("https://bluemediafiles.eu/get-url.php?url=", "")
                     .Replace("https://dl.pcgamestorrents.org/url-generator.php?url=", "")
                     .Replace("https://bluemediafiles.site/get-url.php?url=", "");*/
-                if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = EncodedUrl.Substring(EncodedUrl.IndexOf('=') + 1);
+                if (EncodedUrl.IndexOf('=') <= 60) EncodedUrl = Utilities.GetAfter(EncodedUrl, "=");
                 string URL = "";
                 for (int i = (EncodedUrl.Length / 2) - 5; i >= 0; i -= 2) URL += EncodedUrl[i];
                 for (int i = (EncodedUrl.Length / 2) + 4; i < EncodedUrl.Length; i += 2) URL += EncodedUrl[i];
-                Utilities.HandleLogging("decoded " + EncodedUrl + "!");
+                Utilities.HandleLogging($"[BlueMediaFiles Bypass] Decoded to {URL}!");
                 return URL; } 
             catch (Exception ex) { Utilities.HandleException($"WebInternals.DecodeBlueMediaFiles({EncodedUrl})", ex); return ""; }}}}

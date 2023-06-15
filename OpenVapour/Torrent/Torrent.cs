@@ -106,7 +106,7 @@ namespace OpenVapour.Torrent {
 
                     switch (Source) {
                         case TorrentSource.PCGamesTorrents:
-                            TorrentUrl = GetBetween(JSON, "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
+                            TorrentUrl = GetBetween(GetAfter(JSON, "TORRENT"), "a href=\"", "\""); // needs to load url shortener page then bypass waiting period
                             break;
                     
                         case TorrentSource.FitgirlRepacks:
