@@ -108,9 +108,9 @@ namespace OpenVapour.OpenVapourAPI {
                     Process.GetCurrentProcess().Kill(); }}
             catch (Exception ex) { HandleException($"Utilities.UpdateProgram({TagName})", ex); }}
 
-        internal static void OpenUrl(string Url) {
-            try { Process.Start(new ProcessStartInfo(Url) { UseShellExecute = true, Verb = "open" });
-            } catch (Exception ex) { HandleException($"Utilities.OpenUrl({Url})", ex); }}
+        internal static bool OpenUrl(string Url) {
+            try { Process.Start(new ProcessStartInfo(Url) { UseShellExecute = true, Verb = "open" }); return true;
+            } catch (Exception ex) { HandleException($"Utilities.OpenUrl({Url})", ex); return false; }}
 
         internal static string GetBetween(string String, string BetweenStart, string BetweenEnd) {
             try {
@@ -202,7 +202,7 @@ namespace OpenVapour.OpenVapourAPI {
             while (!fit) {
                 Size s = TextRenderer.MeasureText(text, font, size);
                 if (s.Width > size.Width || s.Height > size.Height) {
-                    font = new Font(font.FontFamily, font.Size * .9f, font.Style);
+                    font = new Font(font.FontFamily, font.Size * .93f, font.Style);
                     if (font.Size < .5f) fit = true;
                 } else fit = true; }
             return font; }

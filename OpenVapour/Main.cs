@@ -580,12 +580,14 @@ namespace OpenVapour {
             try {
                 if (magnet.Length > 0) {
                     Utilities.HandleLogging("opening magnet url " + magnet);
-                    Utilities.OpenUrl(magnet);
-                    magnetbutton.Text = "Success"; 
+                    if (Utilities.OpenUrl(magnet))
+                        magnetbutton.Text = "Success"; 
+                    else if (!copied)
+                        magnetbutton.Text = "Failed";
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
                 else {
-                    magnetbutton.Text = "Blank";
+                    magnetbutton.Text = "No URL";
                     ForceUpdate(); }
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Process]", ex); 

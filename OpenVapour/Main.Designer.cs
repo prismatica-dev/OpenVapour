@@ -475,6 +475,7 @@
             this.gamename.Size = new System.Drawing.Size(203, 41);
             this.gamename.TabIndex = 6;
             this.gamename.Text = "Content Name";
+            this.gamename.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // realsearchtb
             // 
