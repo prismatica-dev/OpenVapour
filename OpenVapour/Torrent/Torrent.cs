@@ -5,6 +5,7 @@ using static OpenVapour.Torrent.TorrentSources;
 using static OpenVapour.OpenVapourAPI.Utilities;
 using static OpenVapour.Torrent.TorrentUtilities;
 using OpenVapour.OpenVapourAPI;
+using System.Text;
 
 namespace OpenVapour.Torrent {
     internal class Torrent {
@@ -164,13 +165,13 @@ namespace OpenVapour.Torrent {
             internal async Task<string> GetMagnet() {
                 switch (Source) {
                     case TorrentSource.PCGamesTorrents:
-                        return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebInternals.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl), "Goroi_n_Create_Button(\"", "\")"))}"), "value=\"", "\"");
+                        return GetBetween(await WebCore.GetWebString($"https://dl.pcgamestorrents.org/get-url.php?url={WebInternals.DecodeBlueMediaFiles(GetBetween(await WebCore.GetWebString(TorrentUrl, 7000), "Goroi_n_Create_Button(\"", "\")"))}", 7000), "value=\"", "\"");
 
                     case TorrentSource.FitgirlRepacks:
                         return TorrentUrl;
 
                     case TorrentSource.SevenGamers:
-                        return $"https://www.seven-gamers.com/fm/{GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl), "<a class=\"maxbutton-2 maxbutton maxbutton-torrent\" target=\"_blank\" rel=\"nofollow noopener\" href=\"", "\"")), "<a class=\"btn btn-primary main-btn py-3 d-flex w-100\" href=\"", "\"")}";
+                        return $"https://www.seven-gamers.com/fm/{GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl, 7000), "<a class=\"maxbutton-2 maxbutton maxbutton-torrent\" target=\"_blank\" rel=\"nofollow noopener\" href=\"", "\"")), "<a class=\"btn btn-primary main-btn py-3 d-flex w-100\" href=\"", "\"")}";
 
                     case TorrentSource.KaOs:
                         // despite all my rage, even if held at gunpoint i would refuse to try to find a stupid linkvertise bypass
@@ -185,10 +186,10 @@ namespace OpenVapour.Torrent {
                         return Url;
 
                     case TorrentSource.GOG:
-                        return GetBetween(await WebCore.GetWebString(GetBetween(await WebCore.GetWebString(TorrentUrl, 3500), "\"download-btn\" href=\"", "\"")), "value=\"", "\"");
+                        return Encoding.UTF8.GetString(Convert.FromBase64String(GetBetween(GetAfter(await WebCore.GetWebString(TorrentUrl, 7000), "Download Here"), "?url=", "\"")));
 
                     case TorrentSource.Xatab:
-                        return MagnetFromTorrent(Url, await WebCore.GetWebBytes($"https://byxatab.com/index.php?do=download{GetBetween(await WebCore.GetWebString(TorrentUrl, 4000), "<a href=\"https://byxatab.com/index.php?do=download", "\"")}"));
+                        return MagnetFromTorrent(Url, await WebCore.GetWebBytes($"https://byxatab.com/index.php?do=download{GetBetween(await WebCore.GetWebString(TorrentUrl, 7000), "<a href=\"https://byxatab.com/index.php?do=download", "\"")}"));
 
                     case TorrentSource.Unknown:
                     default:
