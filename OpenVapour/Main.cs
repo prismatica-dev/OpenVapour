@@ -559,9 +559,8 @@ namespace OpenVapour {
                         foreach (ResultTorrent torrent in results.Result)
                             Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { 
                                 if (Session == session) 
-                                    AddTorrent(torrent); });
-                    Task.Run(() => getresults);
-                    }); }
+                                    AddTorrent(torrent); }); });
+                    Task.Run(() => getresults); }
             if (_.Length > 7)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
                     if (SourceScores[source].Item3 != Implementation.Enabled) continue;
