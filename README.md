@@ -16,7 +16,7 @@ Of course, you should always use a VPN when using OpenVapour, but it will handle
 2. Stable- crashes are extremely rare
 3. Reputable configurable torrent sources
 4. User has full control over sources and theming
-5. Extremely lightweight (less than 400kb!)
+5. Extremely lightweight (less than 200kb!)
 6. No setup, no bullshit. Out-of-box ready for anyone to use.
 
 If you do come across any bugs, please report them [here!](https://github.com/lily-software/OpenVapour/issues)
@@ -27,7 +27,7 @@ Personally, I highly encourage use of [qBittorrent](https://www.qbittorrent.org/
 
 ## Download
 ### [Direct Download](https://github.com/lily-software/OpenVapour/releases/latest/download/OpenVapour.exe)
-or view releases [here](https://github.com/lily-software/OpenVapour/releases)
+or view all releases [here](https://github.com/lily-software/OpenVapour/releases)
 
 ## Customisability
 Of course, no application would be complete without theming. With OpenVapour, you can build a homepage of games so you have quick access to them when an update is released! Games are automatically added as you torrent them, but you can add/remove any at any time. Additionally, you can change the background colours to whatever you find perfect! And, you can filter your searches with all the same filters as Steam.
