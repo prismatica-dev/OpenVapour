@@ -67,7 +67,7 @@ namespace OpenVapour.Steam {
             } catch (Exception ex) { HandleException($"SteamCore.GetSuggestions({Search})", ex); }
             return suggestions; }
 
-        internal static async Task<List<ResultGame>> GetResults(string Search, SteamTag[] Tags = null, int MaxResults = 10, bool extendTimeout = false) {
+        internal static async Task<List<ResultGame>> GetResults(int Session, string Search, SteamTag[] Tags = null, int MaxResults = 10, bool extendTimeout = false) {
             List<ResultGame> results = new List<ResultGame>();
             int _r = 0;
             try {
@@ -89,12 +89,12 @@ namespace OpenVapour.Steam {
                     Main main = null;
                     Application.OpenForms[0].Invoke((MethodInvoker)delegate { main = Application.OpenForms[0] as Main; });
                     main?.Invoke((MethodInvoker)delegate { 
-                        if (!IsSteamGameCached(last.AppId.ToString())) main.AsyncAddGame(last.AppId);
+                        if (!IsSteamGameCached(last.AppId.ToString())) main.AsyncAddGame(Session, last.AppId);
                         else {
                             Task<SteamGame> cachetask = LoadCachedSteamGame(last.AppId.ToString());
                             Task c = cachetask.ContinueWith((result) => { 
-                                if (result != null) main.AddGame(result.Result);
-                                else main.AsyncAddGame(last.AppId); }); }}); }
+                                if (result != null) main.AddGame(Session, result.Result);
+                                else main.AsyncAddGame(Session, last.AppId); }); }}); }
             } catch (Exception ex) { HandleException($"SteamCore.GetResults({Search})", ex); }
             return results; }
 

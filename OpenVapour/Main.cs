@@ -29,6 +29,7 @@ namespace OpenVapour {
         private ResultTorrent currenttorrent = new ResultTorrent(TorrentSource.Unknown, "");
         private bool hover = false;
         private bool clearing = false;
+        private int Session = 0;
 
         private void Main_Load(object sender, EventArgs e) {
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
@@ -270,20 +271,20 @@ namespace OpenVapour {
                 
                 AddPanelEvents(panel);
                 ForceUpdate();
-                LoadGameTorrentBitmap(torrent, panel); }
+                LoadGameTorrentBitmap(Session, torrent, panel); }
             catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); }}
         
-        internal async void AsyncAddGame(int AppId, bool Basic = false) {
+        internal async void AsyncAddGame(int Session, int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
             Task addgame = game.ContinueWith((result) => {
-                Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddGame(result.Result); }); });
+                Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddGame(Session, result.Result); }); });
             await addgame; }
-        internal void AddGame(SteamGame game) {
+        internal void AddGame(int Session, SteamGame game) {
             try {
-                if (game == null || string.IsNullOrEmpty(game.AppId) || string.IsNullOrWhiteSpace(game.Name)) return;
+                if (Session != this.Session || game == null || string.IsNullOrEmpty(game.AppId) || string.IsNullOrWhiteSpace(game.Name)) return;
 
                 if (InvokeRequired) {
-                    BeginInvoke((MethodInvoker)delegate { AddGame(game); });
+                    BeginInvoke((MethodInvoker)delegate { AddGame(Session, game); });
                     return; }
 
                 Utilities.HandleLogging($"{game.Name} loading!");
@@ -300,13 +301,13 @@ namespace OpenVapour {
 
                 AddPanelEvents(panel);
                 try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
-                LoadGameTorrentBitmap(game, panel);
+                LoadGameTorrentBitmap(Session, game, panel);
             } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId})", ex); }}
 
-        internal void LoadGameTorrentBitmap(object game, PictureBox output) {
+        internal void LoadGameTorrentBitmap(int Session, object game, PictureBox output) {
             try {
                 if (InvokeRequired) {
-                    BeginInvoke((MethodInvoker)delegate { LoadGameTorrentBitmap(game, output); });
+                    BeginInvoke((MethodInvoker)delegate { LoadGameTorrentBitmap(Session, game, output); });
                     return; }
 
                 Task<Bitmap> imgTask = null;
@@ -333,7 +334,7 @@ namespace OpenVapour {
                     publish = rt.PublishDate.Replace("+0000", ""); }
 
                 Task cont = imgTask.ContinueWith((img) => {
-                    if (img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
+                    if (Session != this.Session || img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
                     List<Image> states = null;
                     if (torrent)
                         states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null };
@@ -513,15 +514,18 @@ namespace OpenVapour {
                 SteamSearch(s); }}
 
         private async void SteamSearch(string game, bool extendTimeout = false) {
+            NewSession();
             List<SteamTag> tags = new List<SteamTag>();
             foreach (Control ctrl in tagFilterContainer.Controls)
                 if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
             ClearStore(); 
             int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
             UseWaitCursor = true;
-            List<ResultGame> res = await GetResults(game, tags.ToArray(), results, extendTimeout);
+            List<ResultGame> res = await GetResults(Session, game, tags.ToArray(), results, extendTimeout);
             if (res.Count == 0) NoResultsFound(game, true);
             UseWaitCursor = false; }
+
+        private int NewSession() => Session = new Random().Next(0, int.MaxValue);
 
         private void NoResultsFound(string Search, bool ShowTryAgain) { 
             Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 40), Location = new Point(50, 185), TextAlign = ContentAlignment.MiddleCenter, Visible = ShowTryAgain };
@@ -538,16 +542,14 @@ namespace OpenVapour {
             else Utilities.OpenUrl(currenttorrent.Url);
             ForceUpdate(); }
 
-        private int TorrentSearchID = 0;
         private void TorrentSearch(object sender, EventArgs e) {
+            int session = NewSession();
             ClearStore(); 
-            if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
+            if (currentgame != null && currentgame.AppId != "-1") AddGame(Session, currentgame);
             gamepanel.Visible = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
-            int session = new Random().Next(0, int.MaxValue);
-            TorrentSearchID = session;
 
             if (_.Length != 0)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
@@ -556,7 +558,7 @@ namespace OpenVapour {
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (ResultTorrent torrent in results.Result)
                             Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { 
-                                if (TorrentSearchID == session) 
+                                if (Session == session) 
                                     AddTorrent(torrent); });
                     Task.Run(() => getresults);
                     }); }
@@ -566,11 +568,11 @@ namespace OpenVapour {
                     Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (Task<ResultTorrent> torrenttask in results.Result)
-                            if (TorrentSearchID == session) 
+                            if (Session == session) 
                                 AsyncAddTorrent(torrenttask); });
                     Task.Run(() => getresults); }
             Timer resc = new Timer { Interval = 4000 };
-            resc.Tick += delegate { if (store.Controls.Count == 0 && session == TorrentSearchID) NoResultsFound(_, false); resc.Stop(); };
+            resc.Tick += delegate { if (store.Controls.Count == 0 && session == Session) NoResultsFound(_, false); resc.Stop(); };
             resc.Start(); }
 
         private async void Magnet(object sender, EventArgs e) {
@@ -587,7 +589,7 @@ namespace OpenVapour {
                 ForceUpdate();
                 magnet = await currenttorrent.GetMagnet();
 
-                Utilities.HandleLogging("copying magnet url " + magnet);
+                Utilities.HandleLogging("Copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
                 magnetbutton.Text = "Copied!";
                 copied = true;
@@ -598,7 +600,7 @@ namespace OpenVapour {
                 ForceUpdate(); }
             try {
                 if (magnet.Length > 0) {
-                    Utilities.HandleLogging("opening magnet url " + magnet);
+                    Utilities.HandleLogging("Opening magnet url " + magnet);
                     if (Utilities.OpenUrl(magnet))
                         magnetbutton.Text = "Success"; 
                     else if (!copied)
@@ -624,9 +626,9 @@ namespace OpenVapour {
                             if (Cache.IsSteamGameCached(id)) { 
                                 Task<SteamGame> cachetask  = Cache.LoadCachedSteamGame(id);
                                 Task c = cachetask.ContinueWith((result) => {
-                                    if (result.Result != null) AddGame(result.Result);
-                                    else AsyncAddGame(Utilities.ToIntSafe(id), false); }); }
-                            else AsyncAddGame(Utilities.ToIntSafe(id), false); }
+                                    if (result.Result != null) AddGame(0, result.Result);
+                                    else AsyncAddGame(0, Utilities.ToIntSafe(id), false); }); }
+                            else AsyncAddGame(0, Utilities.ToIntSafe(id), false); }
                         catch (Exception ex) { Utilities.HandleException($"Main.LoadLibrary()", ex); }}
                 else { store.Controls.Add(nogamesnotif); nogamesnotif.Visible = true; }
             } catch (Exception ex) { Utilities.HandleException("Main.LoadLibrary()", ex); }}
