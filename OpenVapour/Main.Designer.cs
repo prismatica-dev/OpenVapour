@@ -43,20 +43,15 @@
             this.popuptitle = new System.Windows.Forms.Label();
             this.popupart = new System.Windows.Forms.PictureBox();
             this.gamepanel = new System.Windows.Forms.Panel();
-            this.toggleHomepageContainer = new System.Windows.Forms.Panel();
             this.toggleHomepage = new System.Windows.Forms.Button();
             this.sourcename = new System.Windows.Forms.Label();
             this.gamedescpanel = new System.Windows.Forms.Panel();
             this.gamedesc = new System.Windows.Forms.Label();
             this.closemenu = new System.Windows.Forms.Label();
             this.gamebtns = new System.Windows.Forms.FlowLayoutPanel();
-            this.SteamPageContainer = new System.Windows.Forms.Panel();
             this.steampage = new System.Windows.Forms.Button();
-            this.TorrentSearchContainer = new System.Windows.Forms.Panel();
             this.torrentsearch = new System.Windows.Forms.Button();
-            this.MagnetButtonContainer = new System.Windows.Forms.Panel();
             this.magnetbutton = new System.Windows.Forms.Button();
-            this.VisitButtonContainer = new System.Windows.Forms.Panel();
             this.visitbutton = new System.Windows.Forms.Button();
             this.gameart = new System.Windows.Forms.PictureBox();
             this.gamename = new System.Windows.Forms.Label();
@@ -73,13 +68,8 @@
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
             this.gamepanel.SuspendLayout();
-            this.toggleHomepageContainer.SuspendLayout();
             this.gamedescpanel.SuspendLayout();
             this.gamebtns.SuspendLayout();
-            this.SteamPageContainer.SuspendLayout();
-            this.TorrentSearchContainer.SuspendLayout();
-            this.MagnetButtonContainer.SuspendLayout();
-            this.VisitButtonContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).BeginInit();
             this.nogamesnotif.SuspendLayout();
             this.filtersPanel.SuspendLayout();
@@ -288,7 +278,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gamepanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gamepanel.Controls.Add(this.toggleHomepageContainer);
+            this.gamepanel.Controls.Add(this.toggleHomepage);
             this.gamepanel.Controls.Add(this.sourcename);
             this.gamepanel.Controls.Add(this.gamedescpanel);
             this.gamepanel.Controls.Add(this.closemenu);
@@ -302,16 +292,6 @@
             this.gamepanel.TabIndex = 4;
             this.gamepanel.Visible = false;
             // 
-            // toggleHomepageContainer
-            // 
-            this.toggleHomepageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.toggleHomepageContainer.BackColor = System.Drawing.Color.Transparent;
-            this.toggleHomepageContainer.Controls.Add(this.toggleHomepage);
-            this.toggleHomepageContainer.Location = new System.Drawing.Point(461, 178);
-            this.toggleHomepageContainer.Name = "toggleHomepageContainer";
-            this.toggleHomepageContainer.Size = new System.Drawing.Size(32, 32);
-            this.toggleHomepageContainer.TabIndex = 14;
-            // 
             // toggleHomepage
             // 
             this.toggleHomepage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -320,10 +300,10 @@
             this.toggleHomepage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.toggleHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.toggleHomepage.Font = new System.Drawing.Font("Segoe UI Light", 10F);
-            this.toggleHomepage.Location = new System.Drawing.Point(-11, -11);
-            this.toggleHomepage.MaximumSize = new System.Drawing.Size(54, 54);
+            this.toggleHomepage.Location = new System.Drawing.Point(460, 178);
+            this.toggleHomepage.MaximumSize = new System.Drawing.Size(32, 32);
             this.toggleHomepage.Name = "toggleHomepage";
-            this.toggleHomepage.Size = new System.Drawing.Size(54, 54);
+            this.toggleHomepage.Size = new System.Drawing.Size(32, 32);
             this.toggleHomepage.TabIndex = 13;
             this.toggleHomepage.Text = "⌂";
             this.toggleHomepage.UseVisualStyleBackColor = false;
@@ -384,23 +364,14 @@
             this.gamebtns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gamebtns.BackColor = System.Drawing.Color.Transparent;
-            this.gamebtns.Controls.Add(this.SteamPageContainer);
-            this.gamebtns.Controls.Add(this.TorrentSearchContainer);
-            this.gamebtns.Controls.Add(this.MagnetButtonContainer);
-            this.gamebtns.Controls.Add(this.VisitButtonContainer);
+            this.gamebtns.Controls.Add(this.steampage);
+            this.gamebtns.Controls.Add(this.torrentsearch);
+            this.gamebtns.Controls.Add(this.magnetbutton);
+            this.gamebtns.Controls.Add(this.visitbutton);
             this.gamebtns.Location = new System.Drawing.Point(146, 51);
             this.gamebtns.Name = "gamebtns";
             this.gamebtns.Size = new System.Drawing.Size(344, 100);
             this.gamebtns.TabIndex = 9;
-            // 
-            // SteamPageContainer
-            // 
-            this.SteamPageContainer.Controls.Add(this.steampage);
-            this.SteamPageContainer.Location = new System.Drawing.Point(3, 3);
-            this.SteamPageContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.SteamPageContainer.Name = "SteamPageContainer";
-            this.SteamPageContainer.Size = new System.Drawing.Size(163, 42);
-            this.SteamPageContainer.TabIndex = 12;
             // 
             // steampage
             // 
@@ -411,10 +382,10 @@
             this.steampage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.steampage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.steampage.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.steampage.Location = new System.Drawing.Point(-11, -11);
-            this.steampage.MaximumSize = new System.Drawing.Size(185, 64);
+            this.steampage.Location = new System.Drawing.Point(3, 3);
+            this.steampage.MaximumSize = new System.Drawing.Size(163, 42);
             this.steampage.Name = "steampage";
-            this.steampage.Size = new System.Drawing.Size(185, 64);
+            this.steampage.Size = new System.Drawing.Size(163, 42);
             this.steampage.TabIndex = 8;
             this.steampage.Text = "Steam Page";
             this.steampage.UseVisualStyleBackColor = false;
@@ -422,15 +393,6 @@
             this.steampage.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.steampage.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             this.steampage.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
-            // 
-            // TorrentSearchContainer
-            // 
-            this.TorrentSearchContainer.Controls.Add(this.torrentsearch);
-            this.TorrentSearchContainer.Location = new System.Drawing.Point(172, 3);
-            this.TorrentSearchContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.TorrentSearchContainer.Name = "TorrentSearchContainer";
-            this.TorrentSearchContainer.Size = new System.Drawing.Size(163, 42);
-            this.TorrentSearchContainer.TabIndex = 13;
             // 
             // torrentsearch
             // 
@@ -441,10 +403,10 @@
             this.torrentsearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.torrentsearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.torrentsearch.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.torrentsearch.Location = new System.Drawing.Point(-11, -11);
-            this.torrentsearch.MaximumSize = new System.Drawing.Size(185, 64);
+            this.torrentsearch.Location = new System.Drawing.Point(172, 3);
+            this.torrentsearch.MaximumSize = new System.Drawing.Size(163, 42);
             this.torrentsearch.Name = "torrentsearch";
-            this.torrentsearch.Size = new System.Drawing.Size(185, 64);
+            this.torrentsearch.Size = new System.Drawing.Size(163, 42);
             this.torrentsearch.TabIndex = 9;
             this.torrentsearch.Text = "Torrent Search";
             this.torrentsearch.UseVisualStyleBackColor = false;
@@ -452,16 +414,6 @@
             this.torrentsearch.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.torrentsearch.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             this.torrentsearch.MouseHover += new System.EventHandler(this.BackgroundTearingFix);
-            // 
-            // MagnetButtonContainer
-            // 
-            this.MagnetButtonContainer.Controls.Add(this.magnetbutton);
-            this.MagnetButtonContainer.Location = new System.Drawing.Point(3, 51);
-            this.MagnetButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.MagnetButtonContainer.Name = "MagnetButtonContainer";
-            this.MagnetButtonContainer.Size = new System.Drawing.Size(163, 42);
-            this.MagnetButtonContainer.TabIndex = 14;
-            this.MagnetButtonContainer.Visible = false;
             // 
             // magnetbutton
             // 
@@ -472,26 +424,16 @@
             this.magnetbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.magnetbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.magnetbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.magnetbutton.Location = new System.Drawing.Point(-11, -11);
-            this.magnetbutton.MaximumSize = new System.Drawing.Size(185, 64);
+            this.magnetbutton.Location = new System.Drawing.Point(3, 51);
+            this.magnetbutton.MaximumSize = new System.Drawing.Size(163, 42);
             this.magnetbutton.Name = "magnetbutton";
-            this.magnetbutton.Size = new System.Drawing.Size(185, 64);
+            this.magnetbutton.Size = new System.Drawing.Size(163, 42);
             this.magnetbutton.TabIndex = 10;
             this.magnetbutton.Text = "Magnet";
             this.magnetbutton.UseVisualStyleBackColor = false;
             this.magnetbutton.Click += new System.EventHandler(this.Magnet);
             this.magnetbutton.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.magnetbutton.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
-            // 
-            // VisitButtonContainer
-            // 
-            this.VisitButtonContainer.Controls.Add(this.visitbutton);
-            this.VisitButtonContainer.Location = new System.Drawing.Point(172, 51);
-            this.VisitButtonContainer.MaximumSize = new System.Drawing.Size(163, 42);
-            this.VisitButtonContainer.Name = "VisitButtonContainer";
-            this.VisitButtonContainer.Size = new System.Drawing.Size(163, 42);
-            this.VisitButtonContainer.TabIndex = 15;
-            this.VisitButtonContainer.Visible = false;
             // 
             // visitbutton
             // 
@@ -502,13 +444,14 @@
             this.visitbutton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.visitbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.visitbutton.Font = new System.Drawing.Font("Segoe UI Light", 16.25F);
-            this.visitbutton.Location = new System.Drawing.Point(-11, -11);
-            this.visitbutton.MaximumSize = new System.Drawing.Size(185, 64);
+            this.visitbutton.Location = new System.Drawing.Point(172, 51);
+            this.visitbutton.MaximumSize = new System.Drawing.Size(163, 42);
             this.visitbutton.Name = "visitbutton";
-            this.visitbutton.Size = new System.Drawing.Size(185, 64);
+            this.visitbutton.Size = new System.Drawing.Size(163, 42);
             this.visitbutton.TabIndex = 11;
             this.visitbutton.Text = "View Site";
             this.visitbutton.UseVisualStyleBackColor = false;
+            this.visitbutton.Visible = false;
             this.visitbutton.MouseEnter += new System.EventHandler(this.BackgroundTearingFix);
             this.visitbutton.MouseLeave += new System.EventHandler(this.BackgroundTearingFix);
             // 
@@ -696,18 +639,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).EndInit();
             this.gamepanel.ResumeLayout(false);
             this.gamepanel.PerformLayout();
-            this.toggleHomepageContainer.ResumeLayout(false);
             this.gamedescpanel.ResumeLayout(false);
             this.gamedescpanel.PerformLayout();
             this.gamebtns.ResumeLayout(false);
-            this.SteamPageContainer.ResumeLayout(false);
-            this.SteamPageContainer.PerformLayout();
-            this.TorrentSearchContainer.ResumeLayout(false);
-            this.TorrentSearchContainer.PerformLayout();
-            this.MagnetButtonContainer.ResumeLayout(false);
-            this.MagnetButtonContainer.PerformLayout();
-            this.VisitButtonContainer.ResumeLayout(false);
-            this.VisitButtonContainer.PerformLayout();
+            this.gamebtns.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameart)).EndInit();
             this.nogamesnotif.ResumeLayout(false);
             this.nogamesnotif.PerformLayout();
@@ -746,12 +681,7 @@
         private System.Windows.Forms.Button manageSettings;
         private System.Windows.Forms.Button visitbutton;
         private System.Windows.Forms.Label sourcename;
-        private System.Windows.Forms.Panel SteamPageContainer;
-        private System.Windows.Forms.Panel TorrentSearchContainer;
-        private System.Windows.Forms.Panel MagnetButtonContainer;
-        private System.Windows.Forms.Panel VisitButtonContainer;
         private System.Windows.Forms.Button toggleHomepage;
-        private System.Windows.Forms.Panel toggleHomepageContainer;
         private System.Windows.Forms.Button manageFilters;
         private System.Windows.Forms.Panel filtersPanel;
         private System.Windows.Forms.FlowLayoutPanel tagFilterContainer;

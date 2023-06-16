@@ -67,7 +67,7 @@ namespace OpenVapour.Steam {
             } catch (Exception ex) { HandleException($"SteamCore.GetSuggestions({Search})", ex); }
             return suggestions; }
 
-        internal static async Task<List<ResultGame>> GetResults(string Search, SteamTag[] Tags = null, int MaxResults = 10) {
+        internal static async Task<List<ResultGame>> GetResults(string Search, SteamTag[] Tags = null, int MaxResults = 10, bool extendTimeout = false) {
             List<ResultGame> results = new List<ResultGame>();
             int _r = 0;
             try {
@@ -75,7 +75,7 @@ namespace OpenVapour.Steam {
                 string tags = "";
                 if (Tags != null) tags = ProcessArray(Tags);
 
-                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", 5000, false);
+                string JSON = await WebCore.GetWebString($"https://store.steampowered.com/search/results/?ignore_preferences=1&json=1&term={Uri.EscapeDataString(Search)}&{tags}category1=998%2C994", extendTimeout?20000:5000, false);
                 HandleLogging("processing results");
                 JSON = GetAfter(JSON, "[");
                 while (JSON.Contains("{\"name") && _r < MaxResults) { 

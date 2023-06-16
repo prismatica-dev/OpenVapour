@@ -30,22 +30,25 @@ namespace OpenVapour {
         private bool clearing = false;
 
         private void Main_Load(object sender, EventArgs e) {
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            Utilities.HandleLogging("Initialising OpenVapour");
             Icon = Resources.OpenVapour_Icon;
             System.Net.WebRequest.DefaultWebProxy = null;
             UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
+
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             SetStyle(ControlStyles.ResizeRedraw, false);
             UpdateStyles();
+
             Utilities.CheckCompatibility();
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search";
             Cache.CheckCache();
             
+            Utilities.HandleLogging("Checking for Updates");
             Utilities.CheckAutoUpdateIntegrity();
-            try {
-                string LatestTag = Utilities.GetLatestTag();
-                if (LatestTag.Length > 0) if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(LatestTag)) Utilities.UpdateProgram(LatestTag);
-            } catch (Exception ex) { Utilities.HandleException($"Main.Main_Load(sender, e) [Auto-Update]", ex); }
-
+            Utilities.AsyncCheckAutoUpdate();
+            
+            Utilities.HandleLogging("Loading Theme");
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
             ForeColor = Color.White;
@@ -53,7 +56,8 @@ namespace OpenVapour {
             ForeColor = UserSettings.WindowTheme["text1"];
             filterSearch.ForeColor = UserSettings.WindowTheme["text2"];
             DrawGradient();
-
+            
+            Utilities.HandleLogging("Preparing Store");
             store.AutoScroll = false;
             store.HorizontalScroll.Maximum = 0;
             store.HorizontalScroll.Enabled = false;
@@ -69,18 +73,21 @@ namespace OpenVapour {
                 Parent = this };
             store.Parent = storeContainer;
             store.Location = new Point(0, 0);
-            store.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            store.Anchor = storeContainer.Anchor;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
-
+            
+            Utilities.HandleLogging("Applying WinForm FlatStyle Button Fixes");
             ButtonFix(this, true);
             foreach (Control ctrl in toolbar.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
+            foreach (Control ctrl in gamebtns.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
             ContainButton(filterControlsContainer, resetFilters);
+            ContainButton(gamepanel, toggleHomepage);
 
-            DrawSearchBox(sender, e); }
+            DrawSearchBox(sender, e);
+            Utilities.HandleLogging($"Finished Loading in {sw.ElapsedMilliseconds:N0}ms"); }
 
         internal void ContainButton(Control parent, Control ctrl) {
-            Panel container = new Panel { Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = parent };
-            ctrl.Parent = container;
+            new Panel { Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = parent, Controls = { ctrl }};
             ctrl.Location = new Point(-10, -10);
             ctrl.Size = new Size(ctrl.Width + 20, ctrl.Height + 20); }
 
@@ -326,9 +333,9 @@ namespace OpenVapour {
                 if (!(rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) && rt.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
                 else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
                 steampage.Text = "Torrent Page";
-                MagnetButtonContainer.Visible = true; 
-                toggleHomepageContainer.Visible = false; 
-                TorrentSearchContainer.Visible = false;
+                magnetbutton.Parent.Visible = true; 
+                toggleHomepage.Parent.Visible = false; 
+                torrentsearch.Parent.Visible = false;
 
                 sourcename.Text = $"Source: {GetSourceName(rt.Source)}\nTrustworthiness: {SourceScores[rt.Source].Item1}\nQuality: {SourceScores[rt.Source].Item2}\nIntegration: {((rt.Source == TorrentSource.KaOs&&!rt.SafeAnyway)?GetIntegrationSummary(Integration.NoBypass):GetIntegrationSummary(GetIntegration(rt.Source)))}";
                 _n = rt.Name; _d = $"{rt.Name}{(!string.IsNullOrWhiteSpace(rt.PublishDate)?" — ":"")}{rt.PublishDate}\n\n{rt.Description.Trim()}"; }
@@ -336,9 +343,9 @@ namespace OpenVapour {
                 if (sg.Name == "") return;
                 currentgame = sg;
                 steampage.Text = "Steam Page"; 
-                MagnetButtonContainer.Visible = false;
-                toggleHomepageContainer.Visible = true; 
-                TorrentSearchContainer.Visible = true;
+                magnetbutton.Parent.Visible = false;
+                toggleHomepage.Parent.Visible = true; 
+                torrentsearch.Parent.Visible = true;
                 toggleHomepage.BackColor = Cache.IsHomepaged(sg.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
                 sourcename.Text = "Source: Steam";
                 _n = sg.Name; _d = sg.Description.Replace("store. steampowered. com", "store.steampowered.com"); }
@@ -455,25 +462,35 @@ namespace OpenVapour {
             ForceUpdate(); }
 
         private void Realsearchtb_KeyDown(object sender, KeyEventArgs e) => Realsearchtb_KeyDown(sender, e, false);
-        private async void Realsearchtb_KeyDown(object sender, KeyEventArgs e, bool quick) {
+        private void Realsearchtb_KeyDown(object sender, KeyEventArgs e, bool quick) {
             if (e.KeyCode == Keys.Enter) { 
                 if (realsearchtb.Text == "Search") realsearchtb.Text = "";
+                string s = realsearchtb.Text;
 
                 if (e.Control || quick) {
                     UseWaitCursor = true;
-                    currentgame = new SteamGame("") { Name = realsearchtb.Text };
+                    currentgame = new SteamGame("") { Name = s };
                     TorrentSearch(this, new EventArgs());
                     UseWaitCursor = false;
                     return; }
+                SteamSearch(s); }}
 
-                List<SteamTag> tags = new List<SteamTag>();
-                foreach (Control ctrl in tagFilterContainer.Controls)
-                    if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
-                ClearStore(); 
-                int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
-                UseWaitCursor = true;
-                await GetResults(realsearchtb.Text, tags.ToArray(), results);
-                UseWaitCursor = false; }}
+        private async void SteamSearch(string game, bool extendTimeout = false) {
+            List<SteamTag> tags = new List<SteamTag>();
+            foreach (Control ctrl in tagFilterContainer.Controls)
+                if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
+            ClearStore(); 
+            int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
+            UseWaitCursor = true;
+            List<ResultGame> res = await GetResults(game, tags.ToArray(), results, extendTimeout);
+            if (res.Count == 0) NoResultsFound(game);
+            UseWaitCursor = false; }
+
+        private void NoResultsFound(string Search) { 
+            Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 30), Location = new Point(50, 195), TextAlign = ContentAlignment.MiddleCenter };
+            tryAgain.Click += delegate { SteamSearch(Search, true); };
+            ContainButton(new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 195), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }}, tryAgain);
+            ButtonFix(tryAgain, false); }
 
         private void SteamPage_Click(object sender, EventArgs e) {
             if (steampage.Text == "Steam Page") Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
@@ -637,7 +654,7 @@ namespace OpenVapour {
             gamedescpanel.Size = new Size(gamepanel.Width + SystemInformation.VerticalScrollBarWidth, gamepanel.Height - 219);
             gamedesc.MaximumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, 0);
             gamedesc.MinimumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, gamedescpanel.Height);
-            toggleHomepageContainer.Location = new Point(gamedescpanel.Location.X + gamedesc.Location.X + gamedesc.Width - toggleHomepageContainer.Width, toggleHomepageContainer.Location.Y);
+            toggleHomepage.Parent.Location = new Point(gamedescpanel.Location.X + gamedesc.Location.X + gamedesc.Width - toggleHomepage.Parent.Width, toggleHomepage.Parent.Location.Y);
             gamedescpanel.AutoScroll = false;
             gamedescpanel.VerticalScroll.Maximum = gamedesc.Height;
             gamedescpanel.VerticalScroll.Enabled = true;

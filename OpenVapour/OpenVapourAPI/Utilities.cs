@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static OpenVapour.OpenVapourAPI.DirectoryUtilities;
 
@@ -46,6 +47,15 @@ namespace OpenVapour.OpenVapourAPI {
                     matrix[i, j] = Math.Min(Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1), matrix[i - 1, j - 1] + ((Destination[j - 1] == String[i - 1]) ? 0 : 1));
             return matrix[length1, length2]; }
 
+        internal static void AsyncCheckAutoUpdate() {
+            try {
+                Task<string> tag = GetLatestTag();
+                Task c = tag.ContinueWith((t) => { 
+                    if (t.Result.Length > 0) 
+                        if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(t.Result)) 
+                            UpdateProgram(t.Result); });
+                Task.Run(() => c);
+            } catch (Exception ex) { HandleException($"Utilities.AsyncCheckAutoUpdate()", ex); }}
         internal static void CheckAutoUpdateIntegrity() {
             try {
                 // delete autoupdate remnants if present
@@ -54,13 +64,9 @@ namespace OpenVapour.OpenVapourAPI {
                 if (File.Exists($"_\\OpenVapour.new.zip")) File.Delete($"_\\OpenVapour.new.zip");
                 if (Directory.Exists($"_\\OpenVapour-Update")) Directory.Delete($"_\\OpenVapour-Update"); }
             catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
-        internal static string GetLatestTag() {
+        internal static async Task<string> GetLatestTag() {
             try {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{repo}/releases/latest");
-                request.Method = "GET"; request.UserAgent = "OpenVapour AutoUpdate"; request.Accept = "application/json";
-                StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream());
-
-                return GetBetween(reader.ReadToEnd(), "\"tag_name\":\"", "\""); }
+                return GetBetween(await WebCore.GetWebString($"https://api.github.com/repos/{repo}/releases/latest", 5000, false), "\"tag_name\":\"", "\""); }
             catch (Exception ex) { HandleException($"Utilities.GetLatestTag()", ex); }
             return ""; }
         internal async static void UpdateProgram(string TagName) {
