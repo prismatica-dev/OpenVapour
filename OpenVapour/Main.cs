@@ -84,6 +84,8 @@ namespace OpenVapour {
             
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Performing FlatStyle No-Border Fix", true, true);
             ContainButtons(this, true);
+            visitbutton.Parent.Visible = false;
+            magnetbutton.Parent.Visible = false;
 
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Adding Button Paint Events and FlatStyle No-Border Fix", true, true);
             ButtonFix(this, true);
@@ -93,7 +95,7 @@ namespace OpenVapour {
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Finished Loading", true, true); }
 
         internal void ContainButton(Button ctrl) {
-            new Panel { Name = $"{ctrl.Name}RuntimeContainer", Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = ctrl.Parent, Controls = { ctrl }}.SendToBack();
+            new Panel { Name = $"{ctrl.Name}RuntimeContainer", Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = ctrl.Parent, Controls = { ctrl }};
             ctrl.AutoSize = false;
             ctrl.TextAlign = ContentAlignment.MiddleCenter;
             ctrl.Location = new Point(-10, -10);
@@ -105,7 +107,9 @@ namespace OpenVapour {
             if (ctrl is Button btn) { 
                 if (!btn.Parent.Name.EndsWith("RuntimeContainer"))
                     ContainButton(btn); }
-            else foreach (Control sctrl in ctrl.Controls) ContainButtons(sctrl, false); }
+            else {
+                Control.ControlCollection c = ctrl.Controls;
+                foreach (Control sctrl in c) ContainButtons(sctrl, false); }}
 
         internal void ButtonFix(Control ctrl, bool initiate) {
             if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
@@ -351,6 +355,7 @@ namespace OpenVapour {
                 if (!(rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) && rt.Source != TorrentSource.SteamRIP) { magnetbutton.BackColor = Color.FromArgb(130, 0, 100, 0); magnetbutton.Text = "Magnet"; }
                 else { magnetbutton.BackColor = Color.FromArgb(130, 0, 0, 0); magnetbutton.Text = "View Post"; }
                 steampage.Text = "Torrent Page";
+                steampage.Parent.Visible = true;
                 magnetbutton.Parent.Visible = true; 
                 toggleHomepage.Parent.Visible = false; 
                 torrentsearch.Parent.Visible = false;
@@ -361,9 +366,11 @@ namespace OpenVapour {
                 if (sg.Name == "") return;
                 currentgame = sg;
                 steampage.Text = "Steam Page"; 
+                steampage.Parent.Visible = true;
                 magnetbutton.Parent.Visible = false;
                 toggleHomepage.Parent.Visible = true; 
                 torrentsearch.Parent.Visible = true;
+
                 toggleHomepage.BackColor = Cache.IsHomepaged(sg.AppId)?Color.FromArgb(130, 0, 100, 0):Color.FromArgb(130, 0, 0, 0);
                 sourcename.Text = "Source: Steam";
                 _n = sg.Name; _d = sg.Description.Replace("store. steampowered. com", "store.steampowered.com"); }
