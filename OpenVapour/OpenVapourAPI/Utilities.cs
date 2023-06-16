@@ -49,12 +49,13 @@ namespace OpenVapour.OpenVapourAPI {
 
         internal static void AsyncCheckAutoUpdate() {
             try {
+                CheckAutoUpdateIntegrity();
                 Task<string> tag = GetLatestTag();
                 Task c = tag.ContinueWith((t) => { 
                     if (t.Result.Length > 0) 
                         if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(t.Result)) 
                             UpdateProgram(t.Result); });
-                Task.Run(() => c);
+                Task.Run(() => tag);
             } catch (Exception ex) { HandleException($"Utilities.AsyncCheckAutoUpdate()", ex); }}
         internal static void CheckAutoUpdateIntegrity() {
             try {
