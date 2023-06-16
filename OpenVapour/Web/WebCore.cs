@@ -72,7 +72,12 @@ namespace OpenVapour.Web {
             return new byte[0]; }
 
         internal static async Task<Bitmap> GetWebBitmap(string Url, string CacheIdentifier = "") {
+            if (CacheIdentifier.Length == 0) CacheIdentifier = Url;
+            if (Url.Length > 0)
+                if (Cache.IsBitmapCached(CacheIdentifier)) return Cache.GetCachedBitmap(CacheIdentifier);
+
             string baseUrl = GetBaseUrl(Url);
+
             if (LastTimeout.ContainsKey(baseUrl)) {
                 if ((DateTime.Now - LastTimeout[baseUrl]) < TimeSpan.FromMilliseconds(Timeout / 3))
                     Utilities.HandleLogging($"GetWebBitmap({Url}, {CacheIdentifier}) delayed for >={(DateTime.Now - LastTimeout[baseUrl]).TotalMilliseconds + 5:N2}ms");
@@ -84,15 +89,13 @@ namespace OpenVapour.Web {
             Bitmap img = new Bitmap(1, 1);
             if (CacheIdentifier.Length == 0) CacheIdentifier = Url;
             try {
-                if (Url.Length > 0)
-                    if (Cache.IsBitmapCached(CacheIdentifier)) return Cache.GetCachedBitmap(CacheIdentifier);
-                    else {
-                        HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
-                        req.Method = "GET";
-                        req.UserAgent = GetRandomUserAgent();
-                        Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
-                        if (bmp.Width > 1 && bmp.Height > 1) Cache.CacheBitmap(CacheIdentifier, bmp);
-                        return bmp; }
+                if (Url.Length > 0) { 
+                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
+                    req.Method = "GET";
+                    req.UserAgent = GetRandomUserAgent();
+                    Bitmap bmp = new Bitmap((await req.GetResponseAsync()).GetResponseStream());
+                    if (bmp.Width > 1 && bmp.Height > 1) Cache.CacheBitmap(CacheIdentifier, bmp);
+                    return bmp; }
             } catch (Exception ex) {
                 Utilities.HandleException($"WebCore.GetWebBitmap({Url}, {CacheIdentifier})", ex);
                 img = new Bitmap(150, 225); }
