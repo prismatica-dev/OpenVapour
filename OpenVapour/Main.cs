@@ -520,10 +520,12 @@ namespace OpenVapour {
             UseWaitCursor = false; }
 
         private void NoResultsFound(string Search) { 
-            Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 30), Location = new Point(50, 195), TextAlign = ContentAlignment.MiddleCenter };
+            Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 40), Location = new Point(50, 185), TextAlign = ContentAlignment.MiddleCenter };
             tryAgain.Click += delegate { SteamSearch(Search, true); };
-            new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 195), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
-            ButtonFix(tryAgain, false); }
+            tryAgain.FlatAppearance.BorderSize = 0;
+            new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 185), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
+            ButtonFix(tryAgain, false);
+            ContainButton(tryAgain); }
 
         private void SteamPage_Click(object sender, EventArgs e) {
             if (steampage.Text == "Steam Page") Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
