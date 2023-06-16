@@ -345,7 +345,7 @@ namespace OpenVapour {
                                 Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
                         ForceUpdate();
                         }); });
-                new Thread(async () => { await cont; }) { IsBackground = true }.Start(); //await Task.Run(() => cont);
+                Task.Run(() => cont);
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
         private void LoadGameTorrent(object game, Image art) {
@@ -538,7 +538,7 @@ namespace OpenVapour {
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (ResultTorrent torrent in results.Result)
                             Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(torrent); });
-                    new Thread(async () => { await getresults;}) { IsBackground = true }.Start();
+                    Task.Run(() => getresults);
                     }); }
             if (_.Length > 7)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
@@ -547,7 +547,7 @@ namespace OpenVapour {
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (Task<ResultTorrent> torrenttask in results.Result)
                             AsyncAddTorrent(torrenttask); });
-                    new Thread(async () => { await getresults; }) { IsBackground = true }.Start(); }}
+                    Task.Run(() => getresults); }}
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
