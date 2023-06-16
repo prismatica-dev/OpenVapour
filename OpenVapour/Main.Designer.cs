@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
             this.searchButton = new System.Windows.Forms.Button();
             this.torrentButton = new System.Windows.Forms.Button();
@@ -247,10 +246,9 @@
             this.popupdesc.Location = new System.Drawing.Point(117, 43);
             this.popupdesc.MaximumSize = new System.Drawing.Size(178, 117);
             this.popupdesc.Name = "popupdesc";
-            this.popupdesc.Size = new System.Drawing.Size(175, 117);
+            this.popupdesc.Size = new System.Drawing.Size(144, 23);
             this.popupdesc.TabIndex = 2;
-            this.popupdesc.Text = "content is a game by game developers about game where you can game in a game worl" +
-    "d with many game characters, with a game storyline and plot\r\n";
+            this.popupdesc.Text = "popup description";
             // 
             // popuptitle
             // 
@@ -342,9 +340,9 @@
             this.gamedesc.MaximumSize = new System.Drawing.Size(486, 0);
             this.gamedesc.MinimumSize = new System.Drawing.Size(486, 245);
             this.gamedesc.Name = "gamedesc";
-            this.gamedesc.Size = new System.Drawing.Size(486, 368);
+            this.gamedesc.Size = new System.Drawing.Size(486, 245);
             this.gamedesc.TabIndex = 7;
-            this.gamedesc.Text = resources.GetString("gamedesc.Text");
+            this.gamedesc.Text = "game description";
             // 
             // closemenu
             // 
