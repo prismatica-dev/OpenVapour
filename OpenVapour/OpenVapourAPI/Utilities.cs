@@ -51,6 +51,7 @@ namespace OpenVapour.OpenVapourAPI {
                 CheckAutoUpdateIntegrity();
                 Task<string> tag = GetLatestTag();
                 Task c = tag.ContinueWith((t) => { 
+                    Console.WriteLine($"[Auto-Update] Latest version is {t.Result}");
                     if (t.Result.Length > 0) 
                         if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse(t.Result)) 
                             UpdateProgram(t.Result); });
@@ -66,7 +67,7 @@ namespace OpenVapour.OpenVapourAPI {
             catch (Exception ex) { HandleException($"Utilities.CheckAutoUpdateIntegrity()", ex); }}
         internal static async Task<string> GetLatestTag() {
             try {
-                return GetBetween(await WebCore.GetWebString($"https://api.github.com/repos/{repo}/releases/latest", 20000, false), "\"tag_name\":\"", "\""); }
+                return GetBetween(await WebCore.GetWebString($"https://api.github.com/repos/{repo}/releases/latest", 20000, false), "\"tag_name\": \"", "\""); }
             catch (Exception ex) { HandleException($"Utilities.GetLatestTag()", ex); }
             return ""; }
         internal async static void UpdateProgram(string TagName) {
