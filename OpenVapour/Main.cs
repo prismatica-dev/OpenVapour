@@ -257,6 +257,10 @@ namespace OpenVapour {
             try {
                 if (torrent == null || string.IsNullOrWhiteSpace(torrent.Name)) return;
                 if (torrent.TorrentUrl.Contains("paste.masquerade.site")) return; // dead site
+                Control[] nr = store.Controls.Find("nosearchresults", false);
+                clearing = true;
+                foreach (Control nrc in nr) nrc.Parent = null;
+                clearing = false;
                 PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
                 List<object> metalist = new List<object> { states, torrent, false };
                 panel.Image = states[0];
@@ -516,22 +520,25 @@ namespace OpenVapour {
             int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
             UseWaitCursor = true;
             List<ResultGame> res = await GetResults(game, tags.ToArray(), results, extendTimeout);
-            if (res.Count == 0) NoResultsFound(game);
+            if (res.Count == 0) NoResultsFound(game, true);
             UseWaitCursor = false; }
 
-        private void NoResultsFound(string Search) { 
-            Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 40), Location = new Point(50, 185), TextAlign = ContentAlignment.MiddleCenter };
-            tryAgain.Click += delegate { SteamSearch(Search, true); };
-            tryAgain.FlatAppearance.BorderSize = 0;
-            new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 185), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
-            ButtonFix(tryAgain, false);
-            ContainButton(tryAgain); }
+        private void NoResultsFound(string Search, bool ShowTryAgain) { 
+            Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 40), Location = new Point(50, 185), TextAlign = ContentAlignment.MiddleCenter, Visible = ShowTryAgain };
+            if (ShowTryAgain) { 
+                tryAgain.Click += delegate { SteamSearch(Search, true); };
+                tryAgain.FlatAppearance.BorderSize = 0; }
+            new Panel { Name = "nosearchresults", Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, ShowTryAgain?185:225), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
+            if (ShowTryAgain) {
+                ButtonFix(tryAgain, false);
+                ContainButton(tryAgain); }}
 
         private void SteamPage_Click(object sender, EventArgs e) {
             if (steampage.Text == "Steam Page") Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
             else Utilities.OpenUrl(currenttorrent.Url);
             ForceUpdate(); }
 
+        private int TorrentSearchID = 0;
         private void TorrentSearch(object sender, EventArgs e) {
             ClearStore(); 
             if (currentgame != null && currentgame.AppId != "-1") AddGame(currentgame);
@@ -539,6 +546,8 @@ namespace OpenVapour {
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
             Utilities.HandleLogging(_);
+            int session = new Random().Next(0, int.MaxValue);
+            TorrentSearchID = session;
 
             if (_.Length != 0)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
@@ -546,7 +555,9 @@ namespace OpenVapour {
                     Task<List<ResultTorrent>> getresults = GetResults(source, _);
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (ResultTorrent torrent in results.Result)
-                            Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(torrent); });
+                            Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { 
+                                if (TorrentSearchID == session) 
+                                    AddTorrent(torrent); });
                     Task.Run(() => getresults);
                     }); }
             if (_.Length > 7)
@@ -555,8 +566,12 @@ namespace OpenVapour {
                     Task<List<Task<ResultTorrent>>> getresults = GetExtendedResults(source, _);
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (Task<ResultTorrent> torrenttask in results.Result)
-                            AsyncAddTorrent(torrenttask); });
-                    Task.Run(() => getresults); }}
+                            if (TorrentSearchID == session) 
+                                AsyncAddTorrent(torrenttask); });
+                    Task.Run(() => getresults); }
+            Timer resc = new Timer { Interval = 4000 };
+            resc.Tick += delegate { if (store.Controls.Count == 0 && session == TorrentSearchID) NoResultsFound(_, false); resc.Stop(); };
+            resc.Start(); }
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
