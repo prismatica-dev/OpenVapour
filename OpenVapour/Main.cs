@@ -182,7 +182,9 @@ namespace OpenVapour {
             List<object> pbo = (List<object>)selector.Tag;
             List<Image> pbi = (List<Image>)pbo[0];
             string _d = "";
-            if (Description.Length > 0) _d = Description.Replace("store. steampowered. com", "store.steampowered.com").Trim().Substring(0, Math.Min(Description.Length, 100 + (Publish.Length==0?50:0)));
+            if (Description.Length > 0) { 
+                _d = Description.Replace("store. steampowered. com", "store.steampowered.com").Trim();
+                _d = _d.Substring(0, Math.Min(_d.Length, 100 + (Publish.Length==0?50:0))); }
 
             Panel popup = new Panel { Size = new Size(320, 170), BackColor = Color.FromArgb(165, 0, 0, 0), ForeColor = UserSettings.WindowTheme["text1"], Visible = false, Name = "Popup" };
             PictureBox gameart = new PictureBox { Location = new Point(5, 5), Size = new Size(107, 160), SizeMode = PictureBoxSizeMode.StretchImage, Image = pbi[0] };
