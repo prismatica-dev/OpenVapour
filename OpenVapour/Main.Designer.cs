@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.toolbar = new System.Windows.Forms.Panel();
-            this.torrentButton = new System.Windows.Forms.Button();
             this.searchButton = new System.Windows.Forms.Button();
+            this.torrentButton = new System.Windows.Forms.Button();
             this.manageFilters = new System.Windows.Forms.Button();
             this.searchtextbox = new System.Windows.Forms.Panel();
             this.manageSettings = new System.Windows.Forms.Button();
@@ -106,24 +106,6 @@
             this.toolbar.Visible = false;
             this.toolbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Drag);
             // 
-            // torrentButton
-            // 
-            this.torrentButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.torrentButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(180)))));
-            this.torrentButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.torrentButton.FlatAppearance.BorderSize = 0;
-            this.torrentButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.torrentButton.Font = new System.Drawing.Font("Segoe UI Light", 8F);
-            this.torrentButton.ForeColor = System.Drawing.Color.White;
-            this.torrentButton.Location = new System.Drawing.Point(756, 0);
-            this.torrentButton.Margin = new System.Windows.Forms.Padding(0);
-            this.torrentButton.Name = "torrentButton";
-            this.torrentButton.Size = new System.Drawing.Size(25, 25);
-            this.torrentButton.TabIndex = 10;
-            this.torrentButton.Text = "🧲";
-            this.torrentButton.UseVisualStyleBackColor = false;
-            this.torrentButton.Click += new System.EventHandler(this.QuickTorrent);
-            // 
             // searchButton
             // 
             this.searchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -141,6 +123,24 @@
             this.searchButton.Text = ">";
             this.searchButton.UseVisualStyleBackColor = false;
             this.searchButton.Click += new System.EventHandler(this.SearchButton);
+            // 
+            // torrentButton
+            // 
+            this.torrentButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.torrentButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(180)))));
+            this.torrentButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.torrentButton.FlatAppearance.BorderSize = 0;
+            this.torrentButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.torrentButton.Font = new System.Drawing.Font("Segoe UI Light", 8F);
+            this.torrentButton.ForeColor = System.Drawing.Color.White;
+            this.torrentButton.Location = new System.Drawing.Point(756, 0);
+            this.torrentButton.Margin = new System.Windows.Forms.Padding(0);
+            this.torrentButton.Name = "torrentButton";
+            this.torrentButton.Size = new System.Drawing.Size(25, 25);
+            this.torrentButton.TabIndex = 10;
+            this.torrentButton.Text = "🧲";
+            this.torrentButton.UseVisualStyleBackColor = false;
+            this.torrentButton.Click += new System.EventHandler(this.QuickTorrent);
             // 
             // manageFilters
             // 
@@ -538,13 +538,16 @@
             this.realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.realsearchtb.Location = new System.Drawing.Point(-50, -50);
             this.realsearchtb.Margin = new System.Windows.Forms.Padding(0);
+            this.realsearchtb.MaximumSize = new System.Drawing.Size(1, 1);
             this.realsearchtb.Name = "realsearchtb";
             this.realsearchtb.Size = new System.Drawing.Size(1, 44);
             this.realsearchtb.TabIndex = 6;
             this.realsearchtb.TabStop = false;
             this.realsearchtb.Text = "Search";
             this.realsearchtb.TextChanged += new System.EventHandler(this.DrawSearchBox);
+            this.realsearchtb.Enter += new System.EventHandler(this.DrawSearchBox);
             this.realsearchtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Realsearchtb_KeyDown);
+            this.realsearchtb.Leave += new System.EventHandler(this.DrawSearchBox);
             // 
             // nogamesnotif
             // 
