@@ -146,7 +146,12 @@ namespace OpenVapour.Torrent {
 
                                 // source specific irrelevance
                                 if (Source == TorrentSource.FitgirlRepacks && !torrent.TorrentUrl.StartsWith("magnet:?xt")) continue;
-                                // else if (Source == TorrentSource.GOG && GetLevenshteinDistance(Name.ToLower(), torrent.Name.ToLower().Replace(" +dlc", "").Replace("dlc", "")) > Name.Length * .7f) continue;
+                                else if (Source == TorrentSource.GOG) { 
+                                    string n = torrent.Name.ToLower().Trim();
+                                    if (torrent.Name.Contains(" v")) {
+                                        string _ = GetAfter(n, " v").Substring(0, 1);
+                                        if (_.ToLower() == _.ToUpper()) n = GetUntil(n, " v").TrimEnd(); }
+                                    if (GetLevenshteinDistance(Name.ToLower(), GetUntil(GetUntil(n, " +dlc"), "dlc").Trim()) > Name.Length * .6f) continue; }
                                 
                                 results.Add(torrent);
                                 HandleLogging($"[{name}] found torrent {torrent.Url}");
