@@ -98,7 +98,7 @@ namespace OpenVapour.Torrent {
                         case TorrentSource.SteamRIP:
                         case TorrentSource.GOG:
                             Url = GetBetween(JSON, "<guid isPermaLink=\"false\">", "</guid>");
-                            Name = GetBetween(JSON, "<title>", "</title>");
+                            Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
                             if (Source == TorrentSource.PCGamesTorrents || Source == TorrentSource.FitgirlRepacks) Image = GetBetween(JSON, "src=\"", "\"");

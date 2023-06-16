@@ -302,7 +302,7 @@ namespace OpenVapour {
                 AddPanelEvents(panel);
                 try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
                 LoadGameTorrentBitmap(Session, game, panel);
-            } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId})", ex); }}
+            } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({Session}, {game.AppId})", ex); }}
 
         internal void LoadGameTorrentBitmap(int Session, object game, PictureBox output) {
             try {
@@ -334,7 +334,7 @@ namespace OpenVapour {
                     publish = rt.PublishDate.Replace("+0000", ""); }
 
                 Task cont = imgTask.ContinueWith((img) => {
-                    if (Session != this.Session || img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) return;
+                    if (Session != this.Session || img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) { if (output != null && !output.IsDisposed) output.Parent = null; return; }
                     List<Image> states = null;
                     if (torrent)
                         states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null };
@@ -358,7 +358,7 @@ namespace OpenVapour {
                         ForceUpdate();
                         }); });
                 Task.Run(() => cont);
-            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
+            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap({Session}, game, panel)", ex); }}
 
         private void LoadGameTorrent(object game, Image art) {
             string _n = ""; string _d = "";
@@ -504,6 +504,10 @@ namespace OpenVapour {
             if (e.KeyCode == Keys.Enter) { 
                 if (realsearchtb.Text == "Search") realsearchtb.Text = "";
                 string s = realsearchtb.Text;
+                realsearchtb.Text = "Search";
+                ActiveControl = null;
+                DrawSearchBox();
+                ForceUpdate();
 
                 if (e.Control || quick) {
                     UseWaitCursor = true;
@@ -570,7 +574,7 @@ namespace OpenVapour {
                             if (Session == session) 
                                 AsyncAddTorrent(torrenttask); });
                     Task.Run(() => getresults); }
-            Timer resc = new Timer { Interval = 4000 };
+            Timer resc = new Timer { Interval = 5500 };
             resc.Tick += delegate { if (store.Controls.Count == 0 && session == Session) NoResultsFound(_, false); resc.Stop(); };
             resc.Start(); }
 
