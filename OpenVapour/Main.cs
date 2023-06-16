@@ -32,24 +32,28 @@ namespace OpenVapour {
 
         private void Main_Load(object sender, EventArgs e) {
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Initialising OpenVapour");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Initialising OpenVapour", true, true);
             Icon = Resources.OpenVapour_Icon;
+
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Nullifying Proxy", true, true);
             System.Net.WebRequest.DefaultWebProxy = null;
+
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Shallow-Cloning Theme", true, true);
             UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Applying Form Styles");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Applying Form Styles", true, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             SetStyle(ControlStyles.ResizeRedraw, false);
             UpdateStyles();
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Running Platform-Specific Compatibility Checks");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Running Platform-Specific Compatibility Checks", true, true);
             Utilities.CheckCompatibility();
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search";
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Checking for Updates");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Checking for Updates", true, true);
             new Thread(() => { Thread.CurrentThread.IsBackground = true; Utilities.AsyncCheckAutoUpdate(); });
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Loading Theme");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Loading Theme", true, true);
             Cache.CheckCache();
             UserSettings.LoadSettings();
             Size = UserSettings.WindowSize;
@@ -59,7 +63,7 @@ namespace OpenVapour {
             filterSearch.ForeColor = UserSettings.WindowTheme["text2"];
             DrawGradient();
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Preparing Store");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Preparing Store", true, true);
             store.AutoScroll = false;
             store.HorizontalScroll.Maximum = 0;
             store.HorizontalScroll.Enabled = false;
@@ -78,17 +82,17 @@ namespace OpenVapour {
             store.Anchor = storeContainer.Anchor;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Adding Button Paint Events");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Adding Button Paint Events", true, true);
             ButtonFix(this, true);
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Applying WinForm FlatStyle No-Border Fix");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Applying WinForm FlatStyle No-Border Fix", true, true);
             foreach (Control ctrl in toolbar.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
             foreach (Control ctrl in gamebtns.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
             ContainButton(filterControlsContainer, resetFilters);
             ContainButton(gamepanel, toggleHomepage);
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Drawing Search Pseudotextbox");
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Drawing Search Pseudotextbox", true, true);
             DrawSearchBox();
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Finished Loading"); }
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Finished Loading", true, true); }
 
         internal void ContainButton(Control parent, Control ctrl) {
             new Panel { Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = parent, Controls = { ctrl }};
@@ -466,8 +470,8 @@ namespace OpenVapour {
             searchtextbox.BackgroundImage?.Dispose();
             searchtextbox.BackgroundImage = bit; }
 
-        private void Realsearchtb_KeyDown(object sender, KeyEventArgs e) => Realsearchtb_KeyDown(sender, e, false);
-        private void Realsearchtb_KeyDown(object sender, KeyEventArgs e, bool quick) {
+        private void Realsearchtb_KeyDown(object sender, KeyEventArgs e) => Realsearchtb_KeyDown(e, false);
+        private void Realsearchtb_KeyDown(KeyEventArgs e, bool quick) {
             if (e.KeyCode == Keys.Enter) { 
                 if (realsearchtb.Text == "Search") realsearchtb.Text = "";
                 string s = realsearchtb.Text;
@@ -717,6 +721,4 @@ namespace OpenVapour {
 
         private void SearchButton(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter));
 
-        private void QuickTorrent(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter), true);
-    }
-}
+        private void QuickTorrent(object sender, EventArgs e) => Realsearchtb_KeyDown(new KeyEventArgs(Keys.Enter), true); }}

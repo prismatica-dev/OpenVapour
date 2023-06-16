@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -148,7 +147,7 @@ namespace OpenVapour.OpenVapourAPI {
                 HandleException($"Utilities.GetAfter({String}, {After})", ex); 
                 return String; }}
 
-        internal static void HandleLogging(string Log, bool IgnoreLog = false) {
+        internal static void HandleLogging(string Log, bool IgnoreLog = false, bool IgnoreException = false) {
             try {
                 string logformat = $"[{DateTime.Now}] {Log}";
                 Console.WriteLine(logformat);
@@ -157,7 +156,7 @@ namespace OpenVapour.OpenVapourAPI {
                 else { 
                     File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
                     LogWritten = true; }
-            } catch (Exception ex) { HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
+            } catch (Exception ex) { if (!IgnoreException) HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
 
         internal static void HandleException(string Cause, Exception Result, bool IgnoreLog = false) { 
             try {
