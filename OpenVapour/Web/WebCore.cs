@@ -99,5 +99,6 @@ namespace OpenVapour.Web {
             return img; }
     
         internal static string GetBaseUrl(string Url) { 
+            if (string.IsNullOrWhiteSpace(Url)) return "";
             try { return new Uri(Url).GetLeftPart(UriPartial.Authority); } 
             catch (Exception ex) { Utilities.HandleException($"WebCore.GetBaseUrl({Url})", ex); return null; }}}}

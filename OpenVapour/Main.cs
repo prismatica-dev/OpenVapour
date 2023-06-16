@@ -587,7 +587,7 @@ namespace OpenVapour {
                 if (!copied) magnetbutton.Text = "Open Failed";
                 ForceUpdate(); }}
 
-        private void Exit_Click(object sender, EventArgs e) => Close();
+        private void Exit_Click(object sender, EventArgs e) { clearing = true; Close(); }
 
         private void LoadLibrary() {
             try {
