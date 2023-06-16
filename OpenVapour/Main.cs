@@ -4,12 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
-using System.IO;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using OpenVapour.OpenVapourAPI;
 using static OpenVapour.Steam.SteamCore;
 using static OpenVapour.Steam.SteamInternals;
@@ -19,7 +15,6 @@ using static OpenVapour.Torrent.TorrentSources;
 using Graphics = OpenVapour.OpenVapourAPI.Graphics;
 using OpenVapour.Web;
 using OpenVapour.Properties;
-using System.Web;
 
 namespace OpenVapour {
     internal partial class Main : Form {
@@ -36,7 +31,7 @@ namespace OpenVapour {
 
         private void Main_Load(object sender, EventArgs e) {
             Icon = Resources.OpenVapour_Icon;
-            WebRequest.DefaultWebProxy = null;
+            System.Net.WebRequest.DefaultWebProxy = null;
             UserSettings.OriginalTheme = UserSettings.WindowTheme.ToDictionary(n => n.Key, n => n.Value);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             SetStyle(ControlStyles.ResizeRedraw, false);
@@ -101,15 +96,15 @@ namespace OpenVapour {
         internal void DrawGradient() {
             BackColor = UserSettings.WindowTheme["background2"];
             BackgroundImage?.Dispose();
-            if (BackColor == UserSettings.WindowTheme["background1"]);
+            if (BackColor != UserSettings.WindowTheme["background1"])
                 BackgroundImage = Graphics.DrawGradient(Width, Height); }
 
         internal const int WM_NCLBUTTONDOWN = 0xA1;
         internal const int HT_CAPTION = 0x2;
 
-        [DllImport("user32.dll")]
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [DllImport("user32.dll")]
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
         internal static extern bool ReleaseCapture();
         protected override CreateParams CreateParams {
             get {
@@ -449,11 +444,12 @@ namespace OpenVapour {
         private void DrawSearchBox(object sender, EventArgs e) {
             Bitmap bit = new Bitmap(searchtextbox.Width, searchtextbox.Height);
             string t = realsearchtb.Text;
-            if (DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) t = t.Insert(realsearchtb.SelectionStart, "|");
+            if (realsearchtb.Focused && DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) 
+                t = t.Insert(realsearchtb.SelectionStart, "|");
 
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 Graphics.ApplyQuality(g);
-                g.DrawString(t, new Font("Segoe UI Light", 14f), new SolidBrush(UserSettings.WindowTheme["text1"]), new PointF(0, 0)); } 
+                g.DrawString(t, new Font("Segoe UI Light", 14f, realsearchtb.Focused?FontStyle.Regular:FontStyle.Italic), new SolidBrush(UserSettings.WindowTheme["text1"]), new PointF(0, 0)); } 
             searchtextbox.BackgroundImage?.Dispose();
             searchtextbox.BackgroundImage = bit;
             ForceUpdate(); }
@@ -517,7 +513,7 @@ namespace OpenVapour {
             try {
                 if ((currenttorrent.Source == TorrentSource.KaOs && !currenttorrent.SafeAnyway) || currenttorrent.Source == TorrentSource.SteamRIP) {
                     Utilities.HandleLogging($"Current torrent {currenttorrent.Url} is not fully implemented. Opening page URL");
-                    Process.Start(new ProcessStartInfo(currenttorrent.Url) { UseShellExecute = true, Verb = "open" });
+                    Utilities.OpenUrl(currenttorrent.Url);
                     return; }
 
                 magnetbutton.Text = "Fetching";
@@ -552,8 +548,8 @@ namespace OpenVapour {
 
         private void LoadLibrary() {
             try {
-                if (Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
-                    foreach (string file in Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
+                if (System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
+                    foreach (string file in System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
                         try { 
                             string id = file.Substring(file.LastIndexOf("\\") + 1);
                             if (Cache.IsSteamGameCached(id)) { 
@@ -578,12 +574,12 @@ namespace OpenVapour {
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
             textboxcursor.Start(); }
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);
 
         internal const int WM_SETREDRAW = 0x000B;
 
-        [DllImport("user32.dll")]
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
         internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         private void BackgroundTearingFix(object sender, ScrollEventArgs se) {
