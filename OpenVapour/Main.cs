@@ -105,11 +105,13 @@ namespace OpenVapour {
         internal void ContainButtons(Control ctrl, bool initiate) {
             if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
             if (ctrl is Button btn) { 
+                Utilities.HandleLogging($"containing {ctrl.Name}");
                 if (!btn.Parent.Name.EndsWith("RuntimeContainer"))
                     ContainButton(btn); }
             else {
-                Control.ControlCollection c = ctrl.Controls;
-                foreach (Control sctrl in c) ContainButtons(sctrl, false); }}
+                Control[] _ = new Control[ctrl.Controls.Count];
+                ctrl.Controls.CopyTo(_, 0);
+                foreach (Control sctrl in _) ContainButtons(sctrl, false); }}
 
         internal void ButtonFix(Control ctrl, bool initiate) {
             if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
@@ -120,7 +122,10 @@ namespace OpenVapour {
                 btn.MouseDown += delegate { ForceUpdate(); };
                 btn.MouseUp += delegate { ForceUpdate(); };
                 btn.Tag = "fixed-events"; }
-            else foreach (Control sctrl in ctrl.Controls) ButtonFix(sctrl, false); }
+            else { 
+                Control[] _ = new Control[ctrl.Controls.Count];
+                ctrl.Controls.CopyTo(_, 0);
+                foreach (Control sctrl in _) ButtonFix(sctrl, false); }}
 
         internal void DrawGradient() {
             BackColor = UserSettings.WindowTheme["background2"];
@@ -675,7 +680,7 @@ namespace OpenVapour {
 
         private void Resized(object sender, EventArgs e) {
             ClosePanel(false, false, null);
-            gamename.MaximumSize = new Size(gamepanel.Width - 153, gamename.Height);
+            gamename.MaximumSize = new Size(gamepanel.Width - 153 - 24, gamename.Height);
             sourcename.MaximumSize = new Size(gamepanel.Width - 153, sourcename.Height);
             gamedescpanel.Size = new Size(gamepanel.Width + SystemInformation.VerticalScrollBarWidth, gamepanel.Height - 219);
             gamedesc.MaximumSize = new Size(gamedescpanel.Width - 12 - SystemInformation.VerticalScrollBarWidth, 0);
