@@ -81,7 +81,7 @@ namespace OpenVapour {
             store.Parent = storeContainer;
             store.Location = new Point(0, 0);
             store.Anchor = storeContainer.Anchor;
-            store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
+            store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height + RESIZE_BUFFER_SIZE);
             
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Performing FlatStyle No-Border Fix", true, true);
             ContainButtons(this, true);
