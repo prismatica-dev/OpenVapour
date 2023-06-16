@@ -51,7 +51,7 @@ namespace OpenVapour {
             if (Utilities.CompatibilityMode) storeselect.Text = $"OpenVapour v{Utilities.GetBetween(storeselect.Text, "v", " ")}-wine — FLOSS Torrent Search";
             
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Checking for Updates", true, true);
-            new Thread(() => { Thread.CurrentThread.IsBackground = true; Utilities.AsyncCheckAutoUpdate(); });
+            new Thread(() => { Utilities.AsyncCheckAutoUpdate(); }) { IsBackground = true }.Start();
             
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Loading Theme", true, true);
             Cache.CheckCache();
@@ -82,30 +82,40 @@ namespace OpenVapour {
             store.Anchor = storeContainer.Anchor;
             store.Size = new Size(storeContainer.Width + SystemInformation.VerticalScrollBarWidth, storeContainer.Height);
             
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Adding Button Paint Events", true, true);
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Performing FlatStyle No-Border Fix", true, true);
+            ContainButtons(this, true);
+
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Adding Button Paint Events and FlatStyle No-Border Fix", true, true);
             ButtonFix(this, true);
-            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Applying WinForm FlatStyle No-Border Fix", true, true);
-            foreach (Control ctrl in toolbar.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
-            foreach (Control ctrl in gamebtns.Controls) if (ctrl is Button) ContainButton(toolbar, ctrl);
-            ContainButton(filterControlsContainer, resetFilters);
-            ContainButton(gamepanel, toggleHomepage);
             
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Drawing Search Pseudotextbox", true, true);
             DrawSearchBox();
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Finished Loading", true, true); }
 
-        internal void ContainButton(Control parent, Control ctrl) {
-            new Panel { Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = parent, Controls = { ctrl }};
+        internal void ContainButton(Button ctrl) {
+            new Panel { Name = $"{ctrl.Name}RuntimeContainer", Location = ctrl.Location, Size = ctrl.Size, Anchor = ctrl.Anchor, BackColor = Color.FromArgb(0, 0, 0, 0), ForeColor = ForeColor, Parent = ctrl.Parent, Controls = { ctrl }}.SendToBack();
+            ctrl.AutoSize = false;
+            ctrl.TextAlign = ContentAlignment.MiddleCenter;
             ctrl.Location = new Point(-10, -10);
-            ctrl.Size = new Size(ctrl.Width + 20, ctrl.Height + 20); }
+            ctrl.MaximumSize = new Size(ctrl.Parent.Width + 20, ctrl.Parent.Height + 20);
+            ctrl.Size = ctrl.MaximumSize; }
+
+        internal void ContainButtons(Control ctrl, bool initiate) {
+            if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
+            if (ctrl is Button btn) { 
+                if (!btn.Parent.Name.EndsWith("RuntimeContainer"))
+                    ContainButton(btn); }
+            else foreach (Control sctrl in ctrl.Controls) ContainButtons(sctrl, false); }
 
         internal void ButtonFix(Control ctrl, bool initiate) {
             if (ctrl == this && !initiate) return; // prevent stackoverflowexception if 'this' is somehow a child
-            if (ctrl is Button) {
-                ctrl.MouseEnter += delegate { ForceUpdate(); };
-                ctrl.MouseLeave += delegate { ForceUpdate(); };
-                ctrl.MouseDown += delegate { ForceUpdate(); };
-                ctrl.MouseUp += delegate { ForceUpdate(); }; }
+            if (ctrl is Button btn) {
+                if (btn.Tag != null && btn.Tag.ToString() == "fixed-events") return;
+                btn.MouseEnter += delegate { ForceUpdate(); };
+                btn.MouseLeave += delegate { ForceUpdate(); };
+                btn.MouseDown += delegate { ForceUpdate(); };
+                btn.MouseUp += delegate { ForceUpdate(); };
+                btn.Tag = "fixed-events"; }
             else foreach (Control sctrl in ctrl.Controls) ButtonFix(sctrl, false); }
 
         internal void DrawGradient() {
@@ -278,7 +288,7 @@ namespace OpenVapour {
                 LoadGameTorrentBitmap(game, panel);
             } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId})", ex); }}
 
-        internal async void LoadGameTorrentBitmap(object game, PictureBox output) {
+        internal void LoadGameTorrentBitmap(object game, PictureBox output) {
             try {
                 if (InvokeRequired) {
                     BeginInvoke((MethodInvoker)delegate { LoadGameTorrentBitmap(game, output); });
@@ -331,7 +341,7 @@ namespace OpenVapour {
                                 Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
                         ForceUpdate();
                         }); });
-                await Task.Run(() => cont);
+                new Thread(async () => { await cont; }) { IsBackground = true }.Start(); //await Task.Run(() => cont);
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap(game, panel)", ex); }}
 
         private void LoadGameTorrent(object game, Image art) {
@@ -498,7 +508,7 @@ namespace OpenVapour {
         private void NoResultsFound(string Search) { 
             Button tryAgain = new Button { Text = $"try again", Font = new Font(Font.FontFamily, 14f, FontStyle.Italic), FlatStyle = FlatStyle.Flat, BackColor = searchButton.BackColor, AutoSize = false, Size = new Size(125, 30), Location = new Point(50, 195), TextAlign = ContentAlignment.MiddleCenter };
             tryAgain.Click += delegate { SteamSearch(Search, true); };
-            ContainButton(new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 195), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }}, tryAgain);
+            new Panel { Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, 195), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
             ButtonFix(tryAgain, false); }
 
         private void SteamPage_Click(object sender, EventArgs e) {
@@ -521,7 +531,7 @@ namespace OpenVapour {
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (ResultTorrent torrent in results.Result)
                             Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(torrent); });
-                    Task.Run(() => getresults);
+                    new Thread(async () => { await getresults;}) { IsBackground = true }.Start();
                     }); }
             if (_.Length > 7)
                 foreach (TorrentSource source in Enum.GetValues(typeof(TorrentSource))) {
@@ -530,7 +540,7 @@ namespace OpenVapour {
                     Task gettask = getresults.ContinueWith((results) => {
                         foreach (Task<ResultTorrent> torrenttask in results.Result)
                             AsyncAddTorrent(torrenttask); });
-                    Task.Run(() => getresults); }}
+                    new Thread(async () => { await getresults; }) { IsBackground = true }.Start(); }}
 
         private async void Magnet(object sender, EventArgs e) {
             ForceUpdate();
