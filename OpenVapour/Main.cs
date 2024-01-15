@@ -553,7 +553,7 @@ namespace OpenVapour {
             foreach (Control ctrl in tagFilterContainer.Controls)
                 if ((ctrl as CheckBox).Checked) tags.Add((SteamTag)ctrl.Tag);
             ClearStore(); 
-            int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (int)Math.Floor(store.Height / (225f + 14f)));
+            int results = Math.Max(10, (int)Math.Floor(store.Width / (150f + 10f)) * (1 + (int)Math.Floor(store.Height / (225f + 14f))));
             UseWaitCursor = true;
             List<ResultGame> res = await GetResults(Session, game, tags.ToArray(), results, extendTimeout);
             if (res.Count == 0) NoResultsFound(game, true);
@@ -699,7 +699,6 @@ namespace OpenVapour {
             searchButton.Size = searchButton.MaximumSize;
             manageFilters.Parent.Location = new Point(torrentButton.Parent.Location.X - manageFilters.Parent.Width, 0);
             manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
-            //realsearchtb.Font = new Font(realsearchtb.Font.FontFamily, 24f, FontStyle.Regular);
             panel.BringToFront();
             SearchEngine = panel;
             ForceUpdate(); }
