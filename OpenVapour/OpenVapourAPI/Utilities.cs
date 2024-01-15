@@ -211,20 +211,13 @@ namespace OpenVapour.OpenVapourAPI {
 
         internal static void MigrateDirectories() {
             try {
-                if (Directory.Exists($"{RoamingAppData}\\lily.software")) {
+                if (Directory.Exists($"{RoamingAppData}\\lily.software\\OpenVapour")) {
                     try {
-                    HandleLogging("[Migration Check (1/3)] lily.software directory found! Migrating to prismatica.dev");
-                    CreateDirectory($"{DedicatedAppdata}");
-
-                    foreach (string dirPath in Directory.GetDirectories($"{RoamingAppData}\\lily.software", "*", SearchOption.AllDirectories))
-                        Directory.CreateDirectory(dirPath.Replace("lily.software", "prismatica.dev"));
-                    foreach (string newPath in Directory.GetFiles($"{RoamingAppData}\\lily.software", "*.*", SearchOption.AllDirectories))
-                        if (!newPath.EndsWith(".log")) File.Copy(newPath, newPath.Replace("lily.software", "prismatica.dev"), true);
-
-                    HandleLogging("[Migration Check (2/3)] Copied contents to prismatica.dev");
-                    } catch (Exception ex) { HandleException("[Migration Check */3] Migration failed", ex); }
-                    Directory.Delete($"{RoamingAppData}\\lily.software", true);
-                    HandleLogging("[Migration Check (3/3)] Deleted old directory");
+                    Directory.CreateDirectory($"{RoamingAppData}\\prismatica.dev");
+                    Directory.Delete(DedicatedAppdata, true);
+                    Directory.Move($"{RoamingAppData}\\lily.software\\OpenVapour", DedicatedAppdata);
+                    HandleLogging("[Migration Check (2/2)] Moved contents to prismatica.dev");
+                    } catch (Exception ex) { HandleException("[Migration Check */2] Migration failed", ex); }
             }} catch (Exception ex) { HandleException($"MigrateDirectories()", ex); }  }
 
         internal static float FitText(Font font, string text, Size size, float max) {
