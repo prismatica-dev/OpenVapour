@@ -654,6 +654,7 @@ namespace OpenVapour {
 
         private void LoadLibrary() {
             try {
+                UnloadSearch();
                 if (System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\prismatica.dev\\OpenVapour\\Storage\\Games").Length > 0)
                     foreach (string file in System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\prismatica.dev\\OpenVapour\\Storage\\Games")) {
                         try { 
@@ -670,7 +671,6 @@ namespace OpenVapour {
 
         private void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; 
-            //LoadLibrary();
             LoadSearch();
 
             Timer gc = new Timer { Interval = 500 };
@@ -699,22 +699,25 @@ namespace OpenVapour {
             searchButton.Size = searchButton.MaximumSize;
             manageFilters.Parent.Location = new Point(torrentButton.Parent.Location.X - manageFilters.Parent.Width, 0);
             manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
+            libraryButton.Parent.Location = new Point(manageSettings.Parent.Location.X - libraryButton.Parent.Width, 0);
             panel.BringToFront();
             SearchEngine = panel;
             ForceUpdate(); }
 
         private void UnloadSearch() {
-            searchtextbox.Parent = toolbar;
-            searchtextbox.Size = new Size(200, 25);
-            searchtextbox.Location = new Point(torrentButton.Parent.Location.X - searchtextbox.Width, 0);
-            searchtextbox.BringToFront();
-            manageFilters.Parent.Location = new Point(searchtextbox.Location.X - manageFilters.Parent.Width, 0);
-            manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
+            searchButton.Parent.Parent = toolbar;
             searchButton.Parent.Size = new Size(toolbar.Height, toolbar.Height);
             searchButton.Parent.Location = new Point(torrentButton.Parent.Location.X - searchButton.Parent.Width, 0);
             searchButton.MaximumSize = new Size(searchButton.Parent.Width + 20, searchButton.Parent.Height + 20);
             searchButton.Size = searchButton.MaximumSize;
             searchButton.Location = new Point(-10, -10);
+            searchtextbox.Parent = toolbar;
+            searchtextbox.Size = new Size(200, 25);
+            searchtextbox.Location = new Point(searchButton.Parent.Location.X - searchtextbox.Width, 0);
+            searchtextbox.BringToFront();
+            manageFilters.Parent.Location = new Point(searchtextbox.Location.X - manageFilters.Parent.Width, 0);
+            manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
+            libraryButton.Parent.Location = new Point(manageSettings.Parent.Location.X - libraryButton.Parent.Width, 0);
             if (SearchEngine != null) {
                 foreach (Control ctrl in SearchEngine.Controls) ctrl.Dispose();
                 SearchEngine.Dispose(); }
@@ -841,5 +844,5 @@ namespace OpenVapour {
             ForceUpdate(); }
 
         private void SearchButton(object sender, EventArgs e) => Realsearchtb_KeyDown(sender, new KeyEventArgs(Keys.Enter));
-
-        private void QuickTorrent(object sender, EventArgs e) => Realsearchtb_KeyDown(new KeyEventArgs(Keys.Enter), true); }}
+        private void QuickTorrent(object sender, EventArgs e) => Realsearchtb_KeyDown(new KeyEventArgs(Keys.Enter), true);
+        private void libraryButton_Click(object sender, EventArgs e) => LoadLibrary(); }}

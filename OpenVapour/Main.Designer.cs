@@ -63,6 +63,7 @@
             this.filterControlsContainer = new System.Windows.Forms.Panel();
             this.resetFilters = new System.Windows.Forms.Button();
             this.tagFilterHeader = new System.Windows.Forms.Label();
+            this.libraryButton = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             this.popuppanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupart)).BeginInit();
@@ -78,6 +79,7 @@
             // toolbar
             // 
             this.toolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolbar.Controls.Add(this.libraryButton);
             this.toolbar.Controls.Add(this.searchButton);
             this.toolbar.Controls.Add(this.torrentButton);
             this.toolbar.Controls.Add(this.manageFilters);
@@ -484,7 +486,7 @@
             this.realsearchtb.Margin = new System.Windows.Forms.Padding(0);
             this.realsearchtb.MaximumSize = new System.Drawing.Size(1, 1);
             this.realsearchtb.Name = "realsearchtb";
-            this.realsearchtb.Size = new System.Drawing.Size(1, 1);
+            this.realsearchtb.Size = new System.Drawing.Size(1, 25);
             this.realsearchtb.TabIndex = 6;
             this.realsearchtb.TabStop = false;
             this.realsearchtb.Text = "Search";
@@ -602,6 +604,24 @@
             this.tagFilterHeader.TabIndex = 0;
             this.tagFilterHeader.Text = "Filter by Tag";
             // 
+            // libraryButton
+            // 
+            this.libraryButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.libraryButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.libraryButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.libraryButton.FlatAppearance.BorderSize = 0;
+            this.libraryButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.libraryButton.Font = new System.Drawing.Font("Segoe UI Light", 9F);
+            this.libraryButton.ForeColor = System.Drawing.Color.White;
+            this.libraryButton.Location = new System.Drawing.Point(412, 0);
+            this.libraryButton.Margin = new System.Windows.Forms.Padding(0);
+            this.libraryButton.Name = "libraryButton";
+            this.libraryButton.Size = new System.Drawing.Size(25, 25);
+            this.libraryButton.TabIndex = 11;
+            this.libraryButton.Text = "📚";
+            this.libraryButton.UseVisualStyleBackColor = false;
+            this.libraryButton.Click += new System.EventHandler(this.libraryButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 45F);
@@ -692,6 +712,7 @@
         private System.Windows.Forms.Button resetFilters;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.Button torrentButton;
+        private System.Windows.Forms.Button libraryButton;
     }
 }
 
