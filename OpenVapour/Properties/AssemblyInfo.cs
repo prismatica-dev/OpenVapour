@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OpenVapour")]
-[assembly: AssemblyDescription("FLOSS Torrent Manager")]
+[assembly: AssemblyDescription("FLOSS Torrent Search Engine")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("lily.software")]
+[assembly: AssemblyCompany("prismatica.dev")]
 [assembly: AssemblyProduct("OpenVapour")]
-[assembly: AssemblyCopyright("https://github.com/lily-software/OpenVapour")]
+[assembly: AssemblyCopyright("https://github.com/prismatica-dev/OpenVapour")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.4.6")]
-[assembly: AssemblyFileVersion("1.3.4.6")]
+[assembly: AssemblyVersion("1.4.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]

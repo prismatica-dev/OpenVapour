@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ using static OpenVapour.OpenVapourAPI.DirectoryUtilities;
 namespace OpenVapour.OpenVapourAPI {
     internal class Utilities {
         // Constants
-        private const string repo = "lily-software/OpenVapour";
+        private const string repo = "prismatica-dev/OpenVapour";
 
         // Variables
         internal static readonly string[] FilterCore = {
@@ -148,28 +149,33 @@ namespace OpenVapour.OpenVapourAPI {
                 HandleException($"Utilities.GetAfter({String}, {After})", ex); 
                 return String; }}
 
+        internal static bool ExceptionHandlerException = false;
         internal static void HandleLogging(string Log, bool IgnoreLog = false, bool IgnoreException = false) {
             try {
                 string logformat = $"[{DateTime.Now}] {Log}";
                 Console.WriteLine(logformat);
 
-                if (LogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"\n{logformat}");
+                if (!Directory.Exists(DedicatedAppdata)) CreateDirectory(DedicatedAppdata);
+                if (LogWritten) File.AppendAllText($"{DedicatedAppdata}\\latest.log", $"\n{logformat}");
                 else { 
-                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
+                    File.WriteAllText($"{DedicatedAppdata}\\latest.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}\n{logformat}"); 
                     LogWritten = true; }
             } catch (Exception ex) { if (!IgnoreException) HandleException($"Utilities.HandleLogging({Log}, {IgnoreLog})", ex, IgnoreLog); }}
 
         internal static void HandleException(string Cause, Exception Result, bool IgnoreLog = false) { 
             try {
-                if (!IgnoreLog)
-                    HandleLogging($"{Cause} threw exception '{Result?.Message}'\nat {Result?.StackTrace}", true);
+                if (!IgnoreLog) HandleLogging($"{Cause} threw exception '{Result?.Message}'\nat {Result?.StackTrace}", true);
                 string logformat = $"[{DateTime.Now}] {Cause} threw exception '{Result?.Message}'\nStack Trace: '{Result.StackTrace}'";
-
-                if (ExceptionLogWritten) File.AppendAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"\n{logformat}");
+                
+                if (!Directory.Exists(DedicatedAppdata)) CreateDirectory(DedicatedAppdata);
+                if (ExceptionLogWritten) File.AppendAllText($"{DedicatedAppdata}\\exception.log", $"\n{logformat}");
                 else { 
-                    File.WriteAllText($"{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
+                    File.WriteAllText($"{DedicatedAppdata}\\exception.log", $"Version {Assembly.GetExecutingAssembly().GetName().Version}{(CompatibilityMode?"-wine":"")}\n{logformat}"); 
                     ExceptionLogWritten = true; }
-            } catch (Exception) { MessageBox.Show($"Uh oh. The crash-handler threw an error.\nPlease ensure OpenVapour is able to read and write to\n{RoamingAppData}\\lily.software\\OpenVapour\\exception.log", "Exception when Handling Exception"); }}
+            } catch (Exception ex) { 
+                if (!ExceptionHandlerException) {
+                    ExceptionHandlerException = true;
+                    MessageBox.Show($"Uh oh. The crash-handler threw an error ({ex.Message}).\nPlease ensure OpenVapour is able to read and write to\n{DedicatedAppdata}\\exception.log", "Exception when Handling Exception"); }}}
 
         
         private static readonly string[] wineEnvironmentVariables = new string[] { "WINEPREFIX", "WINEARCH", "WINEDEBUG" };
@@ -187,6 +193,22 @@ namespace OpenVapour.OpenVapourAPI {
             try { if (Environment.OSVersion.Platform == PlatformID.Unix && Environment.OSVersion.VersionString.Contains("Windows")) CompatibilityMode = true;
             } catch (Exception ex) { HandleException($"Main.CheckCompatibility() [Check #3]", ex); }
             HandleLogging($"{(CompatibilityMode?"Detected":"Did not detect")} wine is in use"); }
+
+        internal static void MigrateDirectories() {
+            try {
+                if (Directory.Exists($"{RoamingAppData}\\lily.software")) {
+                    HandleLogging("[Migration Check (1/3)] lily.software directory found! Migrating to prismatica.dev");
+                    CreateDirectory($"{DedicatedAppdata}");
+
+                    foreach (string dirPath in Directory.GetDirectories($"{RoamingAppData}\\lily.software", "*", SearchOption.AllDirectories))
+                        Directory.CreateDirectory(dirPath.Replace("lily.software", "prismatica.dev"));
+                    foreach (string newPath in Directory.GetFiles($"{RoamingAppData}\\lily.software", "*.*", SearchOption.AllDirectories))
+                        if (!newPath.EndsWith(".log")) File.Copy(newPath, newPath.Replace("lily.software", "prismatica.dev"), true);
+
+                    HandleLogging("[Migration Check (2/3)] Copied contents to prismatica.dev");
+                    Directory.Delete($"{RoamingAppData}\\lily.software");
+                    HandleLogging("[Migration Check (3/3)] Deleted old directory");
+            }} catch (Exception ex) { HandleException($"MigrateDirectories()", ex); }  }
 
         internal static float FitText(Font font, string text, Size size, float max) {
             bool fit = false;

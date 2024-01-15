@@ -35,6 +35,7 @@ namespace OpenVapour {
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Initialising OpenVapour", true, true);
             Icon = Resources.OpenVapour_Icon;
+            Utilities.MigrateDirectories();
 
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Nullifying Proxy", true, true);
             System.Net.WebRequest.DefaultWebProxy = null;
@@ -622,8 +623,8 @@ namespace OpenVapour {
 
         private void LoadLibrary() {
             try {
-                if (System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games").Length > 0)
-                    foreach (string file in System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Games")) {
+                if (System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\prismatica.dev\\OpenVapour\\Storage\\Games").Length > 0)
+                    foreach (string file in System.IO.Directory.GetFiles($"{DirectoryUtilities.RoamingAppData}\\prismatica.dev\\OpenVapour\\Storage\\Games")) {
                         try { 
                             string id = file.Substring(file.LastIndexOf("\\") + 1);
                             if (Cache.IsSteamGameCached(id)) { 

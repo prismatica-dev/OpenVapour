@@ -7,7 +7,7 @@ using static OpenVapour.OpenVapourAPI.Utilities;
 
 namespace OpenVapour.OpenVapourAPI {
     internal static class UserSettings {
-        internal static readonly string DedicatedSettings = $"{DirectoryUtilities.RoamingAppData}\\lily.software\\OpenVapour\\Storage\\Settings";
+        internal static readonly string DedicatedSettings = $"{DirectoryUtilities.RoamingAppData}\\prismatica.dev\\OpenVapour\\Storage\\Settings";
         
         internal static Dictionary<string, Color> WindowTheme = new Dictionary<string, Color> {
             { "background1", Color.FromArgb(56, 177, 96) },
@@ -19,7 +19,9 @@ namespace OpenVapour.OpenVapourAPI {
         internal static Dictionary<TorrentSource, Implementation> TorrentSources = GetImplementations(SourceScores);
         internal static Dictionary<DirectSource, Implementation> DirectSources = GetImplementations(DirectSourceScores);
 
-        internal static void CheckSettings() { try { DirectoryUtilities.CreateDirectory($"{DedicatedSettings}"); } catch (Exception ex) { HandleException("CheckSettings()", ex); }}
+        internal static void CheckSettings() { 
+            try { DirectoryUtilities.CreateDirectory($"{DedicatedSettings}"); } 
+            catch (Exception ex) { HandleException("CheckSettings()", ex); }}
 
         internal static string ExtractTheme(string key) {
             Color c = WindowTheme[key];
