@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -160,7 +161,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static bool ExceptionHandlerException = false;
         internal static void HandleLogging(string Log, bool IgnoreLog = false, bool IgnoreException = false) {
             try {
-                string logformat = $"[{DateTime.Now}] {Log}";
+                string logformat = $"{(IgnoreLog?"":$"[{DateTime.Now}]")} {Log}";
                 Console.WriteLine(logformat);
 
                 if (!Directory.Exists(DedicatedAppdata)) CreateDirectory(DedicatedAppdata);
@@ -172,8 +173,14 @@ namespace OpenVapour.OpenVapourAPI {
 
         internal static void HandleException(string Cause, Exception Result, bool IgnoreLog = false) { 
             try {
-                if (!IgnoreLog) HandleLogging($"{Cause} threw exception '{Result?.Message}'\nat {Result?.StackTrace}", true);
-                string logformat = $"[{DateTime.Now}] {Cause} threw exception '{Result?.Message}'\nStack Trace: '{Result.StackTrace}'";
+                bool Unloggable = false;
+                if (Result != null)
+                    if (Result.Message.StartsWith("Unable to translate Unicode character"))
+                        Unloggable = true;
+
+                string logformat = Unloggable?$"[{DateTime.Now}] An unwritable source threw the exception '{Result?.Message}'\nStack Trace: '{Result.StackTrace}'":$"[{DateTime.Now}] {Cause} threw exception '{Result?.Message}'\nStack Trace: '{Result.StackTrace}'";
+                Console.WriteLine(logformat);
+                if (!IgnoreLog) HandleLogging(logformat, true, true);
                 
                 if (!Directory.Exists(DedicatedAppdata)) CreateDirectory(DedicatedAppdata);
                 if (ExceptionLogWritten) File.AppendAllText($"{DedicatedAppdata}\\exception.log", $"\n{logformat}");
