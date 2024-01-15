@@ -153,6 +153,7 @@
             // 
             this.searchtextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchtextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.searchtextbox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.searchtextbox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.searchtextbox.Location = new System.Drawing.Point(531, 0);
             this.searchtextbox.Name = "searchtextbox";
@@ -478,11 +479,12 @@
             // realsearchtb
             // 
             this.realsearchtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.realsearchtb.Font = new System.Drawing.Font("Segoe UI Light", 14F);
             this.realsearchtb.Location = new System.Drawing.Point(-50, -50);
             this.realsearchtb.Margin = new System.Windows.Forms.Padding(0);
             this.realsearchtb.MaximumSize = new System.Drawing.Size(1, 1);
             this.realsearchtb.Name = "realsearchtb";
-            this.realsearchtb.Size = new System.Drawing.Size(1, 44);
+            this.realsearchtb.Size = new System.Drawing.Size(1, 1);
             this.realsearchtb.TabIndex = 6;
             this.realsearchtb.TabStop = false;
             this.realsearchtb.Text = "Search";

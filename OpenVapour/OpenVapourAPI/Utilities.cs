@@ -138,6 +138,14 @@ namespace OpenVapour.OpenVapourAPI {
             } catch (Exception ex) { 
                 HandleException($"Utilities.GetUntil({String}, {Until})", ex); 
                 return String; }}
+        internal static string GetBefore(string String, string Before) {
+            try {
+                if (String == null || Before == null || !String.Contains(Before)) return String;
+                try { return String.Substring(0, String.LastIndexOf(Before));
+                } catch (ArgumentOutOfRangeException) { return ""; }
+            } catch (Exception ex) { 
+                HandleException($"Utilities.GetBefore({String}, {Before})", ex); 
+                return String; }}
         internal static string GetAfter(string String, string After) {
             try {
                 if (String == null || After == null || !String.Contains(After)) return String;
@@ -197,6 +205,7 @@ namespace OpenVapour.OpenVapourAPI {
         internal static void MigrateDirectories() {
             try {
                 if (Directory.Exists($"{RoamingAppData}\\lily.software")) {
+                    try {
                     HandleLogging("[Migration Check (1/3)] lily.software directory found! Migrating to prismatica.dev");
                     CreateDirectory($"{DedicatedAppdata}");
 
@@ -206,7 +215,8 @@ namespace OpenVapour.OpenVapourAPI {
                         if (!newPath.EndsWith(".log")) File.Copy(newPath, newPath.Replace("lily.software", "prismatica.dev"), true);
 
                     HandleLogging("[Migration Check (2/3)] Copied contents to prismatica.dev");
-                    Directory.Delete($"{RoamingAppData}\\lily.software");
+                    } catch (Exception ex) { HandleException("[Migration Check */3] Migration failed", ex); }
+                    Directory.Delete($"{RoamingAppData}\\lily.software", true);
                     HandleLogging("[Migration Check (3/3)] Deleted old directory");
             }} catch (Exception ex) { HandleException($"MigrateDirectories()", ex); }  }
 

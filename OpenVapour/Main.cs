@@ -16,6 +16,7 @@ using Timer = System.Windows.Forms.Timer;
 using OpenVapour.Web;
 using OpenVapour.Properties;
 using System.Threading;
+using System.Net;
 
 namespace OpenVapour {
     internal partial class Main : Form {
@@ -35,6 +36,7 @@ namespace OpenVapour {
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Initialising OpenVapour", true, true);
             Icon = Resources.OpenVapour_Icon;
+            Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Running Migration Check", true, true);
             Utilities.MigrateDirectories();
 
             Utilities.HandleLogging($"({sw.ElapsedMilliseconds:N0}ms) Nullifying Proxy", true, true);
@@ -255,6 +257,7 @@ namespace OpenVapour {
             Task add = torrenttask.ContinueWith((result) => {
                 Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(result.Result); }); });
             Task.Run(() => add); }
+
         internal void AddTorrent(ResultTorrent torrent) {
             try {
                 if (torrent == null || string.IsNullOrWhiteSpace(torrent.Name)) return;
@@ -263,17 +266,42 @@ namespace OpenVapour {
                 clearing = true;
                 foreach (Control nrc in nr) nrc.Parent = null;
                 clearing = false;
-                PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
-                List<object> metalist = new List<object> { states, torrent, false };
-                panel.Image = states[0];
-                panel.Tag = metalist;
-                Panel popup = CreatePopUp(panel, torrent.Name, torrent.Description, torrent.PublishDate);
-                metalist.Add(popup);
-                
-                AddPanelEvents(panel);
-                ForceUpdate();
-                LoadGameTorrentBitmap(Session, torrent, panel); }
+                //PictureBox panel = new PictureBox { Size = new Size(150, 225), SizeMode = PictureBoxSizeMode.StretchImage, Margin = new Padding(5, 7, 5, 7), Cursor = Cursors.Hand };
+
+                int _ = Width - RESIZE_BUFFER_SIZE * 2 - 10;
+                Panel panel = new Panel { Parent = store, Size = new Size(_, 35), BackColor = Color.FromArgb((store.Controls.Count%2==0?165:125), 0, 0, 0), Padding = new Padding(5, 0, 5, 0) };
+
+                for (int i = 1; i < 4; i++) {
+                    new Panel { BackColor = Color.FromArgb(175, 175, 175), Size = new Size(1, panel.Height), Parent = panel, Location = new Point(GetCategoryLocation(i) - 1, 0) }; }
+
+                // name
+                Label name = new Label { Parent = panel, Font = Utilities.FitFont(Font, torrent.Name, new Size(GetCategorySize(0) - 4, panel.Height - 10)), Location = new Point(2, 2), Text = torrent.Name, BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(0), panel.Height - 4), TextAlign = ContentAlignment.MiddleLeft };
+
+                // release date
+                string _d = torrent.PublishDateTime==DateTime.MinValue?torrent.PublishDate:torrent.PublishDateTime.ToString("MMM d, yyyy");
+                new Label { Parent = panel, Font = Utilities.FitFont(Font, _d, new Size(GetCategorySize(1) - 2, panel.Height - 10)), Location = new Point(GetCategoryLocation(1) + 2, 2), Text = _d, BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(1) - 4, panel.Height - 4), TextAlign = ContentAlignment.MiddleCenter };
+
+                // magnet button
+                Button _b = new Button { Parent = panel, Font = Utilities.FitFont(Font, "Copy Failed", new Size(GetCategorySize(2) - 2, panel.Height - 10)), Location = new Point(GetCategoryLocation(2), 0), Text = "🧲", BackColor = magnetbutton.BackColor, MinimumSize = new Size(GetCategorySize(2), panel.Height), TextAlign = ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Flat };
+                _b.FlatAppearance.BorderSize = 0;
+                ButtonFix(_b, false);
+                _b.Parent.SendToBack();
+                _b.MouseClick += delegate { currenttorrent = torrent; Magnet(_b, new EventArgs()); };
+
+                // source
+                Label _source = new Label { Parent = panel, Font = Utilities.FitFont(Font, GetSourceName(torrent.Source), new Size(GetCategorySize(3) - 4, panel.Height - 10)), Location = new Point(GetCategoryLocation(3) + 2, 2), Text = GetSourceName(torrent.Source), BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(3), panel.Height - 4), TextAlign = ContentAlignment.MiddleCenter, ForeColor = GetIntegrationColor(GetIntegration(torrent.Source)) };
+
+                _source.MouseEnter += delegate { _source.Font = new Font(_source.Font, FontStyle.Underline); ForceUpdate(); };
+                _source.MouseLeave += delegate { _source.Font = new Font(_source.Font, FontStyle.Regular); ForceUpdate(); };
+                _source.MouseClick += delegate { Utilities.OpenUrl(torrent.Url); };
+
+                ForceUpdate(); }
             catch (Exception ex) { Utilities.HandleException($"Main.AddTorrent({torrent.Url})", ex); }}
+        
+        internal readonly float[] TorrentCategorySizes = new float[] { 0.55f, 0.15f, 0.15f, 0.15f }; 
+        internal readonly float[] TorrentCategoryLocations = new float[] { 0.00f, 0.55f, 0.70f, 0.85f }; 
+        internal int GetCategorySize(int CategoryIndex) => (int)Math.Round((Width - RESIZE_BUFFER_SIZE * 2f - 10f) * TorrentCategorySizes[CategoryIndex]);
+        internal int GetCategoryLocation(int CategoryIndex) => (int)Math.Round((Width - RESIZE_BUFFER_SIZE * 2f - 10f) * TorrentCategoryLocations[CategoryIndex]);
         
         internal async void AsyncAddGame(int Session, int AppId, bool Basic = false) {
             Task<SteamGame> game = GetGame(AppId, Basic);
@@ -489,20 +517,21 @@ namespace OpenVapour {
         private void DrawSearchBox(object sender, EventArgs e) { DrawSearchBox(); ForceUpdate(); }
 
         private void DrawSearchBox() {
-            Bitmap bit = new Bitmap(searchtextbox.Width, searchtextbox.Height);
+            Bitmap bit = new Bitmap(searchtextbox.Width - 4, 25);
             string t = realsearchtb.Text;
             if (realsearchtb.Focused && DateTime.Now.Millisecond < 500 && t.Length >= realsearchtb.SelectionStart) 
                 t = t.Insert(realsearchtb.SelectionStart, "|");
 
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bit)) {
                 Graphics.ApplyQuality(g);
-                g.DrawString(t, new Font("Segoe UI Light", 14f, realsearchtb.Focused?FontStyle.Regular:FontStyle.Italic), new SolidBrush(UserSettings.WindowTheme["text1"]), new PointF(0, 0)); } 
+                g.DrawString(t, new Font("Segoe UI Light", realsearchtb.Font.Size, realsearchtb.Focused?FontStyle.Regular:FontStyle.Italic), new SolidBrush(UserSettings.WindowTheme["text1"]), new PointF(0, 0)); } 
             searchtextbox.BackgroundImage?.Dispose();
             searchtextbox.BackgroundImage = bit; }
 
         private void Realsearchtb_KeyDown(object sender, KeyEventArgs e) => Realsearchtb_KeyDown(e, false);
         private void Realsearchtb_KeyDown(KeyEventArgs e, bool quick) {
             if (e.KeyCode == Keys.Enter) { 
+                UnloadSearch();
                 if (realsearchtb.Text == "Search") realsearchtb.Text = "";
                 string s = realsearchtb.Text;
                 realsearchtb.Text = "Search";
@@ -550,7 +579,7 @@ namespace OpenVapour {
         private void TorrentSearch(object sender, EventArgs e) {
             int session = NewSession();
             ClearStore(); 
-            if (currentgame != null && currentgame.AppId != "-1") AddGame(Session, currentgame);
+            //if (currentgame != null && currentgame.AppId != "-1") AddGame(Session, currentgame);
             gamepanel.Visible = false;
             ForceUpdate();
             string _ = Regex.Replace(currentgame.Name, @"[^a-zA-Z0-9 ]", string.Empty).Replace("  ", " ").Replace("  ", " ");
@@ -583,40 +612,42 @@ namespace OpenVapour {
             ForceUpdate();
             string magnet = "";
             bool copied = false;
+            Button btn = (Button)sender;
             try {
                 if ((currenttorrent.Source == TorrentSource.KaOs && !currenttorrent.SafeAnyway) || currenttorrent.Source == TorrentSource.SteamRIP) {
                     Utilities.HandleLogging($"Current torrent {currenttorrent.Url} is not fully implemented. Opening page URL");
                     Utilities.OpenUrl(currenttorrent.Url);
                     return; }
 
-                magnetbutton.Text = "Fetching";
+                btn.Text = "Fetching";
                 ForceUpdate();
                 magnet = await currenttorrent.GetMagnet();
+                if (magnet.ToLower().Contains("%2f")) magnet = WebUtility.UrlDecode(magnet);
 
                 Utilities.HandleLogging("Copying magnet url " + magnet);
                 Clipboard.SetText(magnet);
-                magnetbutton.Text = "Copied!";
+                btn.Text = "Copied!";
                 copied = true;
                 Cache.HomepageGame(currentgame);
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Clipboard]", ex); 
-                magnetbutton.Text = "Copy Failed";
+                btn.Text = "Copy Failed";
                 ForceUpdate(); }
             try {
                 if (magnet.Length > 0) {
                     Utilities.HandleLogging("Opening magnet url " + magnet);
                     if (Utilities.OpenUrl(magnet))
-                        magnetbutton.Text = "Success"; 
+                        btn.Text = "Success"; 
                     else if (!copied)
-                        magnetbutton.Text = "Failed";
+                        btn.Text = "Failed";
                     ForceUpdate();
                     Cache.HomepageGame(currentgame); }
                 else {
-                    magnetbutton.Text = "No URL";
+                    btn.Text = "No URL";
                     ForceUpdate(); }
             } catch (Exception ex) { 
                 Utilities.HandleException("Main.Magnet() [Process]", ex); 
-                if (!copied) magnetbutton.Text = "Open Failed";
+                if (!copied) btn.Text = "Open Failed";
                 ForceUpdate(); }}
 
         private void Exit_Click(object sender, EventArgs e) { clearing = true; Close(); }
@@ -639,7 +670,8 @@ namespace OpenVapour {
 
         private void MainShown(object sender, EventArgs e) {
             store.Visible = true; toolbar.Visible = true; 
-            LoadLibrary();
+            //LoadLibrary();
+            LoadSearch();
 
             Timer gc = new Timer { Interval = 500 };
             gc.Tick += delegate { GC.Collect(); gc.Stop(); };
@@ -648,6 +680,33 @@ namespace OpenVapour {
             Timer textboxcursor = new Timer { Interval = 128 };
             textboxcursor.Tick += delegate { if (realsearchtb.Focused) DrawSearchBox(sender, e); };
             textboxcursor.Start(); }
+
+        Panel SearchEngine;
+        private void LoadSearch() {
+            Panel panel = new Panel { Parent = store.Parent, Size = store.Parent.Size, BackColor = Color.FromArgb(50, 255, 255, 255) };
+            Label title = new Label { Parent = panel, BackColor = Color.Transparent, MinimumSize = new Size(Width / 2, Height / 5), Location = new Point(Width / 4, Height / 5), Text = "OpenVapour", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "OpenVapour", new Size(Width / 2, Height / 5)), TextAlign = ContentAlignment.BottomCenter };
+            new Label { Parent = panel, BackColor = Color.Transparent, ForeColor = Color.FromArgb(206, 206, 206), MinimumSize = new Size(Width / 3, Height / 10), Location = new Point(Width / 3, title.Bottom), Text = "take back the web", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "take back the web", new Size(Width / 3, Height / 10)), TextAlign = ContentAlignment.TopCenter };
+            store.Parent.Visible = true;
+            searchtextbox.Parent = panel;
+            searchtextbox.Location = new Point(title.Left, title.Bottom + Height / 4);
+            searchtextbox.Size = new Size(title.Width - Height / 12, Height / 12);
+            searchtextbox.BackColor = Color.FromArgb(40, 255, 255, 255);
+            searchButton.Parent = panel;
+            searchButton.Location = new Point(searchtextbox.Right, searchtextbox.Location.Y);
+            searchButton.Size = new Size(searchtextbox.Height, searchtextbox.Height);
+            //realsearchtb.Font = new Font(realsearchtb.Font.FontFamily, 24f, FontStyle.Regular);
+            panel.BringToFront();
+            SearchEngine = panel; }
+
+        private void UnloadSearch() {
+            searchtextbox.Parent = toolbar;
+            searchtextbox.Size = new Size(200, 25);
+            searchtextbox.Location = new Point(manageFilters.Parent.Right, 0);
+            searchtextbox.BringToFront();
+            if (SearchEngine != null) {
+                foreach (Control ctrl in SearchEngine.Controls) ctrl.Dispose();
+                SearchEngine.Dispose(); }}
+
 
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         private static extern bool LockWindowUpdate(IntPtr hWnd);

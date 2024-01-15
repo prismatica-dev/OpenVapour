@@ -12,6 +12,7 @@ namespace OpenVapour.Torrent {
     internal class Torrent {
         internal static Tuple<string, string>[] PCGTGameList = new Tuple<string, string>[] { };
         internal static string[] KaOSGameList = new string[] { };
+        private static readonly System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
         internal class ResultTorrent {
             internal TorrentSource Source { get; set; }
             internal string Name { get; set; }
@@ -20,6 +21,7 @@ namespace OpenVapour.Torrent {
             internal string Image { get; set; }
             internal string TorrentUrl { get; set; }
             internal string PublishDate = "";
+            internal DateTime PublishDateTime { get; set; }
             internal bool SafeAnyway { get; set; }
             internal static async Task<ResultTorrent> TorrentFromUrl(TorrentSource source, string Url, string Name) {
                 ResultTorrent t = new ResultTorrent(TorrentSource.Unknown, "");
@@ -77,6 +79,7 @@ namespace OpenVapour.Torrent {
 
                             string __ = GetAfter(html, "<time");
                             t.PublishDate = GetBetween(__, ">", "<");
+                            t.PublishDateTime = DateTime.ParseExact(GetBefore(t.PublishDate, ","), "dd MMM yyyy", Culture);
 
                             Cache.CacheTorrent(t);
                             return t;
@@ -103,7 +106,9 @@ namespace OpenVapour.Torrent {
                             Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
-                            if (Source == TorrentSource.PCGamesTorrents || Source == TorrentSource.FitgirlRepacks) Image = GetBetween(JSON, "src=\"", "\"");
+                            if (Source == TorrentSource.PCGamesTorrents || Source == TorrentSource.FitgirlRepacks) {
+                                PublishDateTime = DateTime.ParseExact(GetBefore(GetBetween(PublishDate, ", ", " +"), " "), "dd MMM yyyy", Culture);
+                                Image = GetBetween(JSON, "src=\"", "\""); }
                         break; }
 
                     switch (Source) {
@@ -155,6 +160,7 @@ namespace OpenVapour.Torrent {
                             Image = "https://byxatab.com/uploads" + GetBetween(JSON, "<img src=\"/uploads", "\"");
                             TorrentUrl = Url;
                             PublishDate = GetBetween(JSON, "<div class=\"entry__info-categories\">", "</div>");
+                            PublishDateTime = DateTime.ParseExact(GetBefore(PublishDate, ","), "dd-mm-yyyy", Culture);
                             break;
 
                         case TorrentSource.Unknown:

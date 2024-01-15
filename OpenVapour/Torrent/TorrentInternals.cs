@@ -68,9 +68,9 @@ namespace OpenVapour.Torrent {
         internal static Color GetIntegrationColor(Integration Integration) {
             switch (Integration) {
                 case Integration.Extended:
-                    return Color.FromArgb(0, 80, 0);
+                    return Color.FromArgb(30, 130, 20);
                 case Integration.Full:
-                    return Color.FromArgb(50, 155, 40);
+                    return Color.FromArgb(85, 225, 70);
                 case Integration.Partial:
                     return Color.FromArgb(170, 186, 65);
                 case Integration.NoBypass:
