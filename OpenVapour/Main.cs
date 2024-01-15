@@ -691,21 +691,35 @@ namespace OpenVapour {
             searchtextbox.Location = new Point(title.Left, title.Bottom + Height / 4);
             searchtextbox.Size = new Size(title.Width - Height / 12, Height / 12);
             searchtextbox.BackColor = Color.FromArgb(40, 255, 255, 255);
-            searchButton.Parent = panel;
-            searchButton.Location = new Point(searchtextbox.Right, searchtextbox.Location.Y);
-            searchButton.Size = new Size(searchtextbox.Height, searchtextbox.Height);
+            searchButton.Parent.Parent = panel;
+            searchButton.Parent.Location = new Point(searchtextbox.Right, searchtextbox.Location.Y);
+            searchButton.Parent.Size = new Size(searchtextbox.Height, searchtextbox.Height);
+            searchButton.Location = new Point(-10, -10);
+            searchButton.MaximumSize = new Size(searchButton.Parent.Height + 20, searchButton.Parent.Height + 20);
+            searchButton.Size = searchButton.MaximumSize;
+            manageFilters.Parent.Location = new Point(torrentButton.Parent.Location.X - manageFilters.Parent.Width, 0);
+            manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
             //realsearchtb.Font = new Font(realsearchtb.Font.FontFamily, 24f, FontStyle.Regular);
             panel.BringToFront();
-            SearchEngine = panel; }
+            SearchEngine = panel;
+            ForceUpdate(); }
 
         private void UnloadSearch() {
             searchtextbox.Parent = toolbar;
             searchtextbox.Size = new Size(200, 25);
-            searchtextbox.Location = new Point(manageFilters.Parent.Right, 0);
+            searchtextbox.Location = new Point(torrentButton.Parent.Location.X - searchtextbox.Width, 0);
             searchtextbox.BringToFront();
+            manageFilters.Parent.Location = new Point(searchtextbox.Location.X - manageFilters.Parent.Width, 0);
+            manageSettings.Parent.Location = new Point(manageFilters.Parent.Location.X - manageSettings.Parent.Width, 0);
+            searchButton.Parent.Size = new Size(toolbar.Height, toolbar.Height);
+            searchButton.Parent.Location = new Point(torrentButton.Parent.Location.X - searchButton.Parent.Width, 0);
+            searchButton.MaximumSize = new Size(searchButton.Parent.Width + 20, searchButton.Parent.Height + 20);
+            searchButton.Size = searchButton.MaximumSize;
+            searchButton.Location = new Point(-10, -10);
             if (SearchEngine != null) {
                 foreach (Control ctrl in SearchEngine.Controls) ctrl.Dispose();
-                SearchEngine.Dispose(); }}
+                SearchEngine.Dispose(); }
+            ForceUpdate(); }
 
 
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
