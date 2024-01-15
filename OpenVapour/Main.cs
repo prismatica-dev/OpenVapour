@@ -258,6 +258,7 @@ namespace OpenVapour {
                 Application.OpenForms[0].BeginInvoke((MethodInvoker)delegate { AddTorrent(result.Result); }); });
             Task.Run(() => add); }
 
+        internal bool LoadingTorrent = false;
         internal void AddTorrent(ResultTorrent torrent) {
             try {
                 if (torrent == null || string.IsNullOrWhiteSpace(torrent.Name)) return;
@@ -277,9 +278,22 @@ namespace OpenVapour {
                 // name
                 Label name = new Label { Parent = panel, Font = Utilities.FitFont(Font, torrent.Name, new Size(GetCategorySize(0) - 4, panel.Height - 10)), Location = new Point(2, 2), Text = torrent.Name, BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(0), panel.Height - 4), TextAlign = ContentAlignment.MiddleLeft };
 
+                name.MouseEnter += delegate { name.Font = new Font(name.Font, FontStyle.Underline); ForceUpdate(); };
+                name.MouseLeave += delegate { name.Font = new Font(name.Font, FontStyle.Regular); ForceUpdate(); };
+                name.MouseClick += async delegate { 
+                    if (LoadingTorrent) return;
+                    else LoadingTorrent = true;
+                    try {
+                        Utilities.HandleLogging($"Opening internal page for torrent {torrent.Name}");
+                        Task<Bitmap> _t = WebCore.GetWebBitmap(torrent.Image);
+                        Task _c = _t.ContinueWith((result) => { LoadGameTorrent(torrent, Graphics.ManipulateDisplayBitmap(result.Result, Color.FromArgb(125, 0, 0, 0))); });
+                        await _c;
+                    } catch (Exception ex) { Utilities.HandleException($"AddTorrent({torrent.Name})", ex); }
+                    LoadingTorrent = false; };
+
                 // release date
                 string _d = torrent.PublishDateTime==DateTime.MinValue?torrent.PublishDate:torrent.PublishDateTime.ToString("MMM d, yyyy");
-                new Label { Parent = panel, Font = Utilities.FitFont(Font, _d, new Size(GetCategorySize(1) - 2, panel.Height - 10)), Location = new Point(GetCategoryLocation(1) + 2, 2), Text = _d, BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(1) - 4, panel.Height - 4), TextAlign = ContentAlignment.MiddleCenter };
+                new Label { Parent = panel, Font = Utilities.FitFont(Font, _d, new Size(GetCategorySize(1) - 4, panel.Height - 10)), Location = new Point(GetCategoryLocation(1) + 2, 2), Text = _d, BackColor = Color.Transparent, MinimumSize = new Size(GetCategorySize(1) - 4, panel.Height - 4), TextAlign = ContentAlignment.MiddleCenter };
 
                 // magnet button
                 Button _b = new Button { Parent = panel, Font = Utilities.FitFont(Font, "Copy Failed", new Size(GetCategorySize(2) - 2, panel.Height - 10)), Location = new Point(GetCategoryLocation(2), 0), Text = "🧲", BackColor = magnetbutton.BackColor, MinimumSize = new Size(GetCategorySize(2), panel.Height), TextAlign = ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Flat };
@@ -390,6 +404,10 @@ namespace OpenVapour {
             } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap({Session}, game, panel)", ex); }}
 
         private void LoadGameTorrent(object game, Image art) {
+            if (InvokeRequired) {
+                BeginInvoke((MethodInvoker)delegate { LoadGameTorrent(game, art); });
+                return; }
+
             string _n = ""; string _d = "";
             if (game is ResultTorrent rt) {
                 currenttorrent = rt; 
@@ -569,7 +587,8 @@ namespace OpenVapour {
             new Panel { Name = "nosearchresults", Parent = store, BackColor = Color.FromArgb(50, 0, 0, 0), Size = new Size(225, 225), Controls = { new Label { Text = $"No results found for \"{Search}\"", Size = new Size(225, ShowTryAgain?185:225), BackColor = Color.FromArgb(0, 0, 0, 0), Font = new Font(Font.FontFamily, 16f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleCenter }, tryAgain }};
             if (ShowTryAgain) {
                 ButtonFix(tryAgain, false);
-                ContainButton(tryAgain); }}
+                ContainButton(tryAgain); }
+            ForceUpdate(); }
 
         private void SteamPage_Click(object sender, EventArgs e) {
             if (steampage.Text == "Steam Page") Utilities.OpenUrl($"https://store.steampowered.com/app/{currentgame.AppId}");
@@ -702,6 +721,7 @@ namespace OpenVapour {
             libraryButton.Parent.Location = new Point(manageSettings.Parent.Location.X - libraryButton.Parent.Width, 0);
             panel.BringToFront();
             SearchEngine = panel;
+            DrawSearchBox();
             ForceUpdate(); }
 
         private void UnloadSearch() {

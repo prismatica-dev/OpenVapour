@@ -106,8 +106,10 @@ namespace OpenVapour.Torrent {
                             Name = FixRSSUnicode(GetBetween(JSON, "<title>", "</title>"));
                             Description = FixRSSUnicode(StripTags(GetBetween(JSON, "<description>", "</description>").Replace("<![CDATA[", "").Replace("]]>", "")));
                             PublishDate = GetBetween(JSON, "<pubDate>", "</pubDate>");
+                            try {
+                                PublishDateTime = DateTime.ParseExact(GetBefore(GetBetween(PublishDate, ", ", " +"), " "), "dd MMM yyyy", Culture); 
+                            } catch (Exception) {}
                             if (Source == TorrentSource.PCGamesTorrents || Source == TorrentSource.FitgirlRepacks) {
-                                PublishDateTime = DateTime.ParseExact(GetBefore(GetBetween(PublishDate, ", ", " +"), " "), "dd MMM yyyy", Culture);
                                 Image = GetBetween(JSON, "src=\"", "\""); }
                         break; }
 
