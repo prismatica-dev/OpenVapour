@@ -678,9 +678,9 @@ namespace OpenVapour {
 
         Panel SearchEngine;
         private void LoadSearch() {
-            Panel panel = new Panel { Parent = store.Parent, Size = store.Parent.Size, BackColor = Color.FromArgb(50, 255, 255, 255) };
-            Label title = new Label { Parent = panel, BackColor = Color.Transparent, MinimumSize = new Size(Width / 2, Height / 5), Location = new Point(Width / 4, Height / 5), Text = "OpenVapour", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "OpenVapour", new Size(Width / 2, Height / 5)), TextAlign = ContentAlignment.BottomCenter };
-            new Label { Parent = panel, BackColor = Color.Transparent, ForeColor = Color.FromArgb(206, 206, 206), MinimumSize = new Size(Width / 3, Height / 10), Location = new Point(Width / 3, title.Bottom), Text = "take back the web", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "take back the web", new Size(Width / 3, Height / 10)), TextAlign = ContentAlignment.TopCenter };
+            Panel panel = new Panel { Parent = store.Parent, Size = store.Parent.Size, BackColor = Color.FromArgb(50, 255, 255, 255), Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom };
+            Label title = new Label { ForeColor = UserSettings.WindowTheme["text1"], Parent = panel, BackColor = Color.Transparent, MinimumSize = new Size(Width / 2, Height / 5), Location = new Point(Width / 4, Height / 5), Text = "OpenVapour", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "OpenVapour", new Size(Width / 2, Height / 5)), TextAlign = ContentAlignment.BottomCenter, Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top };
+            new Label { Parent = panel, BackColor = Color.Transparent, ForeColor = UserSettings.WindowTheme["text1"], MinimumSize = new Size(Width / 3, Height / 10), Location = new Point(Width / 3, title.Bottom), Text = "take back the web", Font = Utilities.FitFont(new Font(Font.FontFamily, 128f, FontStyle.Italic), "take back the web", new Size(Width / 3, Height / 10)), TextAlign = ContentAlignment.TopCenter, Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top };
             store.Parent.Visible = true;
             searchtextbox.Parent = panel;
             searchtextbox.Location = new Point(title.Left, title.Bottom + Height / 4);
