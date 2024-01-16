@@ -1,8 +1,8 @@
 <div align="center">
   <img style="width:128px;height:128px;" src="https://github.com/lily-software/OpenVapour/assets/59503910/fde232a9-1191-4d43-b2ee-f3c7281473a2">
-  <h1>/lily.software/ OpenVapour — Torrent Search Engine</h1>
+  <h1>/prismatica.dev/ OpenVapour — Torrent Search Engine</h1>
   <i>A C# torrent search front-end for <a href="https://store.steampowered.com">Steam</a> focused on fast searches. As a <a href="https://www.gnu.org/philosophy/floss-and-foss.en.html">FLOSS</a> project, it is completely open source and uses no 3rd party libraries such as NUGET packages.</i><br>
-  > <a href="https://openvapour.lily.software">Official Site</a> <   > <a href="https://blog.lily.software">Blog</a> <<br>
+  > <a href="https://openvapour.prismatica.dev">Official Site</a> <   > <a href="https://blog.prismatica.dev">Blog</a> <<br>
   <img src="https://img.shields.io/github/downloads/lily-software/OpenVapour/total.svg?color=ff69b4&logoColor=white&labelColor=&style=for-the-badge"/>
 </div><br>
 
@@ -86,7 +86,7 @@ OpenVapour requires [.NET Framework 4.8.1](https://dotnet.microsoft.com/en-us/do
 Additionally, an external torrent client such as [qBittorrent](https://www.qbittorrent.org/) is required to download from torrents (and interpret magnet links).
 
 If you have both of these and are still experiencing issues, please create a report [on the issues page](https://github.com/lily-software/OpenVapour/issues).<br>
-If present, you **must** include your exception.log file and latest.log file (at %Appdata%/lily.software/OpenVapour/exception.log) as otherwise it is significantly more difficult to determine and fix these issues.
+If present, you **must** include your exception.log file and latest.log file (at %Appdata%/prismatica.dev/OpenVapour/exception.log) as otherwise it is significantly more difficult to determine and fix these issues.
 
 OpenVapour, for the foreseeable future, will not be switching to .NET from .NET Framework. This was tested in a branch and provided no improvements on its own. Several .NET Framework bugs are patched inside this project, such as background image tearing on scroll as well as additional enhancements. These fixes and enhancements require surprisingly low-level patches, such as LockWindowUpdate. If your anti-virus removes OpenVapour, chances are its because of these patches, or because Windows just likes complaining. Feel free to build it yourself if you have concerns.
 
