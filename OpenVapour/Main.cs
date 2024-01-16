@@ -344,44 +344,28 @@ namespace OpenVapour {
 
                 AddPanelEvents(panel);
                 try { ForceUpdate(); } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({game.AppId}) [Refresh]", ex);}
-                LoadGameTorrentBitmap(Session, game, panel);
+                LoadGameBitmap(Session, game, panel);
             } catch (Exception ex) { Utilities.HandleException($"Main.AddGame({Session}, {game.AppId})", ex); }}
 
-        internal void LoadGameTorrentBitmap(int Session, object game, PictureBox output) {
+        internal void LoadGameBitmap(int Session, SteamGame game, PictureBox output) {
             try {
                 if (InvokeRequired) {
-                    BeginInvoke((MethodInvoker)delegate { LoadGameTorrentBitmap(Session, game, output); });
+                    BeginInvoke((MethodInvoker)delegate { LoadGameBitmap(Session, game, output); });
                     return; }
 
                 Task<Bitmap> imgTask = null;
                 string name = "";
                 string desc = "";
-                string overlay = "";
                 string publish = "";
-                bool torrent = false;
                 Color baseState = Color.FromArgb(125, 0, 0, 0);
 
-                if (game is SteamGame sg) {
-                    imgTask = GetShelf(Utilities.ToIntSafe(sg.AppId));
-                    name = sg.Name;
-                    desc = sg.Description.Replace("store. steampowered. com", "store.steampowered.com"); }
-                else if (game is ResultTorrent rt) {
-                    torrent = true;
-                    imgTask = WebCore.GetWebBitmap(rt.Image);
-                    overlay = GetSourceName(rt.Source);
-                    baseState = Color.FromArgb(125, GetIntegrationColor(GetIntegration(rt.Source)));
-                    if (rt.Source == TorrentSource.KaOs && !rt.SafeAnyway) 
-                        baseState = Color.FromArgb(125, GetIntegrationColor(Integration.NoBypass));
-                    name = rt.Name;
-                    desc = rt.Description;
-                    publish = rt.PublishDate.Replace("+0000", ""); }
+                imgTask = GetShelf(Utilities.ToIntSafe(game.AppId));
+                name = game.Name;
+                desc = game.Description.Replace("store. steampowered. com", "store.steampowered.com"); 
 
                 Task cont = imgTask.ContinueWith((img) => {
                     if (Session != this.Session || img.Result == null || (img.Result.Width <= 1 && img.Result.Height <= 1)) { if (output != null && !output.IsDisposed) output.Parent = null; return; }
-                    List<Image> states = null;
-                    if (torrent)
-                        states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5, Font, overlay, baseState), null, null };
-                    else states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null };
+                    List<Image> states = new List<Image> { Graphics.ManipulateDisplayBitmap(img.Result, baseState, 5), null, null };
                     output.BeginInvoke((MethodInvoker)delegate { 
                         output.Image = states[0]; 
                         List<object> metalist = output.Tag as List<object>;
@@ -391,17 +375,9 @@ namespace OpenVapour {
                         metalist.RemoveAt(metalist.Count() - 1); metalist.Add(CreatePopUp(output, name, desc, publish));
                         foreach (Control ctrl in prev.Controls) ctrl.Dispose();
                         prev.Dispose();
-
-                        if (game is ResultTorrent rt) {
-                            // resize panel to appropriate proportions
-                            float MaximumSize = Math.Max(img.Result.Width, img.Result.Height);
-                            output.Size = new Size(
-                                Math.Max((int)Math.Round(img.Result.Width / MaximumSize * 225f), 150),
-                                Math.Max((int)Math.Round(img.Result.Height / MaximumSize * 225f), 150)); }
-                        ForceUpdate();
-                        }); });
+                        ForceUpdate(); }); });
                 Task.Run(() => cont);
-            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameTorrentBitmap({Session}, game, panel)", ex); }}
+            } catch(Exception ex) { Utilities.HandleException($"Main.LoadGameBitmap({Session}, game, panel)", ex); }}
 
         private void LoadGameTorrent(object game, Image art) {
             if (InvokeRequired) {
